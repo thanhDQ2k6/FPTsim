@@ -3,34 +3,28 @@ package com.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "giohang")
-public class Giohang {
+@Table(name = "giohang",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"MaKH", "iccid"}))
+public class GioHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "MaKH", nullable = false)
-    private Nguoidung maKH;
+    private NguoiDung khachHang;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "iccid", nullable = false)
-    private Sim iccid;
+    private Sim sim;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "NgayThem")
-    private Instant ngayThem;
-
+    private LocalDateTime ngayThem = LocalDateTime.now();
 }

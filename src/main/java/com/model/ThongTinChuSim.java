@@ -9,16 +9,19 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "thongtinchusim")
-public class Thongtinchusim {
+@Table(name = "thongtinchusim", indexes = {
+        @Index(name = "idx_thongtin_cccd", columnList = "CCCD"),
+        @Index(name = "idx_thongtin_hoten", columnList = "HoTen")
+})
+public class ThongTinChuSim {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "iccid", nullable = false)
-    private Sim iccid;
+    @JoinColumn(name = "iccid", nullable = false, unique = true)
+    private Sim sim;
 
     @Column(name = "HoTen", nullable = false)
     private String hoTen;
@@ -40,6 +43,5 @@ public class Thongtinchusim {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MaHD")
-    private Hoadon maHD;
-
+    private HoaDon hoaDon;
 }

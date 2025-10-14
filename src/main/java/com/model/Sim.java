@@ -3,59 +3,79 @@ package com.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.util.LinkedHashSet;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "sim")
+@Table(name = "sim", indexes = {
+        @Index(name = "idx_sim_msisdn", columnList = "msisdn"),
+        @Index(name = "idx_sim_nhamang", columnList = "NhaMang"),
+        @Index(name = "idx_sim_trangthai", columnList = "TrangThai")
+})
 public class Sim {
     @Id
     @Column(name = "iccid", nullable = false)
     private String iccid;
 
-    @Column(name = "msisdn", length = 20)
+    @Column(name = "msisdn", length = 20, unique = true)
     private String msisdn;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "NhaMang", nullable = false)
-    private String nhaMang;
+    private NhaMang nhaMang;
+
+    public enum NhaMang {
+        Viettel, Mobiphone, Vinaphone
+    }
 
     @Column(name = "GiaBan", nullable = false, precision = 10, scale = 2)
     private BigDecimal giaBan;
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "LoaiSim", nullable = false)
-    private String loaiSim;
+    private LoaiSim loaiSim;
 
-    @ColumnDefault("'SanSang'")
-    @Lob
+    public enum LoaiSim {
+        NgoaiDia, TraTruoc, TraSau
+    }
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "TrangThai", nullable = false)
-    private String trangThai;
+    private TrangThai trangThai = TrangThai.SanSang;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    public enum TrangThai {
+        SanSang, DaBan, HoatDong
+    }
+
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "iccid")
-    private Set<Chitietnhapsim> chitietnhapsims = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "sim")
+    private Set<ChiTietNhapSim> chiTietNhapSims = new HashSet<>();
 
-    @OneToMany(mappedBy = "iccid")
-    private Set<Giohang> giohangs = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "sim")
+    private Set<GioHang> gioHangs = new HashSet<>();
 
-    @OneToMany(mappedBy = "iccid")
-    private Set<Hoadonchitiet> hoadonchitiets = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "sim")
+    private Set<HoaDonChiTiet> hoaDonChiTiets = new HashSet<>();
 
-    @OneToOne(mappedBy = "iccid")
-    private Thongtinchusim thongtinchusim;
+    @OneToOne(mappedBy = "sim", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ThongTinChuSim thongTinChuSim;
 
+    // Phương thức để lấy giá nhập mới nhất
+    public BigDecimal getGiaNhapMoiNhat() {
+        return chiTietNhapSims.stream()
+                .sorted((a, b) -> b.getNhapSim().getNgayNhap().compareTo(a.getNhapSim().getNgayNhap()))
+                .map(ChiTietNhapSim::getGiaNhap)
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
+    }
 }

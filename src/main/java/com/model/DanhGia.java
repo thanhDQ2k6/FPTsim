@@ -1,38 +1,35 @@
 package com.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "danhgia")
-public class Danhgia {
+public class DanhGia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "MaHD", nullable = false)
-    private Hoadon maHD;
+    @JoinColumn(name = "MaHD", nullable = false, unique = true)
+    private HoaDon hoaDon;
 
+    @Min(1)
+    @Max(5)
     @Column(name = "Sao", nullable = false)
     private Integer sao;
 
-    @Lob
-    @Column(name = "NoiDung")
+    @Column(name = "NoiDung", columnDefinition = "TEXT")
     private String noiDung;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "NgayDanhGia")
-    private Instant ngayDanhGia;
-
+    private LocalDateTime ngayDanhGia = LocalDateTime.now();
 }

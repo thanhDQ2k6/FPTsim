@@ -3,15 +3,14 @@ package com.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "lichsugiaodich")
-public class Lichsugiaodich {
+public class LichSuGiaoDich {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaGiaoDich", nullable = false)
@@ -19,22 +18,23 @@ public class Lichsugiaodich {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "MaHD", nullable = false)
-    private Hoadon maHD;
+    private HoaDon hoaDon;
 
-    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "ThoiGian")
-    private Instant thoiGian;
+    private LocalDateTime thoiGian = LocalDateTime.now();
 
-    @Lob
+    @Enumerated(EnumType.STRING)
     @Column(name = "HanhDong", nullable = false)
-    private String hanhDong;
+    private HanhDong hanhDong;
 
-    @Lob
-    @Column(name = "GhiChu")
+    public enum HanhDong {
+        TaoDon, ThanhToan, HuyDon, HoanThanh
+    }
+
+    @Column(name = "GhiChu", columnDefinition = "TEXT")
     private String ghiChu;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "NguoiThucHien")
-    private Nguoidung nguoiThucHien;
-
+    private NguoiDung nguoiThucHien;
 }
