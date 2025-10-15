@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách SIM</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        a.button { padding: 6px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; }
+        a.button.delete { background-color: #f44336; }
+    </style>
+</head>
+<body>
+<h2>Danh sách SIM</h2>
+
+<a href="/sim/create" class="button">+ Thêm SIM mới</a>
+<br><br>
+
+<table>
+    <thead>
+    <tr>
+        <th>ICCID</th>
+        <th>Số điện thoại</th>
+        <th>Nhà mạng</th>
+        <th>Giá bán</th>
+        <th>Loại SIM</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="s : ${list}">
+        <td th:text="${s.iccid}"></td>
+        <td th:text="${s.msisdn}"></td>
+        <td th:text="${s.nhaMang}"></td>
+        <td th:text="${#numbers.formatDecimal(s.giaBan, 0, 'COMMA', 2, 'POINT')}"></td>
+        <td th:text="${s.loaiSim}"></td>
+        <td th:text="${s.trangThai}"></td>
+        <td>
+            <a th:href="@{'/sim/edit/' + ${s.iccid}}" class="button">Sửa</a>
+            <a th:href="@{'/sim/delete/' + ${s.iccid}}" class="button delete"
+               onclick="return confirm('Bạn có chắc chắn muốn xóa SIM này?')">Xóa</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

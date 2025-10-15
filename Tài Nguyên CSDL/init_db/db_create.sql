@@ -21,6 +21,14 @@ CREATE TABLE IF NOT EXISTS `NguoiDung`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+SELECT @@sql_mode;
+SET SESSION sql_mode='ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'STRICT_TRANS_TABLES',''));
+select * from NguoiDung;
+INSERT INTO NguoiDung (Email, Password, HoTen, SDT, NgaySinh, DiaChi, VaiTro)
+VALUES
+    ('kh1@example.com','123456','Nguyen Van A','0901234567','1990-01-01','Ha Noi','KhachHang'),
+    ('nv1@example.com','123456','Tran Thi B','0912345678','1985-05-05','Ho Chi Minh','NhanVien');
 -- Bảng SIM
 CREATE TABLE IF NOT EXISTS `SIM`
 (
@@ -40,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `SIM`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
+SELECT * FROM SIM WHERE iccid = '89345678901234567890';
 -- Bảng nhập SIM
 CREATE TABLE IF NOT EXISTS `NhapSim`
 (
@@ -222,3 +231,110 @@ CREATE TABLE IF NOT EXISTS `ThongKeBanHang`
     PRIMARY KEY (`Ngay`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+
+select * from SIM;
+
+-- =============================
+-- Bảng NguoiDung
+-- =============================
+INSERT INTO NguoiDung (Email, Password, HoTen, SDT, NgaySinh, DiaChi, VaiTro)
+VALUES
+    ('kh1@example.com', '123456', 'Nguyen Van A', '0901234567', '1990-01-01', 'Ha Noi', 'KhachHang'),
+    ('nv1@example.com', '123456', 'Tran Thi B', '0912345678', '1985-05-05', 'Ho Chi Minh', 'NhanVien');
+
+-- =============================
+-- Bảng SIM
+-- =============================
+INSERT INTO SIM (iccid, msisdn, NhaMang, GiaBan, LoaiSim, TrangThai)
+VALUES
+    ('89345678901234567891', '0987654322', 'Mobiphone', 450000, 'TraSau', 'SanSang');
+
+-- =============================
+-- Bảng NhapSim
+-- =============================
+INSERT INTO NhapSim (MaNV, NhaCungCap)
+VALUES
+    ('nv1@example.com', 'NhaCC1'),
+    ('nv1@example.com', 'NhaCC2');
+
+-- =============================
+-- Bảng ChiTietNhapSim
+-- =============================
+INSERT INTO ChiTietNhapSim (MaNhap, iccid, GiaNhap)
+VALUES
+    (1, '89345678901234567890', 400000),
+    (2, '89345678901234567891', 420000);
+
+-- =============================
+-- Bảng GioHang
+-- =============================
+INSERT INTO GioHang (MaKH, iccid)
+VALUES
+    ('kh1@example.com', '89345678901234567890'),
+    ('kh1@example.com', '89345678901234567891');
+
+-- =============================
+-- Bảng HoaDon
+-- =============================
+INSERT INTO HoaDon (MaHD, MaKH, MaNV, TongTien, TrangThaiDon)
+VALUES
+    ('HD001', 'kh1@example.com', 'nv1@example.com', 950000, 'ChoXacNhan'),
+    ('HD002', 'kh1@example.com', 'nv1@example.com', 450000, 'DangXuLy');
+
+-- =============================
+-- Bảng HoaDonChiTiet
+-- =============================
+INSERT INTO HoaDonChiTiet (MaHD, iccid, GiaBan, GiaCuoi)
+VALUES
+    ('HD001', '89345678901234567890', 500000, 480000),
+    ('HD001', '89345678901234567891', 450000, 450000);
+
+-- =============================
+-- Bảng ThongTinChuSIM
+-- =============================
+INSERT INTO ThongTinChuSIM (iccid, HoTen, CCCD, NgayCap, NgaySinh, DiaChi, SDT, MaHD)
+VALUES
+    ('89345678901234567890', 'Le Van C', '123456789', '2020-01-01', '1990-06-06', 'Ha Noi', '098112233', 'HD001'),
+    ('89345678901234567891', 'Pham Thi D', '987654321', '2021-01-01', '1992-08-08', 'Ho Chi Minh', '098223344', 'HD001');
+
+-- =============================
+-- Bảng UuDai
+-- =============================
+INSERT INTO UuDai (MaUD, MoTa, GiaTriGiam, LoaiGiam, NgayBatDau, NgayHetHan, TrangThai)
+VALUES
+    ('UD001', 'Giam 10%', 10, 'PhanTram', '2025-10-01', '2025-12-31', TRUE),
+    ('UD002', 'Giam 50000 VND', 50000, 'TienMat', '2025-10-01', '2025-12-31', TRUE);
+
+-- =============================
+-- Bảng ApDungUuDai
+-- =============================
+INSERT INTO ApDungUuDai (MaKH, MaHD, MaUD, GiaTriApDung)
+VALUES
+    ('kh1@example.com', 'HD001', 'UD001', 95000),
+    ('kh1@example.com', 'HD002', 'UD002', 50000);
+
+-- =============================
+-- Bảng DanhGia
+-- =============================
+INSERT INTO DanhGia (MaHD, Sao, NoiDung)
+VALUES
+    ('HD001', 5, 'Rất hài lòng'),
+    ('HD002', 4, 'Ổn, nhưng giá hơi cao');
+
+-- =============================
+-- Bảng LichSuGiaoDich
+-- =============================
+INSERT INTO LichSuGiaoDich (MaHD, HanhDong, GhiChu, NguoiThucHien)
+VALUES
+    ('HD001', 'TaoDon', 'Tạo đơn bởi hệ thống', 'kh1@example.com'),
+    ('HD001', 'ThanhToan', 'Thanh toán online', 'kh1@example.com');
+
+-- =============================
+-- Bảng ThongKeBanHang
+-- =============================
+INSERT INTO ThongKeBanHang (Ngay, SoDonHang, DoanhThu)
+VALUES
+    ('2025-10-15', 2, 1400000),
+    ('2025-10-16', 1, 500000);
+

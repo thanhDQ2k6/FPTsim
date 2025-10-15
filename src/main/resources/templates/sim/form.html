@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${sim.iccid == null ? 'Thêm SIM mới' : 'Chỉnh sửa SIM'}"></title>
+    <style>
+        label { display: block; margin-top: 10px; }
+        input, select { width: 300px; padding: 5px; margin-top: 5px; }
+        button { margin-top: 15px; padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        a { margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+<h2 th:text="${sim.iccid == null ? 'Thêm SIM mới' : 'Chỉnh sửa SIM'}"></h2>
+
+<form th:action="@{/sim/save}" th:object="${sim}" method="post">
+    <label>ICCID:</label>
+    <input type="text" th:field="*{iccid}" placeholder="Nhập ICCID" required/>
+
+    <label>Số điện thoại (MSISDN):</label>
+    <input type="text" th:field="*{msisdn}" placeholder="Nhập số điện thoại" required/>
+
+    <label>Nhà mạng:</label>
+    <select th:field="*{nhaMang}">
+        <option value="Viettel">Viettel</option>
+        <option value="Mobiphone">Mobiphone</option>
+        <option value="Vinaphone">Vinaphone</option>
+    </select>
+
+    <label>Giá bán:</label>
+    <input type="number" th:field="*{giaBan}" step="1000" min="0" required/>
+
+    <label>Loại SIM:</label>
+    <select th:field="*{loaiSim}">
+        <option value="NgoaiDia">Ngoại địa</option>
+        <option value="TraTruoc">Trả trước</option>
+        <option value="TraSau">Trả sau</option>
+    </select>
+
+    <label>Trạng thái:</label>
+    <select th:field="*{trangThai}">
+        <option value="SanSang">Sẵn sàng</option>
+        <option value="DaBan">Đã bán</option>
+        <option value="HoatDong">Hoạt động</option>
+    </select>
+
+    <br/>
+    <button type="submit">Lưu</button>
+    <a href="/sim/list">Quay lại</a>
+</form>
+
+</body>
+</html>
