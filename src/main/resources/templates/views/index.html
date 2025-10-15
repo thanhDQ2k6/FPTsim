@@ -1,6 +1,6 @@
 <!doctype html>
 <html th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
-<title>Home</title>
+<title th:text="#{home}"></title>
 <main>
     <div class="py-20">
         <div class="container mx-auto px-6 md:px-12">
@@ -13,11 +13,14 @@
                     </h1>
                     <p class="mb-8 text-lg md:text-xl lg:text-2xl" th:text="#{heroDescription}"></p>
                     <div class="flex gap-6">
-                        <a class="d-btn d-btn-primary d-btn-xl px-6 py-3 font-bold" th:href="@{/signin}"
-                           th:text="#{signIn}"></a>
+                        <a
+                                class="d-btn d-btn-primary d-btn-xl px-6 py-3 font-bold"
+                                onclick="signIn.showModal()"
+                                th:text="#{signIn}"
+                        ></a>
                         <a
                                 class="d-btn d-btn-secondary d-btn-xl px-6 py-3 font-bold"
-                                th:href="@{/signup}"
+                                onclick="signUp.showModal()"
                                 th:text="#{signUp}"
                         ></a>
                     </div>
