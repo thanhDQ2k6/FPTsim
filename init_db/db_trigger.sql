@@ -86,24 +86,22 @@ CREATE EVENT update_uudai_status
     END //
 DELIMITER ;
 
-
--- ===== WIP NÊN ĐỪNG CHẠM VÀO=====
 -- ===== TRIGGERS CHO THỐNG KÊ BÁO CÁO =====
 
 -- Trigger tự động cập nhật thống kê bán hàng theo ngày
-# DELIMITER //
-# CREATE TRIGGER after_complete_order
-#     AFTER UPDATE ON `HoaDon`
-#     FOR EACH ROW
-# BEGIN
-#     -- Khi đơn hàng chuyển sang trạng thái hoàn thành
-#     IF NEW.TrangThaiDon = 'DaHoanThanh' AND OLD.TrangThaiDon != 'DaHoanThanh' THEN
-#         -- Tạo hoặc cập nhật bản ghi thống kê theo ngày
-#         INSERT INTO `ThongKeBanHang` (Ngay, SoDonHang, DoanhThu)
-#         VALUES (CURRENT_DATE(), 1, NEW.TongTien)
-#         ON DUPLICATE KEY UPDATE
-#                              SoDonHang = SoDonHang + 1,
-#                              DoanhThu = DoanhThu + NEW.TongTien;
-#     END IF;
-# END //
-# DELIMITER ;
+DELIMITER //
+CREATE TRIGGER after_complete_order
+    AFTER UPDATE ON `HoaDon`
+    FOR EACH ROW
+BEGIN
+    -- Khi đơn hàng chuyển sang trạng thái hoàn thành
+    IF NEW.TrangThaiDon = 'DaHoanThanh' AND OLD.TrangThaiDon != 'DaHoanThanh' THEN
+        -- Tạo hoặc cập nhật bản ghi thống kê theo ngày
+        INSERT INTO `ThongKeBanHang` (Ngay, SoDonHang, DoanhThu)
+        VALUES (CURRENT_DATE(), 1, NEW.TongTien)
+        ON DUPLICATE KEY UPDATE
+                             SoDonHang = SoDonHang + 1,
+                             DoanhThu = DoanhThu + NEW.TongTien;
+    END IF;
+END //
+DELIMITER ;

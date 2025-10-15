@@ -212,3 +212,13 @@ CREATE TABLE IF NOT EXISTS `LichSuGiaoDich`
     FOREIGN KEY (`NguoiThucHien`) REFERENCES `NguoiDung` (`Email`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
+
+-- Bảng lưu trữ thống kê bán hàng theo ngày (hỗ trợ báo cáo nhanh)
+CREATE TABLE IF NOT EXISTS `ThongKeBanHang`
+(
+    `Ngay`      DATE NOT NULL,
+    `SoDonHang` INT            DEFAULT 0,
+    `DoanhThu`  DECIMAL(15, 2) DEFAULT 0,
+    PRIMARY KEY (`Ngay`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
