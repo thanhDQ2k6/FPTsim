@@ -628,7 +628,6 @@ Sử dụng các repository trong service layer:
 package com.service;
 
 import com.model.Sim;
-import com.repository.SimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -712,12 +711,7 @@ import com.model.HoaDon;
 import com.model.HoaDonChiTiet;
 import com.model.NguoiDung;
 import com.model.Sim;
-import com.repository.HoaDonChiTietRepository;
-import com.repository.HoaDonRepository;
-import com.repository.SimRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
