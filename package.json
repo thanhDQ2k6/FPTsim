@@ -1,7 +1,7 @@
 {
   "name": "fptsim",
   "version": "1.0.0",
-  "description": "desc here",
+  "description": "A simulation tool for Flexible Production Technology (FPT) systems, enabling modeling, analysis, and optimization of production processes.",
   "homepage": "https://github.com/thanhdqts00628/FPTsim#readme",
   "bugs": {
     "url": "https://github.com/thanhdqts00628/FPTsim/issues"
