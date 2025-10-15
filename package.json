@@ -13,7 +13,6 @@
   "license": "ISC",
   "author": "FPTteam",
   "type": "commonjs",
-  "main": "index.js",
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i src/app.css -o src/main/resources/static/styles/tailwind.css --minify",
     "watch:css": "npx @tailwindcss/cli -i src/app.css -o src/main/resources/static/styles/tailwind.css --watch"
