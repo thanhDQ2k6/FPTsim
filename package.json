@@ -1,0 +1,26 @@
+{
+  "name": "fptsim",
+  "version": "1.0.0",
+  "description": "A simulation tool for Flexible Production Technology (FPT) systems, enabling modeling, analysis, and optimization of production processes.",
+  "homepage": "https://github.com/thanhdqts00628/FPTsim#readme",
+  "bugs": {
+    "url": "https://github.com/thanhdqts00628/FPTsim/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thanhdqts00628/FPTsim.git"
+  },
+  "license": "ISC",
+  "author": "FPTteam",
+  "type": "commonjs",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i src/app.css -o src/main/resources/static/styles/tailwind.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i src/app.css -o src/main/resources/static/styles/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.14",
+    "daisyui": "^5.3.1",
+    "prettier-plugin-tailwindcss": "^0.7.0",
+    "tailwindcss": "^4.1.14"
+  }
+}

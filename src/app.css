@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@plugin 'daisyui' {
+    themes: retro --default,
+    synthwave --prefersdark;
+    prefix: 'd-';
+}
