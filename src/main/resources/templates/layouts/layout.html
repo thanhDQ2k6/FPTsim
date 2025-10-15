@@ -93,7 +93,9 @@
                 <li th:if="${isLoggedIn}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
 
                 <li th:unless="${isLoggedIn}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
-                <li th:unless="${isLoggedIn}"><a th:href="@{/signup}" th:text="#{signUp}"></a></li>
+                <li th:unless="${isLoggedIn}">
+                    <button onclick="signUp.showModal()" th:text="#{signUp}"></button>
+                </li>
             </ul>
         </div>
     </div>
@@ -125,6 +127,48 @@
         <p th:text="#{footer.copyright}"></p>
     </aside>
 </footer>
+
+<dialog class="d-modal" id="signIn">
+    <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signup}">
+        <fieldset class="d-fieldset w-full p-3">
+            <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signIn}"></legend>
+
+            <label class="d-label" for="email">Email</label>
+            <input class="d-input w-full" id="email" name="email" required type="email"/>
+
+            <label class="d-label mt-2" for="password" th:text="#{password}"></label>
+            <input class="d-input w-full" id="password" name="password" required type="password"/>
+
+            <div class="d-card-actions mt-4 flex justify-end gap-2">
+                <button class="d-btn d-btn-neutral" th:text="#{signIn}" type="submit"></button>
+            </div>
+        </fieldset>
+    </form>
+    <form class="d-modal-backdrop" method="dialog">
+        <button class="hover:cursor-default"></button>
+    </form>
+</dialog>
+
+<dialog class="d-modal" id="signUp">
+    <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signup}">
+        <fieldset class="d-fieldset w-full p-3">
+            <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signUp}"></legend>
+
+            <label class="d-label" for="email">Email</label>
+            <input class="d-input w-full" id="email" name="email" required type="email"/>
+
+            <label class="d-label mt-2" for="password" th:text="#{password}"></label>
+            <input class="d-input w-full" id="password" name="password" required type="password"/>
+
+            <div class="d-card-actions mt-4 flex justify-end gap-2">
+                <button class="d-btn d-btn-neutral" th:text="#{signUp}" type="submit"></button>
+            </div>
+        </fieldset>
+    </form>
+    <form class="d-modal-backdrop" method="dialog">
+        <button class="hover:cursor-default"></button>
+    </form>
+</dialog>
 
 <script src="/scripts/langSelector.js"></script>
 </body>
