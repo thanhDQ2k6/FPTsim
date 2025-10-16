@@ -21,6 +21,7 @@
     "@tailwindcss/cli": "^4.1.14",
     "daisyui": "^5.3.1",
     "prettier-plugin-tailwindcss": "^0.7.0",
-    "tailwindcss": "^4.1.14"
+    "tailwindcss": "^4.1.14",
+    "ungit": "^1.5.28"
   }
 }
