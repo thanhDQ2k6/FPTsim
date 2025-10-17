@@ -1,63 +1,43 @@
 package com.model;
 
 public class CartItem {
-    private String name;
-    private String country;
-    private String company;
-    private String role;
-    private String color;
+    private String phoneNumber;
+    private String networkProvider;
+    private String type; // domestic, foreign, prepaid, postpaid
     private boolean selected;
 
     public CartItem() {
     }
 
-    public CartItem(String name, String country, String company, String role, String color, boolean selected) {
-        this.name = name;
-        this.country = country;
-        this.company = company;
-        this.role = role;
-        this.color = color;
+    public CartItem(String phoneNumber, String networkProvider, String type, boolean selected) {
+        this.phoneNumber = phoneNumber;
+        this.networkProvider = networkProvider;
+        this.type = type;
         this.selected = selected;
     }
 
-    public String getName() {
-        return name;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getCountry() {
-        return country;
+    public String getNetworkProvider() {
+        return networkProvider;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setNetworkProvider(String networkProvider) {
+        this.networkProvider = networkProvider;
     }
 
-    public String getCompany() {
-        return company;
+    public String getType() {
+        return type;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public boolean isSelected() {
