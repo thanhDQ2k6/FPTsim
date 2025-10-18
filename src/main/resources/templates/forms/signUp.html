@@ -19,19 +19,19 @@
 <main class="flex min-h-screen w-full items-center justify-center p-4">
     <form action="#" class="d-card bg-base-100 w-fit max-w-lg min-w-1/4 shadow-xl" method="post">
         <div class="d-card-body gap-4">
-            <h2 class="d-card-title justify-center text-2xl font-bold" th:text="#{signUpForm}"></h2>
+            <h2 class="d-card-title justify-center text-2xl font-bold" th:text="#{auth.signUpForm}"></h2>
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <fieldset class="d-fieldset col-span-1 sm:col-span-2">
                     <label class="d-label" for="fullName">
-                        <span class="text-base font-medium" th:text="#{fullName}"></span>
+                        <span class="text-base font-medium" th:text="#{label.fullName}"></span>
                     </label>
                     <input class="d-input w-full" id="fullName" name="fullName" required type="text"/>
                 </fieldset>
 
                 <fieldset class="d-fieldset col-span-1">
                     <label class="d-label" for="dob">
-                        <span class="text-base font-medium" th:text="#{dateOfBirth}"></span>
+                        <span class="text-base font-medium" th:text="#{label.dateOfBirth}"></span>
                     </label>
                     <input class="d-input w-full" id="dob" name="dob" type="date"/>
                 </fieldset>
@@ -40,14 +40,14 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <fieldset class="d-fieldset">
                     <label class="d-label" for="email">
-                        <span class="text-base font-medium" th:text="#{email}"></span>
+                        <span class="text-base font-medium" th:text="#{label.email}"></span>
                     </label>
                     <input class="d-input w-full" id="email" name="email" required type="email"/>
                 </fieldset>
 
                 <fieldset class="d-fieldset">
                     <label class="d-label" for="phone">
-                        <span class="text-base font-medium" th:text="#{phoneNumber}"></span>
+                        <span class="text-base font-medium" th:text="#{label.phoneNumber}"></span>
                     </label>
                     <input class="d-input w-full" id="phone" name="phone" type="tel"/>
                 </fieldset>
@@ -55,21 +55,21 @@
 
             <fieldset class="d-fieldset">
                 <label class="d-label" for="password">
-                    <span class="text-base font-medium" th:text="#{password}"></span>
+                    <span class="text-base font-medium" th:text="#{auth.password}"></span>
                 </label>
                 <input class="d-input w-full" id="password" name="password" required type="password"/>
             </fieldset>
 
             <fieldset class="d-fieldset">
                 <label class="d-label" for="address">
-                    <span class="text-base font-medium" th:text="#{address}"></span>
+                    <span class="text-base font-medium" th:text="#{label.address}"></span>
                 </label>
                 <textarea class="d-textarea w-full" id="address" name="address" rows="3"></textarea>
             </fieldset>
 
-            <button class="d-btn d-btn-primary mt-2 w-full" th:text="#{signUp}" type="submit"></button>
-            <div class="d-divider" th:text="#{or}"></div>
-            <a class="d-btn d-btn-secondary w-full text-center" href="/login" th:text="#{signIn}"></a>
+            <button class="d-btn d-btn-primary mt-2 w-full" th:text="#{auth.signUp}" type="submit"></button>
+            <div class="d-divider" th:text="#{auth.or}"></div>
+            <a class="d-btn d-btn-secondary w-full text-center" href="/login" th:text="#{auth.signIn}"></a>
         </div>
     </form>
 </main>
