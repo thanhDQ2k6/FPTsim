@@ -92,7 +92,7 @@
             <li th:if="${isLoggedIn}"><a th:href="@{/coupons}" th:text="#{menuUser.coupons}"></a></li>
             <li th:if="${isLoggedIn}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
 
-            <li th:unless="${isLoggedIn}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
+            <li th:unless="${isLoggedIn}"><button onclick="signIn.showModal()" th:text="#{signIn}"></button></li>
             <li th:unless="${isLoggedIn}">
               <button onclick="signUp.showModal()" th:text="#{signUp}"></button>
             </li>
@@ -128,10 +128,16 @@
   </aside>
 </footer>
 
+
+
+
 <dialog class="d-modal" id="signIn">
-  <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signup}">
+  <form class="d-modal-box rounded-box bg-base-100" id="signInForm" method="post" th:action="@{/signin}">
         <fieldset class="d-fieldset w-full p-3">
           <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signIn}"></legend>
+
+          <div id="signInError" class="text-error text-center mb-4" style="display: none;"></div>
+          <div id="signInSuccess" class="text-success text-center mb-4" style="display: none;"></div>
 
           <label class="d-label" for="email">Email</label>
           <input class="d-input d-validator w-full" id="email" name="email" required type="email"/>
@@ -140,7 +146,7 @@
           <input class="d-input d-validator w-full" id="password" name="password" required type="password"/>
 
           <div class="d-card-actions mt-4 flex justify-end gap-2">
-            <button class="d-btn d-btn-neutral" th:text="#{signIn}" type="submit"></button>
+            <button class="d-btn d-btn-neutral" type="submit" th:text="#{signIn}"></button>
           </div>
         </fieldset>
   </form>
@@ -150,15 +156,29 @@
 </dialog>
 
 <dialog class="d-modal" id="signUp">
-  <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signup}">
+  <form class="d-modal-box rounded-box bg-base-100" id="signUpForm" method="post" th:action="@{/signup}">
         <fieldset class="d-fieldset w-full p-3">
           <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signUp}"></legend>
+
+          <div th:if="${error}" class="text-error text-center mb-4" th:text="${error}"></div>
 
           <label class="d-label" for="email">Email</label>
           <input class="d-input d-validator w-full" id="email" name="email" required type="email"/>
 
           <label class="d-label mt-2" for="password" th:text="#{password}"></label>
           <input class="d-input d-validator w-full" id="password" name="password" required type="password"/>
+
+          <label class="d-label mt-2" for="hoTen">Họ và tên</label>
+          <input class="d-input d-validator w-full" id="hoTen" name="hoTen" required type="text"/>
+
+          <label class="d-label mt-2" for="sdt">Số điện thoại</label>
+          <input class="d-input d-validator w-full" id="sdt" name="sdt" type="text"/>
+
+          <label class="d-label mt-2" for="ngaySinh">Ngày sinh</label>
+          <input class="d-input d-validator w-full" id="ngaySinh" name="ngaySinh" type="date"/>
+
+          <label class="d-label mt-2" for="diaChi">Địa chỉ</label>
+          <input class="d-input d-validator w-full" id="diaChi" name="diaChi" type="text"/>
 
           <div class="d-card-actions mt-4 flex justify-end gap-2">
             <button class="d-btn d-btn-neutral" th:text="#{signUp}" type="submit"></button>
@@ -170,6 +190,7 @@
   </form>
 </dialog>
 
+<script src="/scripts/validation.js"></script>
 <script src="/scripts/langSelector.js"></script>
 </body>
 </html>

@@ -1,7 +1,11 @@
 package com.repository;
 
 import com.model.NguoiDung;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface NguoiDungRepository extends Repository<NguoiDung, String> {
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface NguoiDungRepository extends CrudRepository<NguoiDung, String> {
+    NguoiDung findByEmail(String email);
 }
