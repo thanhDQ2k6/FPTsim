@@ -1,0 +1,50 @@
+<!doctype html>
+<html data-theme="retro" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <link href="/styles/tailwind.css" rel="stylesheet"/>
+    <link
+            crossorigin="anonymous"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+            referrerpolicy="no-referrer"
+            rel="stylesheet"
+    />
+    <link href="/images/logo.svg" rel="icon"/>
+    <title th:text="#{signIn}"></title>
+</head>
+<body class="bg-base-200">
+<main class="flex min-h-screen w-full items-center justify-center p-4">
+    <form action="#" class="d-card bg-base-100 w-fit max-w-md min-w-1/4 shadow-xl" method="post">
+        <div class="d-card-body gap-4">
+            <h2 class="d-card-title justify-center text-2xl font-bold" th:text="#{signInForm}"></h2>
+
+            <fieldset class="d-fieldset">
+                <label class="d-label" for="email">
+                    <span class="text-base font-medium" th:text="#{email}"></span>
+                </label>
+                <input class="d-input w-full" id="email" name="email" required type="email"/>
+            </fieldset>
+
+            <fieldset class="d-fieldset">
+                <label class="d-label" for="password">
+                    <span class="text-base font-medium" th:text="#{password}"></span>
+                </label>
+                <input class="d-input w-full" id="password" name="password" required type="password"/>
+                <label class="d-label">
+                    <a class="d-link d-link-hover" href="#" th:text="#{forgotPassword}"></a>
+                </label>
+            </fieldset>
+
+            <div class="flex flex-col gap-2">
+                <button class="d-btn d-btn-primary w-full" th:text="#{signIn}" type="submit"></button>
+                <div class="d-divider" th:text="#{or}"></div>
+                <a class="d-btn d-btn-secondary w-full text-center" th:text="#{signUp}"></a>
+            </div>
+        </div>
+    </form>
+</main>
+</body>
+</html>
