@@ -31,7 +31,7 @@ public class SimController {
             batch.getSims().add(new SimCreateRequest()); // Thêm một SIM trống nếu chưa có
         }
         model.addAttribute("batch", batch);
-        return "/views/sim/import";
+        return "/views/dashboard/simsImport";
     }
 
     @PostMapping("/import")
