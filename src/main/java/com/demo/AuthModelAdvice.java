@@ -1,4 +1,4 @@
-package com.web;
+package com.demo;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.ControllerAdvice;

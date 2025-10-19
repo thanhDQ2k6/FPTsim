@@ -1,4 +1,4 @@
-package com.web;
+package com.demo;
 
 import com.model.CartItem;
 import jakarta.servlet.http.HttpSession;
