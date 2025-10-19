@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Ưu đãi</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 24px;
+        }
+
+        .row {
+            margin-bottom: 8px;
+        }
+
+        label {
+            display: inline-block;
+            width: 140px;
+        }
+
+        input, select {
+            padding: 4px 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .ok {
+            color: green;
+            margin: 8px 0;
+        }
+
+        .inactive {
+            color: #999;
+        }
+
+        .btn {
+            padding: 6px 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Quản lý Ưu đãi</h1>
+
+<div class="ok" th:if="${success}" th:text="${success}"></div>
+
+<h2>Tạo ưu đãi</h2>
+<form th:action="@{/uudai/new}" method="post" th:object="${req}">
+    <div class="row">
+        <label>Mã ưu đãi</label>
+        <input type="text" name="maUD" th:field="*{maUD}" maxlength="20" required>
+    </div>
+    <div class="row">
+        <label>Mô tả</label>
+        <input type="text" name="moTa" th:field="*{moTa}">
+    </div>
+    <div class="row">
+        <label>Loại giảm</label>
+        <select name="loaiGiam" th:field="*{loaiGiam}" required>
+            <option value="PhanTram">Phần trăm</option>
+            <option value="TienMat">Tiền mặt</option>
+        </select>
+    </div>
+    <div class="row">
+        <label>Giá trị giảm</label>
+        <input type="number" name="giaTriGiam" th:field="*{giaTriGiam}" required>
+    </div>
+    <div class="row">
+        <label>Ngày bắt đầu</label>
+        <input type="date" name="ngayBatDau" th:field="*{ngayBatDau}" required>
+    </div>
+    <div class="row">
+        <label>Ngày hết hạn</label>
+        <input type="date" name="ngayHetHan" th:field="*{ngayHetHan}" required>
+    </div>
+    <div class="row">
+        <button class="btn" type="submit">Tạo ưu đãi</button>
+    </div>
+</form>
+
+<h2>Danh sách ưu đãi</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Mã ưu đãi</th>
+        <th>Mô tả</th>
+        <th>Loại</th>
+        <th>Giá trị</th>
+        <th>Hiệu lực</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="u : ${uudais}"
+        th:classappend="${u.trangThai} ? '' : 'inactive'">
+        <td th:text="${u.maUD}">MA01</td>
+        <td th:text="${u.moTa}">Mô tả</td>
+        <td th:text="${u.loaiGiam}">PhanTram</td>
+        <td th:text="${#numbers.formatDecimal(u.giaTriGiam,1,'DEFAULT',2,'DEFAULT')}">10.00</td>
+        <td th:text="${u.conHieuLuc} ? 'Còn hiệu lực' : 'Hết hiệu lực'">Còn hiệu lực</td>
+        <td th:text="${u.trangThai} ? 'Active' : 'Inactive'">Active</td>
+        <td>
+            <form th:if="${u.trangThai}" th:action="@{|/uudai/${u.maUD}/deactivate|}" method="post"
+                  style="display:inline">
+                <button class="btn" type="submit">Ngừng kích hoạt</button>
+            </form>
+            <span th:if="${!u.trangThai}">—</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
