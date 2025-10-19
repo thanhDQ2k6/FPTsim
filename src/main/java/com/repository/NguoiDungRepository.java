@@ -1,7 +1,7 @@
 package com.repository;
 
 import com.model.NguoiDung;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NguoiDungRepository extends Repository<NguoiDung, String> {
+public interface NguoiDungRepository extends JpaRepository<NguoiDung, String> {
 }
