@@ -49,7 +49,7 @@ public class Sim {
     private TrangThai trangThai = TrangThai.SanSang;
 
     public enum TrangThai {
-        SanSang, DaBan, HoatDong
+        SanSang, DaBan, HoatDong, Chet
     }
 
     @Column(name = "created_at")
