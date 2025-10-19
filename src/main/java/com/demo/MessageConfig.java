@@ -1,4 +1,4 @@
-package com.web;
+package com.demo;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
