@@ -22,7 +22,7 @@ public class Sim {
     @Column(name = "iccid", nullable = false)
     private String iccid;
 
-    @Column(name = "msisdn", length = 20, unique = true)
+    @Column(name = "msisdn", length = 20, nullable = false, unique = true)
     private String msisdn;
 
     @Enumerated(EnumType.STRING)

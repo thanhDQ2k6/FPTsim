@@ -33,59 +33,32 @@ public class SimService {
     // Nhân viên thực hiện nhập (đã tồn tại trong CSDL theo xác nhận)
     private static final String IMPORT_STAFF_EMAIL = "root@mail.com";
 
-    // Tạo 1 SIM và ghi lịch sử nhập
-    @Transactional
-    public void createSimAndLogImport(SimCreateRequest req, String nhaCungCap, String ghiChu) {
-        validateCreate(req, nhaCungCap);
-        ensureUnique(req.iccid, req.msisdn);
-
-        Sim sim = new Sim();
-        sim.setIccid(req.iccid);
-        sim.setMsisdn(req.msisdn);
-        sim.setNhaMang(req.nhaMang);
-        sim.setLoaiSim(req.loaiSim);
-        sim.setGiaBan(req.giaBan);
-        sim.setTrangThai(Sim.TrangThai.SanSang);
-        simRepo.save(sim);
-
-        NguoiDung nv = userRepo.findById(IMPORT_STAFF_EMAIL)
-                .orElseThrow(() -> new BusinessException("IMPORT_STAFF_NOT_FOUND",
-                        "Thiếu nhân viên nhập: " + IMPORT_STAFF_EMAIL));
-
-        NhapSim nhap = new NhapSim();
-        nhap.setNhanVien(nv);
-        nhap.setNhaCungCap(nhaCungCap);
-        nhap.setGhiChu(ghiChu);
-        nhap.addChiTietNhap(sim, req.giaNhap);
-        nhapSimRepo.save(nhap);
-    }
-
     // Import hàng loạt: 1 NhapSim header + nhiều ChiTietNhapSim
     @Transactional
     public void importSimsBatch(ImportSimsRequest batch) {
-        if (batch == null || batch.sims == null || batch.sims.isEmpty()) {
+        if (batch == null || batch.getSims() == null || batch.getSims().isEmpty()) {
             throw new BusinessException("EMPTY_IMPORT", "Danh sách SIM nhập trống");
         }
-        if (isBlank(batch.nhaCungCap)) {
+        if (isBlank(batch.getNhaCungCap())) {
             throw new BusinessException("INVALID_SUPPLIER", "Thiếu nhà cung cấp");
         }
 
         // Kiểm tra trước để fail-fast
         Set<String> seenIccids = new HashSet<>();
         Set<String> seenMsisdn = new HashSet<>();
-        for (var s : batch.sims) {
-            validateCreate(s, batch.nhaCungCap);
-            if (!seenIccids.add(s.iccid)) {
-                throw new BusinessException("DUP_ICCID_IN_PAYLOAD", "ICCID bị lặp trong payload: " + s.iccid);
+        for (var s : batch.getSims()) {
+            validateCreate(s, batch.getNhaCungCap());
+            if (!seenIccids.add(s.getIccid())) {
+                throw new BusinessException("DUP_ICCID_IN_PAYLOAD", "ICCID bị lặp trong payload: " + s.getIccid());
             }
-            if (s.msisdn != null && !seenMsisdn.add(s.msisdn)) {
-                throw new BusinessException("DUP_MSISDN_IN_PAYLOAD", "MSISDN bị lặp trong payload: " + s.msisdn);
+            if (s.getMsisdn() != null && !seenMsisdn.add(s.getMsisdn())) {
+                throw new BusinessException("DUP_MSISDN_IN_PAYLOAD", "MSISDN bị lặp trong payload: " + s.getMsisdn());
             }
-            if (simRepo.existsById(s.iccid)) {
-                throw new BusinessException("SIM_ALREADY_EXISTS", "SIM đã tồn tại: " + s.iccid);
+            if (simRepo.existsById(s.getIccid())) {
+                throw new BusinessException("SIM_ALREADY_EXISTS", "SIM đã tồn tại: " + s.getIccid());
             }
-            if (s.msisdn != null && simRepo.existsByMsisdn(s.msisdn)) {
-                throw new BusinessException("MSISDN_ALREADY_EXISTS", "Số msisdn đã tồn tại: " + s.msisdn);
+            if (s.getMsisdn() != null && simRepo.existsByMsisdn(s.getMsisdn())) {
+                throw new BusinessException("MSISDN_ALREADY_EXISTS", "Số msisdn đã tồn tại: " + s.getIccid());
             }
         }
 
@@ -95,20 +68,20 @@ public class SimService {
 
         NhapSim nhap = new NhapSim();
         nhap.setNhanVien(nv);
-        nhap.setNhaCungCap(batch.nhaCungCap);
-        nhap.setGhiChu(batch.ghiChu);
+        nhap.setNhaCungCap(batch.getNhaCungCap());
+        nhap.setGhiChu(batch.getGhiChu());
 
-        for (var s : batch.sims) {
+        for (var s : batch.getSims()) {
             Sim sim = new Sim();
-            sim.setIccid(s.iccid);
-            sim.setMsisdn(s.msisdn);
-            sim.setNhaMang(s.nhaMang);
-            sim.setLoaiSim(s.loaiSim);
-            sim.setGiaBan(s.giaBan);
+            sim.setIccid(s.getIccid());
+            sim.setMsisdn(s.getMsisdn());
+            sim.setNhaMang(s.getNhaMang());
+            sim.setLoaiSim(s.getLoaiSim());
+            sim.setGiaBan(s.getGiaBan());
             sim.setTrangThai(Sim.TrangThai.SanSang);
             simRepo.save(sim);
 
-            nhap.addChiTietNhap(sim, s.giaNhap);
+            nhap.addChiTietNhap(sim, s.getGiaNhap());
         }
 
         nhapSimRepo.save(nhap);
@@ -124,16 +97,16 @@ public class SimService {
             throw new BusinessException("SIM_NOT_EDITABLE", "Chỉ được sửa SIM ở trạng thái Sẵn sàng");
         }
 
-        if (req.msisdn != null && !req.msisdn.equals(sim.getMsisdn()) && simRepo.existsByMsisdn(req.msisdn)) {
-            throw new BusinessException("MSISDN_ALREADY_EXISTS", "Số msisdn đã tồn tại: " + req.msisdn);
+        if (req.getMsisdn() != null && !req.getMsisdn().equals(sim.getMsisdn()) && simRepo.existsByMsisdn(req.getMsisdn())) {
+            throw new BusinessException("MSISDN_ALREADY_EXISTS", "Số msisdn đã tồn tại: " + req.getMsisdn());
         }
-        if (req.msisdn != null) sim.setMsisdn(req.msisdn);
-        if (req.loaiSim != null) sim.setLoaiSim(req.loaiSim);
-        if (req.giaBan != null) {
-            if (req.giaBan.compareTo(BigDecimal.ZERO) <= 0) {
+        if (req.getMsisdn() != null) sim.setMsisdn(req.getMsisdn());
+        if (req.getLoaiSim() != null) sim.setLoaiSim(req.getLoaiSim());
+        if (req.getGiaBan() != null) {
+            if (req.getGiaBan().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new BusinessException("INVALID_GIABAN", "Giá bán phải > 0");
             }
-            sim.setGiaBan(req.giaBan);
+            sim.setGiaBan(req.getGiaBan());
         }
 
         simRepo.save(sim);
@@ -178,12 +151,12 @@ public class SimService {
     // Helpers
     private void validateCreate(SimCreateRequest req, String nhaCungCap) {
         if (req == null) throw new BusinessException("INVALID_INPUT", "Thiếu dữ liệu SIM");
-        if (isBlank(req.iccid)) throw new BusinessException("INVALID_ICCID", "Thiếu ICCID");
-        if (req.nhaMang == null) throw new BusinessException("INVALID_NHAMANG", "Thiếu nhà mạng");
-        if (req.loaiSim == null) throw new BusinessException("INVALID_LOAISIM", "Thiếu loại SIM");
-        if (req.giaBan == null || req.giaBan.compareTo(BigDecimal.ZERO) <= 0)
+        if (isBlank(req.getIccid())) throw new BusinessException("INVALID_ICCID", "Thiếu ICCID");
+        if (req.getNhaMang() == null) throw new BusinessException("INVALID_NHAMANG", "Thiếu nhà mạng");
+        if (req.getLoaiSim() == null) throw new BusinessException("INVALID_LOAISIM", "Thiếu loại SIM");
+        if (req.getGiaBan() == null || req.getGiaBan().compareTo(BigDecimal.ZERO) <= 0)
             throw new BusinessException("INVALID_GIABAN", "Giá bán phải > 0");
-        if (req.giaNhap == null || req.giaNhap.compareTo(BigDecimal.ZERO) < 0)
+        if (req.getGiaNhap() == null || req.getGiaNhap().compareTo(BigDecimal.ZERO) < 0)
             throw new BusinessException("INVALID_GIANHAP", "Giá nhập không hợp lệ");
         if (isBlank(nhaCungCap))
             throw new BusinessException("INVALID_SUPPLIER", "Thiếu nhà cung cấp");
