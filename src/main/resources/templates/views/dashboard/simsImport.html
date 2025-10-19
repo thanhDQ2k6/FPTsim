@@ -9,7 +9,7 @@
 
             <div class="text-success mb-4 text-sm" th:if="${success}" th:text="${success}"></div>
 
-            <form id="importForm" method="post" th:action="@{/dashboard/sims/import}" th:object="${batch}">
+            <form id="importForm" method="post" th:action="@{/sim/import}" th:object="${batch}">
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div>
                         <label class="d-label" th:text="#{sim.import.provider}">Nhà cung cấp</label>
@@ -26,7 +26,6 @@
                     <table class="d-table w-full" id="simTable">
                         <thead>
                         <tr>
-                            <th th:text="#{'accounts.table.no'}">#</th>
                             <th th:text="#{'sim.import.header.iccid'}">ICCID</th>
                             <th th:text="#{'sim.import.header.msisdn'}">MSISDN</th>
                             <th th:text="#{'sim.import.header.provider'}">Nhà mạng</th>
@@ -38,7 +37,6 @@
                         </thead>
                         <tbody>
                         <tr th:each="s,iter : *{sims}">
-                            <td th:text="${iter.index + 1}">1</td>
                             <td>
                                 <input class="d-input d-input-bordered" required
                                        th:field="*{sims[__${iter.index}__].iccid}"/>
@@ -107,7 +105,6 @@
                     const idx = tbody.rows.length
                     const tr = document.createElement('tr')
                     tr.innerHTML = `
-              <td>${idx + 1}</td>
               <td><input name="sims[${idx}].iccid" class="d-input d-input-bordered" required></td>
               <td><input name="sims[${idx}].msisdn" class="d-input d-input-bordered"></td>
               <td>
