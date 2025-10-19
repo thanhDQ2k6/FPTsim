@@ -7,8 +7,6 @@
       <div class="d-tab-content bg-base-100 border-base-300 p-6">
         <h1 class="mb-4 text-2xl font-bold" th:text="#{'sim.import.title'}"></h1>
 
-        <div class="text-success mb-4 text-sm" th:if="${success}" th:text="${success}"></div>
-
         <form id="importForm" method="post" th:action="@{/dashboard/sims/import}" th:object="${batch}">
           <div class="grid grid-cols-3 gap-4">
             <div class="col-span-1">
@@ -23,7 +21,11 @@
           </div>
 
           <div class="mt-4 overflow-x-auto">
-            <table class="d-table d-table-sm w-full" id="simTable">
+            <table
+              class="d-table d-table-sm w-full"
+              id="simTable"
+              th:attr="data-type-international=#{sim.type.international},data-type-prepaid=#{sim.type.prepaid},data-type-postpaid=#{sim.type.postpaid},data-provider-viettel=#{sim.provider.viettel},data-provider-mobifone=#{sim.provider.mobifone},data-provider-vinaphone=#{sim.provider.vinaphone},data-remove=#{sim.import.remove}"
+            >
               <thead>
                 <tr>
                   <th class="w-3/12" th:text="#{'sim.import.header.iccid'}"></th>
@@ -64,9 +66,9 @@
                       required
                       th:field="*{sims[__${iter.index}__].loaiSim}"
                     >
-                      <option value="NgoaiDia">Ngoại Địa</option>
-                      <option value="TraTruoc">Trả Trước</option>
-                      <option value="TraSau">Trả Sau</option>
+                      <option th:text="#{sim.type.international}" value="NgoaiDia"></option>
+                      <option th:text="#{sim.type.prepaid}" value="TraTruoc"></option>
+                      <option th:text="#{sim.type.postpaid}" value="TraSau"></option>
                     </select>
                   </td>
                   <td>
@@ -88,7 +90,14 @@
                     />
                   </td>
                   <td>
-                    <button class="d-btn d-btn-sm d-btn-outline" onclick="removeRow(this)" type="button">X</button>
+                    <button
+                      class="d-btn d-btn-sm d-btn-outline"
+                      onclick="removeRow(this)"
+                      th:text="#{sim.import.remove}"
+                      type="button"
+                    >
+                      X
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -110,22 +119,24 @@
           function addRow() {
             const tbody = document.querySelector('#simTable tbody')
             const idx = tbody.rows.length
+            const table = document.getElementById('simTable')
+            const labels = table.dataset
             const tr = document.createElement('tr')
             tr.innerHTML = `
               <td><input name="sims[${idx}].iccid" class="d-input d-input-bordered w-full" required></td>
               <td><input name="sims[${idx}].msisdn" class="d-input d-input-bordered w-full"></td>
               <td>
                 <select name="sims[${idx}].nhaMang" class="d-select d-select-bordered w-full" required>
-                  <option value="Viettel">Viettel</option>
-                  <option value="Mobifone">Mobifone</option>
-                  <option value="Vinaphone">Vinaphone</option>
+                  <option value="Viettel">${labels.providerViettel}</option>
+                  <option value="Mobifone">${labels.providerMobifone}</option>
+                  <option value="Vinaphone">${labels.providerVinaphone}</option>
                 </select>
               </td>
               <td>
                 <select name="sims[${idx}].loaiSim" class="d-select d-select-bordered w-full" required>
-                  <option value="NgoaiDia">Ngoại Địa</option>
-                  <option value="TraTruoc">Trả Trước</option>
-                  <option value="TraSau">Trả Sau</option>
+                  <option value="NgoaiDia">${labels.typeInternational}</option>
+                  <option value="TraTruoc">${labels.typePrepaid}</option>
+                  <option value="TraSau">${labels.typePostpaid}</option>
                 </select>
               </td>
               <td>
@@ -135,7 +146,7 @@
               <input name="sims[${idx}].giaNhap" type="number" step="0.01" class="d-input d-input-bordered w-full" required>
               </td>
               <td>
-              <button type="button" class="d-btn d-btn-sm d-btn-outline" onclick="removeRow(this)">X</button>
+              <button type="button" class="d-btn d-btn-sm d-btn-outline" onclick="removeRow(this)">${labels.remove || 'X'}</button>
               </td>
             `
             tbody.appendChild(tr)
@@ -144,6 +155,16 @@
           function removeRow(btn) {
             const tr = btn.closest('tr')
             tr.remove()
+            renumber()
+          }
+
+          function renumber() {
+            const rows = document.querySelectorAll('#simTable tbody tr')
+            rows.forEach((tr, i) => {
+              tr.querySelectorAll('input[name], select[name]').forEach((el) => {
+                el.name = el.name.replace(/sims\[\d+\]/, `sims[${i}]`)
+              })
+            })
           }
         </script>
       </div>
