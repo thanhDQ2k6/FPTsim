@@ -17,7 +17,7 @@
 </head>
 <body class="bg-base-200">
 <main class="flex min-h-screen w-full items-center justify-center p-4">
-    <form action="#" class="d-card bg-base-100 w-fit max-w-lg min-w-1/4 shadow-xl" method="post">
+    <form th:action="@{/signup}" class="d-card bg-base-100 w-fit max-w-lg min-w-1/4 shadow-xl" method="post">
         <div class="d-card-body gap-4">
             <h2 class="d-card-title justify-center text-2xl font-bold" th:text="#{auth.signUpForm}"></h2>
 
@@ -69,7 +69,7 @@
 
             <button class="d-btn d-btn-primary mt-2 w-full" th:text="#{auth.signUp}" type="submit"></button>
             <div class="d-divider" th:text="#{auth.or}"></div>
-            <a class="d-btn d-btn-secondary w-full text-center" href="/login" th:text="#{auth.signIn}"></a>
+            <a class="d-btn d-btn-secondary w-full text-center" th:href="@{/login}" th:text="#{auth.signIn}"></a>
         </div>
     </form>
 </main>
