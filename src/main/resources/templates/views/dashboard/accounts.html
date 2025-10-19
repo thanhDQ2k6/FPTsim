@@ -3,31 +3,28 @@
 <title th:text="#{nav.accounts}"></title>
 <main>
     <div class="d-tabs d-tabs-lift min-h-full w-full">
-        <input checked class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.accounts}" type="radio"/>
+        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.accounts}" th:checked="${activeTab == 'list'}" type="radio"/>
         <div class="d-tab-content bg-base-100 border-base-300 p-6">
             <div class="flex items-center justify-between">
                 <div class="w-2/3">
                     <fieldset class="d-fieldset">
                         <legend class="d-fieldset-legend text-lg font-bold" th:text="#{accounts.legend}"></legend>
-                        <div class="flex items-center gap-3">
+                        <form class="flex items-center gap-3" method="get" th:action="@{/dashboard/accounts}">
                             <label class="d-label" for="accountFilter" th:text="#{accounts.select.label}"></label>
                             <select
                                     class="d-select d-select-bordered w-full"
                                     id="accountFilter"
+                                    name="role"
                                     th:attr="aria-label=#{accounts.select.aria}"
                             >
-                                <option th:text="#{accounts.filter.all}" value=""></option>
-                                <option th:text="#{accounts.filter.admin}" value="admin"></option>
-                                <option th:text="#{accounts.filter.staff}" value="staff"></option>
-                                <option th:text="#{accounts.filter.user}" value="user"></option>
+                                <option th:selected="${roleFilter == null or roleFilter == ''}" th:text="#{accounts.filter.all}" value=""></option>
+                                <option th:selected="${roleFilter == 'admin'}" th:text="#{accounts.filter.admin}" value="admin"></option>
+                                <option th:selected="${roleFilter == 'staff'}" th:text="#{accounts.filter.staff}" value="staff"></option>
+                                <option th:selected="${roleFilter == 'user'}" th:text="#{accounts.filter.user}" value="user"></option>
                             </select>
-                            <button
-                                    class="d-btn d-btn-ghost d-btn-sm"
-                                    onclick="document.getElementById('accountFilter').value='';"
-                                    th:text="#{accounts.reset}"
-                                    type="button"
-                            ></button>
-                        </div>
+                            <button class="d-btn d-btn-primary d-btn-sm" type="submit">Apply</button>
+                            <a class="d-btn d-btn-ghost d-btn-sm" th:href="@{/dashboard/accounts}" th:text="#{accounts.reset}"></a>
+                        </form>
                     </fieldset>
                 </div>
 
@@ -58,17 +55,13 @@
                         <td th:text="${acct.role}"></td>
                         <td>
                             <div class="flex gap-2">
-                                <a
-                                        class="d-btn d-btn-sm"
-                                        th:href="@{/dashboard/accounts/{id}(id=${acct.id})}"
-                                        th:text="#{action.detail}"
-                                ></a>
-                                <button
-                                        class="d-btn d-btn-sm d-btn-error"
-                                        th:attr="data-id=${acct.id}"
-                                        th:text="#{action.delete}"
-                                        type="button"
-                                ></button>
+                                <a class="d-btn d-btn-sm" th:href="@{/dashboard/accounts/{id}(id=${acct.id})}"
+                                   th:text="#{action.detail}"></a>
+                                <form method="post" th:action="@{/dashboard/accounts}" onsubmit="return confirm('Xoá tài khoản này?');">
+                                    <input name="email" th:value="${acct.email}" type="hidden"/>
+                                    <input name="action" type="hidden" value="delete"/>
+                                    <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}" type="submit"></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -153,27 +146,30 @@
                 </table>
             </div>
 
-            <div class="mt-6 flex items-center justify-center gap-4">
+            <div class="mt-6 flex items-center justify-center gap-4" th:with="p=${page}">
                 <div class="flex gap-2">
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.first}">First</button>
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.prev}">Prev</button>
+                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.first} ? ' d-btn-disabled' : ''"
+                       th:href="@{/dashboard/accounts(page=0, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.first}"></a>
+                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.first} ? ' d-btn-disabled' : ''"
+                       th:href="@{/dashboard/accounts(page=${p.number-1}, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.prev}"></a>
                 </div>
 
                 <div class="hidden gap-2 sm:flex">
-                    <button class="d-btn d-btn-sm">1</button>
-                    <button class="d-btn d-btn-sm d-btn-ghost">2</button>
-                    <button class="d-btn d-btn-sm d-btn-ghost">3</button>
+                    <span class="d-btn d-btn-sm" th:text="${p.number + 1}"></span>
                 </div>
 
                 <div class="flex gap-2">
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.next}">Next</button>
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.last}">Last</button>
+                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.last} ? ' d-btn-disabled' : ''"
+                       th:href="@{/dashboard/accounts(page=${p.number+1}, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.next}"></a>
+                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.last} ? ' d-btn-disabled' : ''"
+                       th:href="@{/dashboard/accounts(page=${p.totalPages-1}, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.last}"></a>
                 </div>
             </div>
         </div>
 
-        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.detail}" type="radio"/>
+        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.detail}" th:checked="${activeTab == 'detail'}" type="radio"/>
         <div class="d-tab-content bg-base-100 border-base-300 p-6">
+            <div th:if="${error}" class="d-alert d-alert-error mb-3" th:text="${error}"></div>
             <form class="w-full" method="post" th:action="@{/dashboard/accounts}">
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Credentials -->
@@ -183,21 +179,23 @@
                             <div class="col-span-2">
                                 <label class="d-label" for="email" th:text="#{form.email}"></label>
                                 <input class="d-input d-input-bordered w-full" id="email" name="email" placeholder=""
+                                       th:value="${detail != null} ? ${detail.email} : ''"
                                        type="email"/>
                             </div>
                             <div class="col-span-1">
                                 <label class="d-label" for="password" th:text="#{form.password}"></label>
                                 <input class="d-input d-input-bordered w-full" id="password" name="password"
+                                       placeholder="••••••"
                                        type="password"/>
                             </div>
                             <!-- Role -->
                             <div class="col-span-1">
                                 <label class="d-label" for="role" th:text="#{form.role}"></label>
                                 <select class="d-select d-select-bordered w-full" id="role" name="role">
-                                    <option th:text="#{accounts.filter.all}" value=""></option>
-                                    <option th:text="#{accounts.filter.admin}" value="admin"></option>
-                                    <option th:text="#{accounts.filter.staff}" value="staff"></option>
-                                    <option th:text="#{accounts.filter.user}" value="user"></option>
+                                    <option th:selected="${detail == null || detail.vaiTro == null}" th:text="#{accounts.filter.all}" value=""></option>
+                                    <option th:selected="${detail != null && detail.vaiTro?.name() == 'Admin'}" th:text="#{accounts.filter.admin}" value="admin"></option>
+                                    <option th:selected="${detail != null && detail.vaiTro?.name() == 'NhanVien'}" th:text="#{accounts.filter.staff}" value="staff"></option>
+                                    <option th:selected="${detail != null && detail.vaiTro?.name() == 'KhachHang'}" th:text="#{accounts.filter.user}" value="user"></option>
                                 </select>
                             </div>
                         </div>
@@ -210,15 +208,16 @@
                             <div class="col-span-3">
                                 <label class="d-label" for="fullName" th:text="#{form.fullName}"></label>
                                 <input class="d-input d-input-bordered w-full" id="fullName" name="fullName"
+                                       th:value="${detail != null} ? ${detail.hoTen} : ''"
                                        type="text"/>
                             </div>
                             <div class="col-span-2">
                                 <label class="d-label" for="phone" th:text="#{form.phone}"></label>
-                                <input class="d-input d-input-bordered w-full" id="phone" name="phone" type="tel"/>
+                                <input class="d-input d-input-bordered w-full" id="phone" name="phone" th:value="${detail != null} ? ${detail.sdt} : ''" type="tel"/>
                             </div>
                             <div class="col-span-1">
                                 <label class="d-label" for="dob" th:text="#{form.dob}"></label>
-                                <input class="d-input d-input-bordered w-full" id="dob" name="dob" type="date"/>
+                                <input class="d-input d-input-bordered w-full" id="dob" name="dob" th:value="${detail != null && detail.ngaySinh != null} ? ${detail.ngaySinh} : ''" type="date"/>
                             </div>
                         </div>
                     </fieldset>
@@ -235,6 +234,7 @@
                                     placeholder=""
                                     rows="4"
                                     th:attr="aria-label=#{form.address}"
+                                    th:text="${detail != null} ? ${detail.diaChi} : ''"
                             ></textarea>
                         </div>
                     </fieldset>
