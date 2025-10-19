@@ -1,9 +1,9 @@
 package com.repository;
 
 import com.model.ThongKeBanHang;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 
-public interface ThongKeBanHangRepository extends Repository<ThongKeBanHang, LocalDate> {
+public interface ThongKeBanHangRepository extends JpaRepository<ThongKeBanHang, LocalDate> {
 }

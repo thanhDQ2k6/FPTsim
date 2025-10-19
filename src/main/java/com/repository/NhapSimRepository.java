@@ -1,7 +1,7 @@
 package com.repository;
 
 import com.model.NhapSim;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NhapSimRepository extends Repository<NhapSim, Integer> {
+public interface NhapSimRepository extends JpaRepository<NhapSim, Integer> {
 }

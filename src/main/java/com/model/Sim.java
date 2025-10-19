@@ -22,7 +22,7 @@ public class Sim {
     @Column(name = "iccid", nullable = false)
     private String iccid;
 
-    @Column(name = "msisdn", length = 20, unique = true)
+    @Column(name = "msisdn", length = 20, nullable = false, unique = true)
     private String msisdn;
 
     @Enumerated(EnumType.STRING)
@@ -49,7 +49,7 @@ public class Sim {
     private TrangThai trangThai = TrangThai.SanSang;
 
     public enum TrangThai {
-        SanSang, DaBan, HoatDong
+        SanSang, DaBan, HoatDong, Chet
     }
 
     @Column(name = "created_at")

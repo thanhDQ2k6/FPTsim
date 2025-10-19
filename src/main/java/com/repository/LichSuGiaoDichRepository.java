@@ -1,7 +1,7 @@
 package com.repository;
 
 import com.model.LichSuGiaoDich;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LichSuGiaoDichRepository extends Repository<LichSuGiaoDich, Integer> {
+public interface LichSuGiaoDichRepository extends JpaRepository<LichSuGiaoDich, Integer> {
 }

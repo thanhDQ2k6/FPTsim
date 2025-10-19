@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `SIM`
     `NhaMang`    ENUM ('Viettel', 'Mobiphone', 'Vinaphone') NOT NULL,
     `GiaBan`     DECIMAL(10, 2)                             NOT NULL,
     `LoaiSim`    ENUM ('NgoaiDia', 'TraTruoc', 'TraSau')    NOT NULL,
-    `TrangThai`  ENUM ('SanSang', 'DaBan', 'HoatDong')      NOT NULL DEFAULT 'SanSang',
+    `TrangThai`  ENUM ('SanSang', 'DaBan', 'HoatDong', 'Chet')      NOT NULL DEFAULT 'SanSang',
     `created_at` DATETIME                                            DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME                                            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`iccid`),

@@ -1,7 +1,7 @@
 package com.repository;
 
 import com.model.ApDungUuDai;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ApDungUuDaiRepository extends Repository<ApDungUuDai, Integer> {
+public interface ApDungUuDaiRepository extends JpaRepository<ApDungUuDai, Integer> {
 }
