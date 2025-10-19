@@ -1,17 +1,16 @@
 <!doctype html>
 <html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
-<title th:text="#{nav.dashboard}"></title>
+<title th:text="#{nav.accounts}"></title>
 <main>
     <div class="d-tabs d-tabs-lift min-h-full w-full">
         <input checked class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.accounts}" type="radio"/>
         <div class="d-tab-content bg-base-100 border-base-300 p-6">
-            <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center justify-between">
                 <div class="w-2/3">
                     <fieldset class="d-fieldset">
-                        <legend class="d-fieldset-legend" th:text="#{accounts.legend}"></legend>
+                        <legend class="d-fieldset-legend text-lg font-bold" th:text="#{accounts.legend}"></legend>
                         <div class="flex items-center gap-3">
-                            <label class="d-label sr-only" for="accountFilter"
-                                   th:text="#{accounts.select.label}"></label>
+                            <label class="d-label" for="accountFilter" th:text="#{accounts.select.label}"></label>
                             <select
                                     class="d-select d-select-bordered w-full"
                                     id="accountFilter"

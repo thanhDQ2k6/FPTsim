@@ -1,0 +1,159 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title th:text="#{nav.sims.import}"></title>
+<main>
+    <div class="d-tabs d-tabs-lift min-h-full w-full">
+        <input checked class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.sims}" type="radio"/>
+        <div class="d-tab-content bg-base-100 border-base-300 p-6">
+            <h1 class="mb-4 text-2xl font-bold" th:text="#{'sim.import.title'}">Nhập lô SIM</h1>
+
+            <div class="text-success mb-4 text-sm" th:if="${success}" th:text="${success}"></div>
+
+            <form id="importForm" method="post" th:action="@{/dashboard/sims/import}" th:object="${batch}">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div>
+                        <label class="d-label" th:text="#{sim.import.provider}">Nhà cung cấp</label>
+                        <input class="d-input d-input-bordered w-full" required th:field="*{nhaCungCap}"/>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="d-label" th:text="#{sim.import.note}">Ghi chú</label>
+                        <input class="d-input d-input-bordered w-full" th:field="*{ghiChu}"/>
+                    </div>
+                </div>
+
+                <div class="mt-4 overflow-x-auto">
+                    <table class="d-table w-full" id="simTable">
+                        <thead>
+                        <tr>
+                            <th th:text="#{'accounts.table.no'}">#</th>
+                            <th th:text="#{'sim.import.header.iccid'}">ICCID</th>
+                            <th th:text="#{'sim.import.header.msisdn'}">MSISDN</th>
+                            <th th:text="#{'sim.import.header.provider'}">Nhà mạng</th>
+                            <th th:text="#{'sim.import.header.type'}">Loại SIM</th>
+                            <th th:text="#{'sim.import.header.priceSell'}">Giá bán</th>
+                            <th th:text="#{'sim.import.header.priceBuy'}">Giá nhập</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="s,iter : *{sims}">
+                            <td th:text="${iter.index + 1}">1</td>
+                            <td>
+                                <input class="d-input d-input-bordered" required
+                                       th:field="*{sims[__${iter.index}__].iccid}"/>
+                            </td>
+                            <td><input class="d-input d-input-bordered" th:field="*{sims[__${iter.index}__].msisdn}"/>
+                            </td>
+                            <td>
+                                <select class="d-select d-select-bordered" required
+                                        th:field="*{sims[__${iter.index}__].nhaMang}">
+                                    <option th:text="#{sim.provider.viettel}" value="Viettel">Viettel</option>
+                                    <option th:text="#{sim.provider.mobifone}" value="Mobifone">Mobifone</option>
+                                    <option th:text="#{sim.provider.vinaphone}" value="Vinaphone">Vinaphone</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="d-select d-select-bordered" required
+                                        th:field="*{sims[__${iter.index}__].loaiSim}">
+                                    <option value="NgoaiDia">Ngoại Địa</option>
+                                    <option value="TraTruoc">Trả Trước</option>
+                                    <option value="TraSau">Trả Sau</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input
+                                        class="d-input d-input-bordered"
+                                        required
+                                        step="0.01"
+                                        th:field="*{sims[__${iter.index}__].giaBan}"
+                                        type="number"
+                                />
+                            </td>
+                            <td>
+                                <input
+                                        class="d-input d-input-bordered"
+                                        required
+                                        step="0.01"
+                                        th:field="*{sims[__${iter.index}__].giaNhap}"
+                                        type="number"
+                                />
+                            </td>
+                            <td>
+                                <button
+                                        class="d-btn d-btn-sm d-btn-outline"
+                                        onclick="removeRow(this)"
+                                        th:text="#{sim.import.remove}"
+                                        type="button"
+                                >
+                                    X
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4 flex items-center gap-2">
+                    <button class="d-btn" onclick="addRow()" th:text="#{sim.import.addRow}" type="button">+ Thêm dòng
+                    </button>
+                    <button class="d-btn d-btn-primary" th:text="#{sim.import.submit}" type="submit">Nhập lô</button>
+                </div>
+            </form>
+
+            <script>
+                function addRow() {
+                    const tbody = document.querySelector('#simTable tbody')
+                    const idx = tbody.rows.length
+                    const tr = document.createElement('tr')
+                    tr.innerHTML = `
+              <td>${idx + 1}</td>
+              <td><input name="sims[${idx}].iccid" class="d-input d-input-bordered" required></td>
+              <td><input name="sims[${idx}].msisdn" class="d-input d-input-bordered"></td>
+              <td>
+                <select name="sims[${idx}].nhaMang" class="d-select d-select-bordered" required>
+                  <option value="Viettel">Viettel</option>
+                  <option value="Mobifone">Mobifone</option>
+                  <option value="Vinaphone">Vinaphone</option>
+                </select>
+              </td>
+              <td>
+                <select name="sims[${idx}].loaiSim" class="d-select d-select-bordered" required>
+                  <option value="NgoaiDia">Ngoại Địa</option>
+                  <option value="TraTruoc">Trả Trước</option>
+                  <option value="TraSau">Trả Sau</option>
+                </select>
+              </td>
+              <td>
+              <input name="sims[${idx}].giaBan" type="number" step="0.01" class="d-input d-input-bordered" required>
+              </td>
+              <td>
+              <input name="sims[${idx}].giaNhap" type="number" step="0.01" class="d-input d-input-bordered" required>
+              </td>
+              <td>
+              <button type="button" class="d-btn d-btn-sm d-btn-outline" onclick="removeRow(this)">X</button>
+              </td>
+            `
+                    tbody.appendChild(tr)
+                }
+
+                function removeRow(btn) {
+                    const tr = btn.closest('tr')
+                    tr.remove()
+                    renumber()
+                }
+
+                function renumber() {
+                    const rows = document.querySelectorAll('#simTable tbody tr')
+                    rows.forEach((tr, i) => {
+                        tr.cells[0].textContent = i + 1
+                        tr.querySelectorAll('input,select').forEach((el) => {
+                            if (el.name) el.name = el.name.replace(/sims\[\d+\]/, 'sims[' + i + ']')
+                        })
+                    })
+                }
+            </script>
+        </div>
+    </div>
+</main>
+</html>

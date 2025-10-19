@@ -1,10 +1,10 @@
 <!doctype html>
 <html data-theme="retro" lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8"/>
-  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
-  <link href="/styles/tailwind.css" rel="stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <link href="/styles/tailwind.css" rel="stylesheet"/>
     <link
             crossorigin="anonymous"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -12,7 +12,7 @@
             referrerpolicy="no-referrer"
             rel="stylesheet"
     />
-  <link href="/images/logo.svg" rel="icon"/>
+    <link href="/images/logo.svg" rel="icon"/>
     <title th:replace="${title}"></title>
 </head>
 
@@ -23,8 +23,8 @@
 
 <!-- Sidebar -->
 <div class="d-drawer-side">
-  <!-- Sidebar Content Container -->
-  <div class="bg-base-200 text-base-content flex min-h-full w-64 flex-col p-4">
+    <!-- Sidebar Content Container -->
+    <div class="bg-base-200 text-base-content flex min-h-full w-64 flex-col p-4">
         <!-- Sidebar Header: Title and Theme Controller -->
         <div class="mb-4 flex items-center justify-between">
           <!-- Dashboard Title -->
@@ -32,7 +32,7 @@
 
           <!-- Theme Controller -->
           <label class="d-toggle text-base-content" th:attr="aria-label=#{theme.toggle}">
-            <input class="d-theme-controller" type="checkbox" value="synthwave"/>
+              <input class="d-theme-controller" type="checkbox" value="synthwave"/>
             <svg aria-label="sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                 <circle cx="12" cy="12" r="4"></circle>
@@ -82,11 +82,27 @@
               <span th:text="#{nav.accounts}"></span>
             </a>
           </li>
-          <li class="text-lg font-semibold">
-            <a class="flex items-center gap-4" th:href="@{/dashboard/sims}">
-              <i aria-hidden="true" class="fa-solid fa-sim-card w-5 text-center"></i>
-              <span th:text="#{nav.sims}"></span>
-            </a>
+            <li>
+                <details open>
+                    <summary class="text-lg font-semibold">
+                        <i aria-hidden="true" class="fa-solid fa-sim-card w-5 text-center"></i>
+                        <span th:text="#{nav.sims}"></span>
+                    </summary>
+                    <ul>
+                        <li class="text-lg">
+                            <a class="flex items-center gap-4" th:href="@{/dashboard/sims/manage}">
+                                <i aria-hidden="true" class="fa-solid fa-table-list w-5 text-center"></i>
+                                <span th:text="#{nav.sims.manage}"></span>
+                            </a>
+                        </li>
+                        <li class="text-lg">
+                            <a class="flex items-center gap-4" th:href="@{/dashboard/sims/import}">
+                                <i aria-hidden="true" class="fa-solid fa-file-arrow-up w-5 text-center"></i>
+                                <span th:text="#{nav.sims.import}"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </details>
           </li>
           <li class="text-lg font-semibold">
             <a class="flex items-center gap-4" th:href="@{/dashboard/coupons}">
@@ -107,7 +123,7 @@
             </a>
           </li>
         </ul>
-  </div>
+    </div>
 </div>
 </body>
 </html>

@@ -1,0 +1,317 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title th:text="#{nav.sims.manage}"></title>
+<main>
+    <div class="d-tabs d-tabs-lift min-h-full w-full">
+        <input checked class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.sims}" type="radio"/>
+        <div class="d-tab-content bg-base-100 border-base-300 p-6">
+            <div class="flex items-center justify-between gap-4">
+                <div class="w-2/3">
+                    <fieldset class="d-fieldset">
+                        <legend class="d-fieldset-legend text-lg font-bold" th:text="#{sortByOrder}"></legend>
+                        <div class="flex items-center gap-3">
+                            <div class="w-1/3">
+                                <label class="d-label" for="filterProvider" th:text="#{sim.filter.provider}"></label>
+                                <select
+                                        class="d-select d-select-bordered w-full"
+                                        id="filterProvider"
+                                        name="provider"
+                                        th:attr="aria-label=#{sim.filter.provider}"
+                                >
+                                    <option th:text="#{sim.filter.all}" value=""></option>
+                                    <option th:text="#{sim.provider.viettel}" value="viettel"></option>
+                                    <option th:text="#{sim.provider.mobifone}" value="mobifone"></option>
+                                    <option th:text="#{sim.provider.vinaphone}" value="vinaphone"></option>
+                                    <option th:text="#{sim.provider.other}" value="other"></option>
+                                </select>
+                            </div>
+
+                            <div class="w-1/3">
+                                <label class="d-label" for="filterType" th:text="#{sim.filter.type}"></label>
+                                <select
+                                        class="d-select d-select-bordered w-full"
+                                        id="filterType"
+                                        name="type"
+                                        th:attr="aria-label=#{sim.filter.type}"
+                                >
+                                    <option th:text="#{sim.filter.all}" value=""></option>
+                                    <option th:text="#{sim.type.prepaid}" value="prepaid"></option>
+                                    <option th:text="#{sim.type.postpaid}" value="postpaid"></option>
+                                </select>
+                            </div>
+
+                            <div class="w-1/3">
+                                <label class="d-label" for="filterStatus" th:text="#{sim.filter.status}"></label>
+                                <select
+                                        class="d-select d-select-bordered w-full"
+                                        id="filterStatus"
+                                        name="status"
+                                        th:attr="aria-label=#{sim.filter.status}"
+                                >
+                                    <option th:text="#{sim.filter.all}" value=""></option>
+                                    <option th:text="#{sim.status.active}" value="active"></option>
+                                    <option th:text="#{sim.status.inactive}" value="inactive"></option>
+                                    <option th:text="#{sim.status.suspended}" value="suspended"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="flex w-1/3 justify-end">
+                    <button
+                            class="d-btn d-btn-ghost"
+                            onclick="
+              document.getElementById('filterProvider').value='';
+              document.getElementById('filterType').value='';
+              document.getElementById('filterStatus').value='';"
+                            th:text="#{accounts.reset}"
+                            type="button"
+                    ></button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="mt-6 overflow-x-auto">
+                <table class="d-table w-full">
+                    <thead>
+                    <tr>
+                        <th class="text-left" th:text="#{accounts.table.no}"></th>
+                        <th class="text-left">MSISDN</th>
+                        <th class="text-left" th:text="#{sim.provider.label}"></th>
+                        <th class="text-left" th:text="#{sim.type.label}"></th>
+                        <th class="text-left" th:text="#{sim.status.label}"></th>
+                        <th class="text-left" th:text="#{table.action}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="sim, idx : ${sims}">
+                        <td th:text="${idx.index + 1}"></td>
+                        <td th:text="${sim.msisdn}">0987654321</td>
+                        <td th:text="${sim.provider}">Viettel</td>
+                        <td th:text="${sim.type}">Prepaid</td>
+                        <td th:text="${sim.status}">Active</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <a
+                                        class="d-btn d-btn-sm"
+                                        th:href="@{/dashboard/sims/{id}(id=${sim.id})}"
+                                        th:text="#{action.detail}"
+                                ></a>
+                                <button
+                                        class="d-btn d-btn-sm d-btn-error"
+                                        th:attr="data-id=${sim.id}"
+                                        th:text="#{action.delete}"
+                                        type="button"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Empty state when sims list exists but empty -->
+                    <tr th:if="${sims != null} and ${#lists.isEmpty(sims)}">
+                        <td class="text-center" colspan="6" th:text="#{sim.empty}">No sims found</td>
+                    </tr>
+
+                    <!-- Demo rows when sims not provided (FE demo) -->
+                    <tr th:if="${sims == null}">
+                        <td>1</td>
+                        <td>0987000001</td>
+                        <td th:text="#{sim.provider.viettel}">Viettel</td>
+                        <td th:text="#{sim.type.prepaid}">Prepaid</td>
+                        <td th:text="#{sim.status.active}">Active</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${sims == null}">
+                        <td>2</td>
+                        <td>0987000002</td>
+                        <td th:text="#{sim.provider.mobifone}">Mobifone</td>
+                        <td th:text="#{sim.type.postpaid}">Postpaid</td>
+                        <td th:text="#{sim.status.inactive}">Inactive</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${sims == null}">
+                        <td>3</td>
+                        <td>0987000003</td>
+                        <td th:text="#{sim.provider.vinaphone}">Vinaphone</td>
+                        <td th:text="#{sim.type.prepaid}">Prepaid</td>
+                        <td th:text="#{sim.status.suspended}">Suspended</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${sims == null}">
+                        <td>4</td>
+                        <td>0987000004</td>
+                        <td th:text="#{sim.provider.other}">Other</td>
+                        <td th:text="#{sim.type.prepaid}">Prepaid</td>
+                        <td th:text="#{sim.status.active}">Active</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${sims == null}">
+                        <td>5</td>
+                        <td>0987000005</td>
+                        <td th:text="#{sim.provider.viettel}">Viettel</td>
+                        <td th:text="#{sim.type.postpaid}">Postpaid</td>
+                        <td th:text="#{sim.status.inactive}">Inactive</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-6 flex items-center justify-center gap-4">
+                <div class="flex gap-2">
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.first}">First</button>
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.prev}">Prev</button>
+                </div>
+
+                <div class="hidden gap-2 sm:flex">
+                    <button class="d-btn d-btn-sm">1</button>
+                    <button class="d-btn d-btn-sm d-btn-ghost">2</button>
+                    <button class="d-btn d-btn-sm d-btn-ghost">3</button>
+                </div>
+
+                <div class="flex gap-2">
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.next}">Next</button>
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.last}">Last</button>
+                </div>
+            </div>
+        </div>
+
+        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.detail}" type="radio"/>
+        <div class="d-tab-content bg-base-100 border-base-300 p-6">
+            <form class="w-full" method="post" th:action="@{/dashboard/sims}">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Identification -->
+                    <fieldset class="d-fieldset col-span-1">
+                        <legend class="d-fieldset-legend" th:text="#{sim.section.identification}"></legend>
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <div class="col-span-2">
+                                <label class="d-label" for="iccid" th:text="#{sim.field.iccid}"></label>
+                                <input class="d-input d-input-bordered w-full" id="iccid" name="iccid" type="text"/>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="d-label" for="msisdn" th:text="#{sim.field.msisdn}"></label>
+                                <input class="d-input d-input-bordered w-full" id="msisdn" name="msisdn" type="text"/>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="d-label" for="provider" th:text="#{sim.provider.label}"></label>
+                                <select class="d-select d-select-bordered w-full" id="provider" name="provider">
+                                    <option th:text="#{sim.filter.all}" value=""></option>
+                                    <option th:text="#{sim.provider.viettel}" value="viettel"></option>
+                                    <option th:text="#{sim.provider.mobifone}" value="mobifone"></option>
+                                    <option th:text="#{sim.provider.vinaphone}" value="vinaphone"></option>
+                                    <option th:text="#{sim.provider.other}" value="other"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Pricing & classification -->
+                    <fieldset class="d-fieldset col-span-1">
+                        <legend class="d-fieldset-legend" th:text="#{sim.section.classification}"></legend>
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <div class="col-span-2">
+                                <label class="d-label" for="price" th:text="#{sim.field.price}"></label>
+                                <input class="d-input d-input-bordered w-full" id="price" name="price" step="0.01"
+                                       type="number"/>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="d-label" for="type" th:text="#{sim.type.label}"></label>
+                                <select class="d-select d-select-bordered w-full" id="type" name="type">
+                                    <option th:text="#{sim.filter.all}" value=""></option>
+                                    <option th:text="#{sim.type.prepaid}" value="prepaid"></option>
+                                    <option th:text="#{sim.type.postpaid}" value="postpaid"></option>
+                                </select>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="d-label" for="status" th:text="#{sim.status.label}"></label>
+                                <select class="d-select d-select-bordered w-full" id="status" name="status">
+                                    <option th:text="#{sim.filter.all}" value=""></option>
+                                    <option th:text="#{sim.status.active}" value="active"></option>
+                                    <option th:text="#{sim.status.inactive}" value="inactive"></option>
+                                    <option th:text="#{sim.status.suspended}" value="suspended"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Timestamps -->
+                    <fieldset class="d-fieldset md:col-span-2">
+                        <legend class="d-fieldset-legend" th:text="#{sim.section.timestamps}"></legend>
+                        <div class="mt-2 grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>
+                                <label class="d-label" for="createdAt" th:text="#{sim.field.createdAt}"></label>
+                                <input
+                                        class="d-input d-input-bordered w-full"
+                                        id="createdAt"
+                                        name="createdAt"
+                                        type="datetime-local"
+                                />
+                            </div>
+                            <div>
+                                <label class="d-label" for="updatedAt" th:text="#{sim.field.updatedAt}"></label>
+                                <input
+                                        class="d-input d-input-bordered w-full"
+                                        id="updatedAt"
+                                        name="updatedAt"
+                                        type="datetime-local"
+                                />
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="mt-4 flex flex-wrap justify-end gap-2">
+                    <!--            <button-->
+                    <!--              class="d-btn d-btn-primary"-->
+                    <!--              name="action"-->
+                    <!--              th:text="#{form.create}"-->
+                    <!--              type="submit"-->
+                    <!--              value="create"-->
+                    <!--            ></button>-->
+                    <button class="d-btn d-btn-ghost" th:text="#{form.reset}" type="reset"></button>
+                    <button class="d-btn" name="action" th:text="#{form.update}" type="submit" value="update"></button>
+                    <button
+                            class="d-btn d-btn-error"
+                            name="action"
+                            th:text="#{form.delete}"
+                            type="submit"
+                            value="delete"
+                    ></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</html>
