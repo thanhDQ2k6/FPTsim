@@ -4,6 +4,8 @@ import com.service.SimService;
 import com.web.dto.ImportSimsRequest;
 import com.web.dto.SimCreateRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/sim")
+@RequestMapping("/dashboard/sims")
 @RequiredArgsConstructor
 public class SimController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SimController.class);
 
     private final SimService simService;
 
@@ -39,6 +43,6 @@ public class SimController {
                               RedirectAttributes ra) {
         simService.importSimsBatch(batch);
         ra.addFlashAttribute("success", "Đã nhập lô SIM thành công.");
-        return "redirect:/sim/import";
+        return "redirect:/dashboard/sims/import";
     }
 }
