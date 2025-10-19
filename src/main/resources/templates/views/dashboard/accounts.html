@@ -1,0 +1,266 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title th:text="#{nav.dashboard}"></title>
+<main>
+    <div class="d-tabs d-tabs-lift min-h-full w-full">
+        <input checked class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.accounts}" type="radio"/>
+        <div class="d-tab-content bg-base-100 border-base-300 p-6">
+            <div class="flex items-center justify-between gap-4">
+                <div class="w-2/3">
+                    <fieldset class="d-fieldset">
+                        <legend class="d-fieldset-legend" th:text="#{accounts.legend}"></legend>
+                        <div class="flex items-center gap-3">
+                            <label class="d-label sr-only" for="accountFilter"
+                                   th:text="#{accounts.select.label}"></label>
+                            <select
+                                    class="d-select d-select-bordered w-full"
+                                    id="accountFilter"
+                                    th:attr="aria-label=#{accounts.select.aria}"
+                            >
+                                <option th:text="#{accounts.filter.all}" value=""></option>
+                                <option th:text="#{accounts.filter.admin}" value="admin"></option>
+                                <option th:text="#{accounts.filter.staff}" value="staff"></option>
+                                <option th:text="#{accounts.filter.user}" value="user"></option>
+                            </select>
+                            <button
+                                    class="d-btn d-btn-ghost d-btn-sm"
+                                    onclick="document.getElementById('accountFilter').value='';"
+                                    th:text="#{accounts.reset}"
+                                    type="button"
+                            ></button>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="flex w-1/3 justify-end">
+                    <a class="d-btn d-btn-primary" th:href="@{/dashboard/accounts/new}"
+                       th:text="#{accounts.create}"></a>
+                </div>
+            </div>
+
+            <div class="mt-6 overflow-x-auto">
+                <table class="d-table w-full">
+                    <thead>
+                    <tr>
+                        <th class="text-left" th:text="#{accounts.table.no}"></th>
+                        <th class="text-left" th:text="#{accounts.table.fullName}"></th>
+                        <th class="text-left" th:text="#{accounts.table.email}"></th>
+                        <th class="text-left" th:text="#{accounts.table.phone}"></th>
+                        <th class="text-left" th:text="#{accounts.table.role}"></th>
+                        <th class="text-left" th:text="#{table.action}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="acct, idx : ${accounts}">
+                        <td th:text="${idx.index + 1}"></td>
+                        <td th:text="${acct.fullName}"></td>
+                        <td th:text="${acct.email}"></td>
+                        <td th:text="${acct.phone}"></td>
+                        <td th:text="${acct.role}"></td>
+                        <td>
+                            <div class="flex gap-2">
+                                <a
+                                        class="d-btn d-btn-sm"
+                                        th:href="@{/dashboard/accounts/{id}(id=${acct.id})}"
+                                        th:text="#{action.detail}"
+                                ></a>
+                                <button
+                                        class="d-btn d-btn-sm d-btn-error"
+                                        th:attr="data-id=${acct.id}"
+                                        th:text="#{action.delete}"
+                                        type="button"
+                                ></button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Empty state when accounts list exists but has no items -->
+                    <tr th:if="${accounts != null} and ${#lists.isEmpty(accounts)}">
+                        <td class="text-center" colspan="6" th:text="#{accounts.empty}">No accounts found</td>
+                    </tr>
+
+                    <!-- Demo rows shown when accounts is not provided (FE demo) -->
+                    <tr th:if="${accounts == null}">
+                        <td>1</td>
+                        <td>Nguyen Van A</td>
+                        <td>a@example.com</td>
+                        <td>0123456789</td>
+                        <td>User</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${accounts == null}">
+                        <td>2</td>
+                        <td>Le Thi B</td>
+                        <td>b@example.com</td>
+                        <td>0987654321</td>
+                        <td>Admin</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${accounts == null}">
+                        <td>3</td>
+                        <td>Tran Van C</td>
+                        <td>c@example.com</td>
+                        <td>0912345678</td>
+                        <td>User</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${accounts == null}">
+                        <td>4</td>
+                        <td>Pham Thi D</td>
+                        <td>d@example.com</td>
+                        <td>0901234567</td>
+                        <td>Staff</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${accounts == null}">
+                        <td>5</td>
+                        <td>Hoang Van E</td>
+                        <td>e@example.com</td>
+                        <td>0934567890</td>
+                        <td>User</td>
+                        <td>
+                            <div class="flex gap-2">
+                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
+                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
+                                        type="button"></button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 flex items-center justify-center gap-4">
+                <div class="flex gap-2">
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.first}">First</button>
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.prev}">Prev</button>
+                </div>
+
+                <div class="hidden gap-2 sm:flex">
+                    <button class="d-btn d-btn-sm">1</button>
+                    <button class="d-btn d-btn-sm d-btn-ghost">2</button>
+                    <button class="d-btn d-btn-sm d-btn-ghost">3</button>
+                </div>
+
+                <div class="flex gap-2">
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.next}">Next</button>
+                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.last}">Last</button>
+                </div>
+            </div>
+        </div>
+
+        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.detail}" type="radio"/>
+        <div class="d-tab-content bg-base-100 border-base-300 p-6">
+            <form class="w-full" method="post" th:action="@{/dashboard/accounts}">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Credentials -->
+                    <fieldset class="d-fieldset">
+                        <legend class="d-fieldset-legend" th:text="#{form.credentials}"></legend>
+                        <div class="mt-2 grid grid-cols-2 gap-4">
+                            <div class="col-span-2">
+                                <label class="d-label" for="email" th:text="#{form.email}"></label>
+                                <input class="d-input d-input-bordered w-full" id="email" name="email" placeholder=""
+                                       type="email"/>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="d-label" for="password" th:text="#{form.password}"></label>
+                                <input class="d-input d-input-bordered w-full" id="password" name="password"
+                                       type="password"/>
+                            </div>
+                            <!-- Role -->
+                            <div class="col-span-1">
+                                <label class="d-label" for="role" th:text="#{form.role}"></label>
+                                <select class="d-select d-select-bordered w-full" id="role" name="role">
+                                    <option th:text="#{accounts.filter.all}" value=""></option>
+                                    <option th:text="#{accounts.filter.admin}" value="admin"></option>
+                                    <option th:text="#{accounts.filter.staff}" value="staff"></option>
+                                    <option th:text="#{accounts.filter.user}" value="user"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Personal info -->
+                    <fieldset class="d-fieldset">
+                        <legend class="d-fieldset-legend" th:text="#{form.personal}"></legend>
+                        <div class="mt-2 grid grid-cols-3 gap-4">
+                            <div class="col-span-3">
+                                <label class="d-label" for="fullName" th:text="#{form.fullName}"></label>
+                                <input class="d-input d-input-bordered w-full" id="fullName" name="fullName"
+                                       type="text"/>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="d-label" for="phone" th:text="#{form.phone}"></label>
+                                <input class="d-input d-input-bordered w-full" id="phone" name="phone" type="tel"/>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="d-label" for="dob" th:text="#{form.dob}"></label>
+                                <input class="d-input d-input-bordered w-full" id="dob" name="dob" type="date"/>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- Address -->
+                    <fieldset class="d-fieldset col-span-2">
+                        <legend class="d-fieldset-legend" th:text="#{form.addressLegend}"></legend>
+                        <div class="mt-2">
+                            <label class="d-label sr-only" for="address" th:text="#{form.address}"></label>
+                            <textarea
+                                    class="d-textarea d-textarea-bordered w-full"
+                                    id="address"
+                                    name="address"
+                                    placeholder=""
+                                    rows="4"
+                                    th:attr="aria-label=#{form.address}"
+                            ></textarea>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="mt-4 flex flex-wrap justify-end gap-2">
+                    <button
+                            class="d-btn d-btn-primary"
+                            name="action"
+                            th:text="#{form.create}"
+                            type="submit"
+                            value="create"
+                    ></button>
+                    <button class="d-btn d-btn-ghost" th:text="#{form.reset}" type="reset"></button>
+                    <button class="d-btn" name="action" th:text="#{form.update}" type="submit" value="update"></button>
+                    <button
+                            class="d-btn d-btn-error"
+                            name="action"
+                            th:text="#{form.delete}"
+                            type="submit"
+                            value="delete"
+                    ></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</html>
