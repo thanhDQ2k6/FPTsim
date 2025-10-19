@@ -1,0 +1,129 @@
+<!doctype html>
+<html data-theme="retro" lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <link href="/styles/tailwind.css" rel="stylesheet"/>
+    <link
+            crossorigin="anonymous"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+            referrerpolicy="no-referrer"
+            rel="stylesheet"
+    />
+    <link href="/images/logo.svg" rel="icon"/>
+    <title th:replace="${title}"></title>
+</head>
+
+<body class="d-drawer d-drawer-open">
+<input class="d-drawer-toggle" type="checkbox"/>
+<!-- Page Content -->
+<main class="d-drawer-content flex flex-col items-center justify-center p-8" th:include="${content}"></main>
+
+<!-- Sidebar -->
+<div class="d-drawer-side">
+    <!-- Sidebar Content Container -->
+    <div class="bg-base-200 text-base-content flex min-h-full w-64 flex-col p-4">
+        <!-- Sidebar Header: Title and Theme Controller -->
+        <div class="mb-4 flex items-center justify-between">
+          <!-- Dashboard Title -->
+          <a class="d-btn d-btn-ghost text-xl font-bold" th:href="@{/dashboard}" th:text="#{nav.dashboard}"> </a>
+
+          <!-- Theme Controller -->
+          <label class="d-toggle text-base-content" th:attr="aria-label=#{theme.toggle}">
+              <input class="d-theme-controller" type="checkbox" value="synthwave"/>
+            <svg aria-label="sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+              </g>
+            </svg>
+            <svg aria-label="moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+              </g>
+            </svg>
+          </label>
+        </div>
+
+        <!-- Language selector (full-width line under title & theme toggle) -->
+        <div class="mt-2 w-full">
+          <select
+                  class="d-select d-select-bordered w-full text-sm"
+                  onchange="
+            (function(value){
+                const params=new URLSearchParams(location.search);
+                params.set('lang', value);
+                location.search = params.toString();
+            })(this.value)"
+                  th:attr="aria-label=#{label.language}"
+          >
+            <option th:selected="${#locale.language == 'en'}" th:text="#{lang.en}" value="en"></option>
+            <option th:selected="${#locale.language == 'vi'}" th:text="#{lang.vi}" value="vi"></option>
+          </select>
+        </div>
+
+        <!-- Divider -->
+        <div class="d-divider m-0"></div>
+
+        <!-- Navigation Menu Items -->
+        <ul class="d-menu w-full flex-grow">
+          <li class="text-lg font-semibold">
+            <a class="flex items-center gap-4" th:href="@{/dashboard/accounts}">
+              <i aria-hidden="true" class="fa-solid fa-users w-5 text-center"></i>
+              <span th:text="#{nav.accounts}"></span>
+            </a>
+          </li>
+            <li>
+                <details open>
+                    <summary class="text-lg font-semibold">
+                        <i aria-hidden="true" class="fa-solid fa-sim-card w-5 text-center"></i>
+                        <span th:text="#{nav.sims}"></span>
+                    </summary>
+                    <ul>
+                        <li class="text-lg">
+                            <a class="flex items-center gap-4" th:href="@{/dashboard/sims/manage}">
+                                <i aria-hidden="true" class="fa-solid fa-table-list w-5 text-center"></i>
+                                <span th:text="#{nav.sims.manage}"></span>
+                            </a>
+                        </li>
+                        <li class="text-lg">
+                            <a class="flex items-center gap-4" th:href="@{/dashboard/sims/import}">
+                                <i aria-hidden="true" class="fa-solid fa-file-arrow-up w-5 text-center"></i>
+                                <span th:text="#{nav.sims.import}"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </details>
+          </li>
+          <li class="text-lg font-semibold">
+            <a class="flex items-center gap-4" th:href="@{/dashboard/coupons}">
+              <i aria-hidden="true" class="fa-solid fa-ticket w-5 text-center"></i>
+              <span th:text="#{nav.coupons}"></span>
+            </a>
+          </li>
+          <li class="text-lg font-semibold">
+            <a class="flex items-center gap-4" th:href="@{/dashboard/bills}">
+              <i aria-hidden="true" class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
+              <span th:text="#{nav.bills}"></span>
+            </a>
+          </li>
+          <li class="text-lg font-semibold">
+            <a class="flex items-center gap-4" th:href="@{/dashboard/signout}">
+              <i aria-hidden="true" class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+              <span th:text="#{nav.signout}"></span>
+            </a>
+          </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

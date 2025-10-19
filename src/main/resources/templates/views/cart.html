@@ -1,79 +1,180 @@
 <!doctype html>
 <html th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
-<title th:text="#{cart}"></title>
-<main>
+  <title th:text="#{cart}"></title>
+  <main>
     <div class="container px-9 py-6">
-        <h1 class="mb-3 ml-3 text-3xl font-bold" th:text="#{cart}"></h1>
-        <div class="rounded-box bg-base-100 border-base-300 overflow-x-auto border shadow-lg">
-            <table class="d-table">
-                <!-- head -->
-                <thead>
-                <tr>
-                    <th>
-                        <label>
-                            <input class="d-checkbox" type="checkbox"/>
-                        </label>
-                    </th>
-                    <th>Name</th>
-                    <th>Job</th>
-                    <th>Favorite Color</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <th:block th:each="item,iter : ${cartItems}">
-                    <tr>
-                        <th>
-                            <label>
-                                <input class="d-checkbox" th:checked="${item.selected} ? 'checked' : null"
-                                       type="checkbox"/>
-                            </label>
-                        </th>
-                        <td>
-                            <div class="flex items-center gap-3">
-                                <div>
-                                    <div class="font-bold" th:text="${item.name}">Hart Hagerty</div>
-                                    <div class="text-sm opacity-50" th:text="${item.country}">United States</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span th:text="${item.company}">Zemlak, Daniel and Leannon</span>
-                            <br/>
-                            <span class="d-badge d-badge-ghost d-badge-sm" th:text="${item.role}"
-                            >Desktop Support Technician</span
-                            >
-                        </td>
-                        <td th:text="${item.color}">Purple</td>
-                        <th>
-                            <!-- remove button: submit the row index to the cart controller -->
-                            <form method="post" style="display: inline" th:action="@{/cart/remove}">
-                                <input
-                                        th:if="${_csrf != null}"
-                                        th:name="${_csrf.parameterName}"
-                                        th:value="${_csrf.token}"
-                                        type="hidden"
-                                />
-                                <input name="index" th:value="${iter.index}" type="hidden"/>
-                                <button class="d-btn d-btn-error d-btn-xs" type="submit">Remove</button>
-                            </form>
-                        </th>
-                    </tr>
-                </th:block>
-                </tbody>
-
-                <!-- foot -->
-                <tfoot>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Job</th>
-                    <th>Favorite Color</th>
-                    <th></th>
-                </tr>
-                </tfoot>
-            </table>
+      <h1 class="mb-3 ml-3 text-3xl font-bold" th:text="#{cart}"></h1>
+      <!-- Sorting selections -->
+      <div class="mb-4 flex justify-center gap-4">
+        <div>
+          <div class="mb-2 text-center" id="providerLabel">Network</div>
+          <select class="d-select d-select-bordered" id="sortProvider">
+            <option value="">none</option>
+            <option value="Viettel">Viettel</option>
+            <option value="Mobifone">Mobifone</option>
+            <option value="Vinaphone">Vinaphone</option>
+            <option value="Vietnamobile">Vietnamobile</option>
+          </select>
         </div>
+        <div>
+          <div class="mb-2 text-center" id="typeLabel" style="display: none">none</div>
+          <select class="d-select d-select-bordered" id="sortType">
+            <option value="">none</option>
+            <option value="domestic">Domestic</option>
+            <option value="foreign">Foreign</option>
+            <option value="prepaid">Prepaid</option>
+            <option value="postpaid">Postpaid</option>
+          </select>
+        </div>
+      </div>
+      <div class="rounded-box bg-base-100 border-base-300 overflow-x-auto border shadow-lg">
+        <table class="d-table text-center">
+          <!-- head -->
+          <thead>
+            <tr>
+              <th class="text-center">
+                <label>
+                  <input class="d-checkbox" id="checkAll" type="checkbox" />
+                </label>
+              </th>
+              <th class="text-center">Phone Number</th>
+              <th class="text-center">Network Provider</th>
+              <th class="text-center">Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <th:block th:each="item,iter : ${cartItems}">
+              <tr>
+                <td class="text-center">
+                  <label>
+                    <input
+                      class="d-checkbox item-checkbox"
+                      th:checked="${item.selected} ? 'checked' : null"
+                      type="checkbox"
+                    />
+                  </label>
+                </td>
+                <td class="text-center" th:text="${item.phoneNumber}">0123456789</td>
+                <td class="text-center" th:text="${item.networkProvider}">Viettel</td>
+                <td class="text-center" th:text="${item.type}">prepaid</td>
+              </tr>
+            </th:block>
+          </tbody>
+        </table>
+      </div>
+      <!-- Buttons -->
+      <div class="mt-4 flex justify-center gap-4">
+        <button class="d-btn d-btn-primary" id="payBtn">Pay</button>
+        <button class="d-btn d-btn-error" id="deleteSelectedBtn">Delete Selected</button>
+      </div>
     </div>
-</main>
+    <script>
+      // Function to update master checkbox
+      function updateMasterCheckbox() {
+        const checkboxes = document.querySelectorAll('.item-checkbox')
+        const visibleCheckboxes = Array.from(checkboxes).filter((cb) => cb.closest('tr').style.display !== 'none')
+        const allChecked = visibleCheckboxes.length > 0 && visibleCheckboxes.every((cb) => cb.checked)
+        document.getElementById('checkAll').checked = allChecked
+      }
+
+      // Check all functionality
+      document.getElementById('checkAll').addEventListener('change', function () {
+        const checkboxes = document.querySelectorAll('.item-checkbox')
+        checkboxes.forEach((cb) => {
+          if (cb.closest('tr').style.display !== 'none') {
+            cb.checked = this.checked
+          }
+        })
+        // No need to update master since it's the one changing
+      })
+
+      // Add change listeners to item checkboxes
+      document.querySelectorAll('.item-checkbox').forEach((cb) => {
+        cb.addEventListener('change', updateMasterCheckbox)
+      })
+
+      // Initial update
+      updateMasterCheckbox()
+
+      // Pay button
+      document.getElementById('payBtn').addEventListener('click', function () {
+        alert('Pay functionality not implemented yet.')
+      })
+
+      // Delete selected
+      document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
+        const form = document.createElement('form')
+        form.method = 'post'
+        form.action = '/cart/deleteSelected'
+        // CSRF if needed
+        const csrfInput = document.querySelector('input[name="_csrf"]')
+        if (csrfInput) {
+          const csrf = csrfInput.cloneNode()
+          form.appendChild(csrf)
+        }
+        document.querySelectorAll('.item-checkbox:checked').forEach((cb, index) => {
+          const input = document.createElement('input')
+          input.type = 'hidden'
+          input.name = 'indices'
+          input.value = index
+          form.appendChild(input)
+        })
+        if (form.querySelectorAll('input[name="indices"]').length > 0) {
+          document.body.appendChild(form)
+          form.submit()
+        } else {
+          alert('No items selected.')
+        }
+      })
+
+      // Filtering (show/hide rows based on selections)
+      function filterTable() {
+        const tbody = document.querySelector('tbody')
+        const rows = Array.from(tbody.querySelectorAll('tr'))
+        const providerFilter = document.getElementById('sortProvider').value
+        const typeFilter = document.getElementById('sortType').value
+        rows.forEach((row) => {
+          const provider = row.cells[2].textContent
+          const type = row.cells[3].textContent
+          const matchesProvider = !providerFilter || provider === providerFilter
+          const matchesType = !typeFilter || type === typeFilter
+          if (matchesProvider && matchesType) {
+            row.style.display = ''
+          } else {
+            row.style.display = 'none'
+          }
+        })
+      }
+
+      document.getElementById('sortProvider').addEventListener('change', filterTable)
+      document.getElementById('sortType').addEventListener('change', filterTable)
+
+      // Function to check and display common values
+      function checkCommonValues() {
+        const rows = document.querySelectorAll('tbody tr')
+        if (rows.length === 0) return
+        const providers = Array.from(rows).map((row) => row.cells[2].textContent)
+        const types = Array.from(rows).map((row) => row.cells[3].textContent)
+        const commonProvider = providers.every((p) => p === providers[0]) ? providers[0] : null
+        const commonType = types.every((t) => t === types[0]) ? types[0] : null
+        const providerLabel = document.getElementById('providerLabel')
+        if (commonProvider) {
+          providerLabel.textContent = commonProvider
+          providerLabel.style.display = 'block'
+        } else {
+          providerLabel.style.display = 'none'
+        }
+        const typeLabel = document.getElementById('typeLabel')
+        if (commonType) {
+          typeLabel.textContent = commonType
+          typeLabel.style.display = 'block'
+        } else {
+          typeLabel.style.display = 'none'
+        }
+      }
+
+      // Initial check
+      checkCommonValues()
+    </script>
+  </main>
 </html>

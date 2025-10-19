@@ -19,10 +19,10 @@ public class CartController {
 
     private List<CartItem> demoItems() {
         return new ArrayList<>(Arrays.asList(
-                new CartItem("Hart Hagerty", "United States", "Zemlak, Daniel and Leannon", "Desktop Support Technician", "Purple", false),
-                new CartItem("Brice Swyre", "Canada", "Yost, Kerluke and Wunsch", "Software Engineer", "Blue", false),
-                new CartItem("Marvin McKinney", "United Kingdom", "Robel-Cormier", "Product Manager", "Green", false),
-                new CartItem("Jerome Bell", "Australia", "D'Amore and Sons", "UX Designer", "Red", false)
+                new CartItem("0123456789", "Viettel", "prepaid", false),
+                new CartItem("0987654321", "Mobifone", "postpaid", false),
+                new CartItem("0111111111", "Vinaphone", "domestic", false),
+                new CartItem("0222222222", "Vietnamobile", "foreign", false)
         ));
     }
 
@@ -47,6 +47,22 @@ public class CartController {
                 // update session attribute (not strictly required for same list instance)
                 session.setAttribute("cartItems", items);
             }
+        }
+        return "redirect:/cart";
+    }
+
+    @PostMapping("/deleteSelected")
+    public String deleteSelected(@RequestParam("indices") List<Integer> indices, HttpSession session) {
+        List<CartItem> items = (List<CartItem>) session.getAttribute("cartItems");
+        if (items != null) {
+            // Sort indices descending to remove from end
+            indices.sort((a, b) -> b - a);
+            for (int index : indices) {
+                if (index >= 0 && index < items.size()) {
+                    items.remove(index);
+                }
+            }
+            session.setAttribute("cartItems", items);
         }
         return "redirect:/cart";
     }
