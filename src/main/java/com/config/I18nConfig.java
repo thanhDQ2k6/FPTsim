@@ -1,4 +1,4 @@
-package com.demo;
+package com.config;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -13,22 +13,28 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import java.time.Duration;
 import java.util.Locale;
 
+/**
+ * Configuration for internationalization (i18n) support.
+ * Enables bilingual support (English/Vietnamese) through Spring's message source.
+ */
 @Configuration
-public class MessageConfig implements WebMvcConfigurer {
+public class I18nConfig implements WebMvcConfigurer {
+    
     @Bean("messageSource")
-    public MessageSource getMessageSource() {
-        ReloadableResourceBundleMessageSource ms = new ReloadableResourceBundleMessageSource();
-        ms.setBasenames("classpath:i18n/messages");
-        ms.setDefaultEncoding("utf-8");
-        return ms;
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames("classpath:i18n/messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setCacheSeconds(3600);
+        return messageSource;
     }
 
     @Bean("localeResolver")
-    public LocaleResolver getLocaleResolver() {
+    public LocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver();
         resolver.setCookiePath("/");
         resolver.setCookieMaxAge(Duration.ofDays(30));
-        resolver.setDefaultLocale(new Locale("en"));
+        resolver.setDefaultLocale(Locale.ENGLISH);
         return resolver;
     }
 
