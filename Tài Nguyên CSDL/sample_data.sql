@@ -79,54 +79,54 @@ VALUES
 -- ============================================
 -- SIM IMPORT BATCHES (5 batches)
 -- ============================================
-INSERT INTO nhapsim (MaNhanVien, NhaCungCap, NgayNhap, GhiChu, created_at)
+INSERT INTO nhapsim (MaNV, NgayNhap, NhaCungCap, GhiChu, TongSoLuong, TongGiaNhap)
 VALUES
-    ('staff1@fptsim.com', 'Viettel Official Distributor', DATE_SUB(NOW(), INTERVAL 30 DAY), 'First major import batch', DATE_SUB(NOW(), INTERVAL 30 DAY)),
-    ('staff1@fptsim.com', 'Mobiphone Official Partner', DATE_SUB(NOW(), INTERVAL 20 DAY), 'Premium SIM collection', DATE_SUB(NOW(), INTERVAL 20 DAY)),
-    ('staff2@fptsim.com', 'Vinaphone Authorized Dealer', DATE_SUB(NOW(), INTERVAL 15 DAY), 'Mixed type SIM import', DATE_SUB(NOW(), INTERVAL 15 DAY)),
-    ('staff2@fptsim.com', 'Viettel Regional Office', DATE_SUB(NOW(), INTERVAL 10 DAY), 'International SIM batch', DATE_SUB(NOW(), INTERVAL 10 DAY)),
-    ('staff3@fptsim.com', 'Multi-Provider Import', DATE_SUB(NOW(), INTERVAL 5 DAY), 'Latest inventory update', DATE_SUB(NOW(), INTERVAL 5 DAY));
+    ('staff1@fptsim.com', DATE_SUB(NOW(), INTERVAL 30 DAY), 'Viettel Official Distributor', 'First major import batch', 6, 343000.00),
+    ('staff1@fptsim.com', DATE_SUB(NOW(), INTERVAL 20 DAY), 'Mobiphone Official Partner', 'Premium SIM collection', 5, 301000.00),
+    ('staff2@fptsim.com', DATE_SUB(NOW(), INTERVAL 15 DAY), 'Vinaphone Authorized Dealer', 'Mixed type SIM import', 5, 304000.00),
+    ('staff2@fptsim.com', DATE_SUB(NOW(), INTERVAL 10 DAY), 'Viettel Regional Office', 'International SIM batch', 4, 312000.00),
+    ('staff3@fptsim.com', DATE_SUB(NOW(), INTERVAL 5 DAY), 'Multi-Provider Import', 'Latest inventory update', 6, 391000.00);
 
 -- ============================================
 -- SIM IMPORT DETAILS
 -- ============================================
-INSERT INTO chitietnhapsim (MaNhapSim, iccid, GiaNhap, SoLuong, created_at)
+INSERT INTO chitietnhapsim (MaNhap, iccid, GiaNhap)
 VALUES
     -- Batch 1 (staff1 - Viettel)
-    (1, '89840000000000001', 40000.00, 1, DATE_SUB(NOW(), INTERVAL 30 DAY)),
-    (1, '89840000000000002', 60000.00, 1, DATE_SUB(NOW(), INTERVAL 30 DAY)),
-    (1, '89840000000000003', 95000.00, 1, DATE_SUB(NOW(), INTERVAL 30 DAY)),
-    (1, '89840000000000004', 45000.00, 1, DATE_SUB(NOW(), INTERVAL 30 DAY)),
-    (1, '89840000000000005', 65000.00, 1, DATE_SUB(NOW(), INTERVAL 30 DAY)),
-    (1, '89840000000000006', 38000.00, 1, DATE_SUB(NOW(), INTERVAL 30 DAY)),
+    (1, '89840000000000001', 40000.00),
+    (1, '89840000000000002', 60000.00),
+    (1, '89840000000000003', 95000.00),
+    (1, '89840000000000004', 45000.00),
+    (1, '89840000000000005', 65000.00),
+    (1, '89840000000000006', 38000.00),
     
     -- Batch 2 (staff1 - Mobiphone)
-    (2, '89840000000000011', 48000.00, 1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
-    (2, '89840000000000012', 56000.00, 1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
-    (2, '89840000000000013', 80000.00, 1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
-    (2, '89840000000000014', 42000.00, 1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
-    (2, '89840000000000015', 75000.00, 1, DATE_SUB(NOW(), INTERVAL 20 DAY)),
+    (2, '89840000000000011', 48000.00),
+    (2, '89840000000000012', 56000.00),
+    (2, '89840000000000013', 80000.00),
+    (2, '89840000000000014', 42000.00),
+    (2, '89840000000000015', 75000.00),
     
     -- Batch 3 (staff2 - Vinaphone)
-    (3, '89840000000000021', 46000.00, 1, DATE_SUB(NOW(), INTERVAL 15 DAY)),
-    (3, '89840000000000022', 54000.00, 1, DATE_SUB(NOW(), INTERVAL 15 DAY)),
-    (3, '89840000000000023', 88000.00, 1, DATE_SUB(NOW(), INTERVAL 15 DAY)),
-    (3, '89840000000000024', 44000.00, 1, DATE_SUB(NOW(), INTERVAL 15 DAY)),
-    (3, '89840000000000025', 72000.00, 1, DATE_SUB(NOW(), INTERVAL 15 DAY)),
+    (3, '89840000000000021', 46000.00),
+    (3, '89840000000000022', 54000.00),
+    (3, '89840000000000023', 88000.00),
+    (3, '89840000000000024', 44000.00),
+    (3, '89840000000000025', 72000.00),
     
     -- Batch 4 (staff2 - Viettel)
-    (4, '89840000000000007', 120000.00, 1, DATE_SUB(NOW(), INTERVAL 10 DAY)),
-    (4, '89840000000000008', 52000.00, 1, DATE_SUB(NOW(), INTERVAL 10 DAY)),
-    (4, '89840000000000009', 72000.00, 1, DATE_SUB(NOW(), INTERVAL 10 DAY)),
-    (4, '89840000000000010', 68000.00, 1, DATE_SUB(NOW(), INTERVAL 10 DAY)),
+    (4, '89840000000000007', 120000.00),
+    (4, '89840000000000008', 52000.00),
+    (4, '89840000000000009', 72000.00),
+    (4, '89840000000000010', 68000.00),
     
     -- Batch 5 (staff3 - Mixed)
-    (5, '89840000000000016', 38000.00, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-    (5, '89840000000000017', 104000.00, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-    (5, '89840000000000018', 50000.00, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-    (5, '89840000000000026', 36000.00, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-    (5, '89840000000000027', 112000.00, 1, DATE_SUB(NOW(), INTERVAL 5 DAY)),
-    (5, '89840000000000028', 51000.00, 1, DATE_SUB(NOW(), INTERVAL 5 DAY));
+    (5, '89840000000000016', 38000.00),
+    (5, '89840000000000017', 104000.00),
+    (5, '89840000000000018', 50000.00),
+    (5, '89840000000000026', 36000.00),
+    (5, '89840000000000027', 112000.00),
+    (5, '89840000000000028', 51000.00);
 
 -- ============================================
 -- ORDERS (8 completed orders for testing)
@@ -192,7 +192,7 @@ VALUES
 -- ============================================
 -- SHOPPING CART (current cart items)
 -- ============================================
-INSERT INTO giohang (KhachHang_Email, iccid, NgayThem)
+INSERT INTO giohang (MaKH, iccid, NgayThem)
 VALUES
     ('customer1@fptsim.com', '89840000000000002', DATE_SUB(NOW(), INTERVAL 2 DAY)),
     ('customer1@fptsim.com', '89840000000000012', DATE_SUB(NOW(), INTERVAL 1 DAY)),
