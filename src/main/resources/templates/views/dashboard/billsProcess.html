@@ -1,0 +1,135 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>Process Orders - Dashboard</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold mb-6">Process Orders Queue</h1>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Next Order in Queue -->
+        <div th:if="${nextOrder != null}">
+            <div class="d-card bg-base-100 shadow-xl">
+                <div class="d-card-body">
+                    <h2 class="d-card-title text-2xl">Next Order to Process</h2>
+                    <div class="divider"></div>
+                    
+                    <!-- Order Header -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">Order Information</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-base-content/70">Order ID:</span>
+                                    <span class="font-semibold" th:text="${nextOrder.maHD}">HD12345678</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-base-content/70">Customer:</span>
+                                    <span class="font-semibold" th:text="${nextOrder.khachHang.hoTen}">Customer Name</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-base-content/70">Created:</span>
+                                    <span th:text="${#temporals.format(nextOrder.ngayTao, 'dd/MM/yyyy HH:mm')}">20/10/2025 14:30</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-base-content/70">Total:</span>
+                                    <span class="font-bold text-success" th:text="${#numbers.formatDecimal(nextOrder.tongTien, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                        150,000 VND
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-lg mb-2">Customer Contact</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-base-content/70">Email:</span>
+                                    <span th:text="${nextOrder.khachHang.email}">customer@mail.com</span>
+                                </div>
+                                <div class="flex justify-between" th:if="${nextOrder.khachHang.sdt != null}">
+                                    <span class="text-base-content/70">Phone:</span>
+                                    <span th:text="${nextOrder.khachHang.sdt}">0901234567</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div class="mt-4">
+                        <h3 class="font-semibold text-lg mb-3">Order Items</h3>
+                        <div class="overflow-x-auto">
+                            <table class="d-table d-table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>MSISDN</th>
+                                        <th>Provider</th>
+                                        <th>Type</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="detail : ${nextOrder.hoaDonChiTiets}">
+                                        <td class="font-mono" th:text="${detail.sim.msisdn}">0901234567</td>
+                                        <td>
+                                            <span class="d-badge d-badge-primary" th:text="${detail.sim.nhaMang}">Viettel</span>
+                                        </td>
+                                        <td>
+                                            <span class="d-badge d-badge-secondary" th:text="${detail.sim.loaiSim}">Prepaid</span>
+                                        </td>
+                                        <td class="font-semibold" th:text="${#numbers.formatDecimal(detail.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                            50,000 VND
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Rating if exists -->
+                    <div class="mt-4" th:if="${nextOrder.danhGia != null}">
+                        <h3 class="font-semibold text-lg mb-2">Customer Feedback</h3>
+                        <div class="d-card bg-base-200">
+                            <div class="d-card-body">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="text-warning">
+                                        <i class="fa-solid fa-star" th:each="i : ${#numbers.sequence(1, nextOrder.danhGia.sao)}"></i>
+                                        <i class="fa-regular fa-star" th:each="i : ${#numbers.sequence(nextOrder.danhGia.sao + 1, 5)}"></i>
+                                    </div>
+                                    <span th:text="${nextOrder.danhGia.sao} + '/5'">5/5</span>
+                                </div>
+                                <p class="text-sm" th:text="${nextOrder.danhGia.noiDung}">Great service!</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-card-actions justify-end mt-6">
+                        <form method="post" th:action="@{/dashboard/bills/{id}/approve(id=${nextOrder.maHD})}">
+                            <button class="d-btn d-btn-success d-btn-lg" type="submit">
+                                <i class="fa-solid fa-check mr-2"></i>
+                                Approve Order
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Orders in Queue -->
+        <div class="text-center py-12" th:if="${nextOrder == null}">
+            <i class="fa-solid fa-inbox text-6xl text-base-300 mb-4"></i>
+            <p class="text-xl text-base-content/70 mb-2">No pending orders in queue</p>
+            <p class="text-sm text-base-content/50">All orders have been processed</p>
+        </div>
+    </div>
+</main>
+</html>

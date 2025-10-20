@@ -1,0 +1,111 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>Processed Orders - Dashboard</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold mb-6">Processed Orders History</h1>
+
+        <!-- Orders List -->
+        <div class="space-y-4" th:if="${!orders.empty}">
+            <div class="d-card bg-base-100 shadow-md" th:each="order : ${orders.content}">
+                <div class="d-card-body">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold">
+                                Order #<span th:text="${order.maHD}">HD12345678</span>
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 text-sm">
+                                <div>
+                                    <div class="space-y-1">
+                                        <div>
+                                            <span class="text-base-content/70">Customer: </span>
+                                            <span class="font-semibold" th:text="${order.khachHang.hoTen}">Customer Name</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-base-content/70">Created: </span>
+                                            <span th:text="${#temporals.format(order.ngayTao, 'dd/MM/yyyy HH:mm')}">20/10/2025 14:30</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-base-content/70">Processed: </span>
+                                            <span th:text="${#temporals.format(order.ngayCapNhat, 'dd/MM/yyyy HH:mm')}">20/10/2025 15:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="space-y-1">
+                                        <div>
+                                            <span class="text-base-content/70">Processed by: </span>
+                                            <span class="font-semibold" th:text="${order.nhanVien.hoTen}">Staff Name</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-base-content/70">Items: </span>
+                                            <span class="font-semibold" th:text="${#lists.size(order.hoaDonChiTiets)}">2</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-base-content/70">Total: </span>
+                                            <span class="font-bold text-success" th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                                150,000 VND
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Customer Rating if exists -->
+                            <div class="mt-3" th:if="${order.danhGia != null}">
+                                <div class="d-alert d-alert-info">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-star"></i>
+                                        <span>Customer Rating: </span>
+                                        <div class="text-warning">
+                                            <i class="fa-solid fa-star" th:each="i : ${#numbers.sequence(1, order.danhGia.sao)}"></i>
+                                            <i class="fa-regular fa-star" th:each="i : ${#numbers.sequence(order.danhGia.sao + 1, 5)}"></i>
+                                        </div>
+                                        <span th:if="${order.danhGia.noiDung != null && !order.danhGia.noiDung.isBlank()}">
+                                            - "<span th:text="${#strings.abbreviate(order.danhGia.noiDung, 50)}">Great service!</span>"
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="d-badge d-badge-success d-badge-lg">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="text-center py-12" th:if="${orders.empty}">
+            <i class="fa-solid fa-receipt text-6xl text-base-300 mb-4"></i>
+            <p class="text-xl text-base-content/70">No processed orders yet</p>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-join flex justify-center mt-8" th:if="${totalPages > 1}">
+            <a class="d-join-item d-btn" 
+               th:classappend="${currentPage == 0} ? 'd-btn-disabled' : ''"
+               th:href="@{/dashboard/bills/history(page=${currentPage - 1}, size=10)}">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            
+            <th:block th:with="startPage=${currentPage > 0 ? currentPage - 1 : 0}, 
+                                endPage=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1}">
+                <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a class="d-join-item d-btn" 
+                       th:classappend="${i == currentPage} ? 'd-btn-active' : ''"
+                       th:href="@{/dashboard/bills/history(page=${i}, size=10)}"
+                       th:text="${i + 1}">1</a>
+                </th:block>
+            </th:block>
+            
+            <a class="d-join-item d-btn"
+               th:classappend="${currentPage >= totalPages - 1} ? 'd-btn-disabled' : ''"
+               th:href="@{/dashboard/bills/history(page=${currentPage + 1}, size=10)}">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+</main>
+</html>
