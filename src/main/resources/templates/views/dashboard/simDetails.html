@@ -1,0 +1,177 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>SIM Details - FPTsim</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">SIM Card Details</h1>
+            <a class="d-btn d-btn-ghost" th:href="@{/dashboard/sims/manage}">
+                <i class="fa-solid fa-arrow-left mr-2"></i>
+                Back to Manage
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- SIM Details Card -->
+        <div class="d-card bg-base-100 shadow-md">
+            <div class="d-card-body">
+                <form method="post" th:action="@{/dashboard/sims/{iccid}/update(iccid=${sim.iccid})}" th:object="${sim}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Identification Section -->
+                        <div class="d-card bg-base-200">
+                            <div class="d-card-body">
+                                <h2 class="d-card-title">Identification</h2>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text font-semibold">ICCID</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered" disabled th:value="${sim.iccid}" type="text" />
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt">Cannot be changed</span>
+                                    </label>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text font-semibold">MSISDN</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered" name="msisdn" th:value="${sim.msisdn}" type="text" 
+                                           th:disabled="${sim.trangThai.name() != 'SanSang'}" />
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt" th:if="${sim.trangThai.name() != 'SanSang'}">
+                                            Locked (not SanSang status)
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text font-semibold">Provider</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered" disabled th:value="${sim.nhaMang}" type="text" />
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt">Cannot be changed</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pricing & Classification Section -->
+                        <div class="d-card bg-base-200">
+                            <div class="d-card-body">
+                                <h2 class="d-card-title">Pricing & Classification</h2>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text font-semibold">Selling Price (VND)</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered" name="giaBan" step="0.01" 
+                                           th:value="${sim.giaBan}" type="number" 
+                                           th:disabled="${sim.trangThai.name() != 'SanSang'}" />
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text font-semibold">Type</span>
+                                    </label>
+                                    <select class="d-select d-select-bordered" name="loaiSim" 
+                                            th:disabled="${sim.trangThai.name() != 'SanSang'}">
+                                        <option th:selected="${sim.loaiSim.name() == 'TraTruoc'}" value="TraTruoc">Prepaid (Trả Trước)</option>
+                                        <option th:selected="${sim.loaiSim.name() == 'TraSau'}" value="TraSau">Postpaid (Trả Sau)</option>
+                                        <option th:selected="${sim.loaiSim.name() == 'NgoaiDia'}" value="NgoaiDia">International (Ngoại Địa)</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text font-semibold">Status</span>
+                                    </label>
+                                    <div class="flex gap-2 items-center">
+                                        <span class="d-badge d-badge-lg" 
+                                              th:classappend="${sim.trangThai.name() == 'SanSang'} ? 'd-badge-success' : 
+                                                             (${sim.trangThai.name() == 'HoatDong'} ? 'd-badge-info' : 
+                                                             (${sim.trangThai.name() == 'DaBan'} ? 'd-badge-warning' : 'd-badge-error'))"
+                                              th:text="${sim.trangThai}">
+                                            SanSang
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timestamps Section -->
+                        <div class="d-card bg-base-200 md:col-span-2">
+                            <div class="d-card-body">
+                                <h2 class="d-card-title">Timestamps</h2>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="d-form-control">
+                                        <label class="d-label">
+                                            <span class="d-label-text font-semibold">Created At</span>
+                                        </label>
+                                        <input class="d-input d-input-bordered" disabled 
+                                               th:value="${#temporals.format(sim.createdAt, 'dd/MM/yyyy HH:mm:ss')}" type="text" />
+                                    </div>
+
+                                    <div class="d-form-control">
+                                        <label class="d-label">
+                                            <span class="d-label-text font-semibold">Updated At</span>
+                                        </label>
+                                        <input class="d-input d-input-bordered" disabled 
+                                               th:value="${#temporals.format(sim.updatedAt, 'dd/MM/yyyy HH:mm:ss')}" type="text" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-card-actions justify-end mt-6">
+                        <button class="d-btn" type="reset">
+                            <i class="fa-solid fa-rotate-left mr-2"></i>
+                            Reset
+                        </button>
+                        <button class="d-btn d-btn-primary" type="submit" 
+                                th:disabled="${sim.trangThai.name() != 'SanSang'}">
+                            <i class="fa-solid fa-save mr-2"></i>
+                            Update SIM
+                        </button>
+                    </div>
+                </form>
+
+                <div class="divider"></div>
+
+                <!-- Deactivate Section -->
+                <div class="d-alert d-alert-warning" th:if="${sim.trangThai.name() != 'Chet'}">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <div class="flex-1">
+                        <h3 class="font-bold">Deactivate SIM Card</h3>
+                        <div class="text-xs">This will mark the SIM as inactive (Chết) and remove it from all shopping carts.</div>
+                    </div>
+                    <form method="post" th:action="@{/dashboard/sims/{iccid}/deactivate(iccid=${sim.iccid})}">
+                        <button class="d-btn d-btn-error d-btn-sm" type="submit">
+                            <i class="fa-solid fa-ban mr-2"></i>
+                            Deactivate
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="d-alert d-alert-info" th:if="${sim.trangThai.name() == 'Chet'}">
+                    <i class="fa-solid fa-info-circle"></i>
+                    <span>This SIM card has been deactivated.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>
