@@ -168,6 +168,77 @@
           }
         </script>
       </div>
+
+      <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{import.history.title}" type="radio" />
+      <div class="d-tab-content bg-base-100 border-base-300 p-6">
+        <h2 class="mb-4 text-xl font-semibold" th:text="#{import.history.title}"></h2>
+
+        <div class="mt-2 overflow-x-auto">
+          <table class="d-table w-full">
+            <thead>
+              <tr>
+                <th th:text="#{import.history.col.manv}"></th>
+                <th th:text="#{import.history.col.ngaynhap}"></th>
+                <th th:text="#{import.history.col.nhacungcap}"></th>
+                <th th:text="#{import.history.col.tongsoluong}"></th>
+                <th th:text="#{import.history.col.tonggianhap}"></th>
+                <th th:text="#{import.history.col.ghichu}"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Real data binding: th:each="imp,idx : ${importHistories}" -->
+              <tr th:each="imp,idx : ${importHistories}">
+                <td th:text="${imp.manv}"></td>
+                <td th:text="${imp.ngayNhap}"></td>
+                <td th:text="${imp.nhaCungCap}"></td>
+                <td th:text="${imp.tongSoLuong}"></td>
+                <td th:text="${imp.tongGiaNhap}"></td>
+                <td th:text="${imp.ghiChu}"></td>
+              </tr>
+
+              <!-- Demo rows when no data provided (FE only) -->
+              <tr th:if="${importHistories == null}">
+                <td>NV001</td>
+                <td>2025-10-01</td>
+                <td>Viettel</td>
+                <td>10</td>
+                <td>1,500,000</td>
+                <td>Đợt nhập đầu tháng</td>
+              </tr>
+              <tr th:if="${importHistories == null}">
+                <td>NV002</td>
+                <td>2025-09-15</td>
+                <td>Mobifone</td>
+                <td>5</td>
+                <td>750,000</td>
+                <td>Nhập bổ sung</td>
+              </tr>
+
+              <tr th:if="${importHistories != null} and ${#lists.isEmpty(importHistories)}">
+                <td class="text-center" colspan="6" th:text="#{import.history.empty}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mt-6 flex items-center justify-center gap-4">
+          <div class="flex gap-2">
+            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.first}">First</button>
+            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.prev}">Prev</button>
+          </div>
+
+          <div class="hidden gap-2 sm:flex">
+            <button class="d-btn d-btn-sm">1</button>
+            <button class="d-btn d-btn-sm d-btn-ghost">2</button>
+            <button class="d-btn d-btn-sm d-btn-ghost">3</button>
+          </div>
+
+          <div class="flex gap-2">
+            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.next}">Next</button>
+            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.last}">Last</button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </html>
