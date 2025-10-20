@@ -236,7 +236,7 @@
 
 ## 🐛 Known Issues
 
-1. **No password encryption** - Passwords stored in plain text (HIGH PRIORITY)
+1. **No password hashing** - Passwords stored in plain text (HIGH PRIORITY)
 2. **Session-based cart** - Not persisted across sessions
 3. **No input validation** - Limited server-side validation
 4. **No CSRF protection** - Vulnerable to CSRF attacks
@@ -253,16 +253,16 @@
 5. Pick a task from "In Progress" section
 
 ### Before Production
-1. ✅ Implement Spring Security
-2. ✅ Add password hashing
-3. ✅ Add CSRF protection
-4. ✅ Add comprehensive tests
-5. ✅ Set up monitoring
-6. ✅ Configure proper logging
-7. ✅ Add database backups
-8. ✅ Security audit
-9. ✅ Performance testing
-10. ✅ Load testing
+1. ⚠️ Implement Spring Security
+2. ⚠️ Add password hashing (BCrypt)
+3. ⚠️ Add CSRF protection
+4. ⚠️ Add comprehensive tests
+5. ⚠️ Set up monitoring
+6. ⚠️ Configure proper logging
+7. ⚠️ Add database backups
+8. ⚠️ Security audit
+9. ⚠️ Performance testing
+10. ⚠️ Load testing
 
 ### Maintenance
 - Regular dependency updates
