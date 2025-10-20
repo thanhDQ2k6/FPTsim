@@ -1,63 +1,75 @@
 package com.controller;
 
-import com.model.CartItem;
+import com.model.GioHang;
+import com.model.NguoiDung;
+import com.model.HoaDon;
+import com.repository.GioHangRepository;
+import com.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller for shopping cart functionality.
- * Currently uses session-based cart storage for demonstration purposes.
- * In production, this should be replaced with database-backed cart using GioHang entity.
+ * Controller for shopping cart and checkout functionality.
  */
 @Controller
 @RequestMapping("/cart")
 @RequiredArgsConstructor
 public class CartController {
+    
+    private final GioHangRepository gioHangRepository;
+    private final OrderService orderService;
 
     @GetMapping("")
     public String viewCart(Model model, HttpSession session) {
-        List<CartItem> items = getCartItems(session);
-        model.addAttribute("cartItems", items);
+        Object user = session.getAttribute("user");
+        if (!(user instanceof NguoiDung nguoiDung)) {
+            return "redirect:/signin";
+        }
+        
+        List<GioHang> cartItems = gioHangRepository.findByKhachHang_Email(nguoiDung.getEmail());
+        model.addAttribute("cartItems", cartItems);
         return "views/cart";
     }
 
     @PostMapping("/remove")
-    public String removeItem(@RequestParam("index") int index, HttpSession session) {
-        List<CartItem> items = getCartItems(session);
-        if (index >= 0 && index < items.size()) {
-            items.remove(index);
-            session.setAttribute("cartItems", items);
+    public String removeItem(@RequestParam int itemId, HttpSession session) {
+        Object user = session.getAttribute("user");
+        if (!(user instanceof NguoiDung)) {
+            return "redirect:/signin";
         }
+        
+        gioHangRepository.deleteById(itemId);
         return "redirect:/cart";
     }
 
-    @PostMapping("/deleteSelected")
-    public String deleteSelected(@RequestParam("indices") List<Integer> indices, HttpSession session) {
-        List<CartItem> items = getCartItems(session);
-        // Sort indices in descending order to remove from end first
-        indices.sort((a, b) -> b - a);
-        for (int index : indices) {
-            if (index >= 0 && index < items.size()) {
-                items.remove(index);
-            }
+    @PostMapping("/checkout")
+    public String checkout(@RequestParam String ownerName,
+                          @RequestParam String ownerPhone,
+                          @RequestParam String ownerAddress,
+                          @RequestParam(required = false) String discountCode,
+                          HttpSession session,
+                          RedirectAttributes redirectAttributes) {
+        Object user = session.getAttribute("user");
+        if (!(user instanceof NguoiDung nguoiDung)) {
+            return "redirect:/signin";
         }
-        session.setAttribute("cartItems", items);
-        return "redirect:/cart";
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<CartItem> getCartItems(HttpSession session) {
-        List<CartItem> items = (List<CartItem>) session.getAttribute("cartItems");
-        if (items == null) {
-            items = new ArrayList<>();
-            session.setAttribute("cartItems", items);
+        
+        try {
+            HoaDon order = orderService.createOrderFromCart(
+                nguoiDung.getEmail(), ownerName, ownerPhone, ownerAddress, discountCode);
+            
+            redirectAttributes.addFlashAttribute("success", 
+                "Order created successfully: " + order.getMaHD());
+            return "redirect:/orders";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/cart";
         }
-        return items;
     }
 }

@@ -34,6 +34,15 @@ public class AuthController {
         Optional<NguoiDung> user = authService.authenticate(email, password);
         if (user.isPresent()) {
             session.setAttribute("user", user.get());
+            
+            // Redirect based on role
+            NguoiDung nguoiDung = user.get();
+            if (nguoiDung.getVaiTro() == NguoiDung.VaiTro.KhachHang) {
+                return "redirect:/shop";
+            } else if (nguoiDung.getVaiTro() == NguoiDung.VaiTro.NhanVien || 
+                       nguoiDung.getVaiTro() == NguoiDung.VaiTro.Admin) {
+                return "redirect:/dashboard";
+            }
             return "redirect:/";
         } else {
             redirectAttributes.addFlashAttribute("error", "Invalid email or password");

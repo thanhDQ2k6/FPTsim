@@ -174,4 +174,23 @@ public class SimService {
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
+    
+    // Get all SIMs with pagination (for admin)
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sim> getAllSims(org.springframework.data.domain.Pageable pageable) {
+        return simRepo.findAll(pageable);
+    }
+    
+    // Get SIMs imported by staff
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sim> getSimsByStaff(String email, org.springframework.data.domain.Pageable pageable) {
+        return simRepo.findByImportedBy(email, pageable);
+    }
+    
+    // Get SIM by ID
+    @Transactional(readOnly = true)
+    public Sim getSimById(String iccid) {
+        return simRepo.findById(iccid)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy SIM: " + iccid));
+    }
 }

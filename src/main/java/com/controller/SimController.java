@@ -57,4 +57,91 @@ public class SimController {
         ra.addFlashAttribute("success", "Đã nhập lô SIM thành công.");
         return "redirect:/dashboard/sims/import";
     }
+    
+    @GetMapping("/manage")
+    public String manageSims(@RequestParam(defaultValue = "0") int page,
+                            @RequestParam(defaultValue = "10") int size,
+                            @RequestParam(required = false) String nhaMang,
+                            @RequestParam(required = false) String loaiSim,
+                            @RequestParam(required = false) String trangThai,
+                            Model model,
+                            jakarta.servlet.http.HttpSession session) {
+        // Get user from session
+        Object user = session.getAttribute("user");
+        if (!(user instanceof com.model.NguoiDung nguoiDung)) {
+            return "redirect:/";
+        }
+        
+        // Check authorization
+        boolean isAdmin = nguoiDung.getVaiTro() == com.model.NguoiDung.VaiTro.Admin;
+        boolean isStaff = nguoiDung.getVaiTro() == com.model.NguoiDung.VaiTro.NhanVien;
+        
+        if (!isAdmin && !isStaff) {
+            return "redirect:/";
+        }
+        
+        // Build sort with multiple criteria: import date desc, then by filters
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        if (nhaMang != null && !nhaMang.isBlank()) {
+            sort = sort.and(Sort.by(Sort.Direction.ASC, "nhaMang"));
+        }
+        if (loaiSim != null && !loaiSim.isBlank()) {
+            sort = sort.and(Sort.by(Sort.Direction.ASC, "loaiSim"));
+        }
+        if (trangThai != null && !trangThai.isBlank()) {
+            sort = sort.and(Sort.by(Sort.Direction.ASC, "trangThai"));
+        }
+        
+        PageRequest pageable = PageRequest.of(page, size, sort);
+        
+        Page<com.model.Sim> sims;
+        if (isAdmin) {
+            // Admin sees all SIMs
+            sims = simService.getAllSims(pageable);
+        } else {
+            // Staff sees only SIMs they imported
+            sims = simService.getSimsByStaff(nguoiDung.getEmail(), pageable);
+        }
+        
+        model.addAttribute("sims", sims);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", sims.getTotalPages());
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("nhaMang", nhaMang);
+        model.addAttribute("loaiSim", loaiSim);
+        model.addAttribute("trangThai", trangThai);
+        
+        return "views/dashboard/simsManage";
+    }
+    
+    @GetMapping("/{iccid}")
+    public String simDetails(@PathVariable String iccid, Model model) {
+        com.model.Sim sim = simService.getSimById(iccid);
+        model.addAttribute("sim", sim);
+        return "views/dashboard/simDetails";
+    }
+    
+    @PostMapping("/{iccid}/update")
+    public String updateSim(@PathVariable String iccid,
+                           @ModelAttribute com.web.dto.SimUpdateRequest request,
+                           RedirectAttributes ra) {
+        try {
+            simService.updateSimIfReady(iccid, request);
+            ra.addFlashAttribute("success", "SIM updated successfully");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/dashboard/sims/manage";
+    }
+    
+    @PostMapping("/{iccid}/deactivate")
+    public String deactivateSim(@PathVariable String iccid, RedirectAttributes ra) {
+        try {
+            simService.deactivateSim(iccid);
+            ra.addFlashAttribute("success", "SIM deactivated");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/dashboard/sims/manage";
+    }
 }
