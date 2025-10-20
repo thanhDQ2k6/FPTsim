@@ -1,17 +1,17 @@
 package com.controller;
 
+import com.repository.NhapSimRepository;
 import com.service.SimService;
 import com.web.dto.ImportSimsRequest;
+import com.web.dto.NhapSimSummaryView;
 import com.web.dto.SimCreateRequest;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -19,13 +19,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class SimController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimController.class);
-
     private final SimService simService;
+    private final NhapSimRepository nhapSimRepo;
 
     @ModelAttribute("batch")
     public ImportSimsRequest initBatch() {
         return new ImportSimsRequest(); // sims đã non-null nhờ DTO
+    }
+
+    // Lịch sử phiếu nhập (header) cho cả GET và POST (PRG vẫn được)
+    @ModelAttribute
+    public void addImportHeaderHistory(Model model,
+                                       @RequestParam(name = "hPage", defaultValue = "0") int hPage,
+                                       @RequestParam(name = "hSize", defaultValue = "10") int hSize) {
+        // Sắp xếp: mới nhất trước
+        Sort sort = Sort.by(Sort.Direction.DESC, "ngayNhap").and(Sort.by(Sort.Direction.DESC, "id"));
+        Page<NhapSimSummaryView> headers = nhapSimRepo.findSummary(PageRequest.of(hPage, hSize, sort));
+        model.addAttribute("importHeaders", headers);
+        model.addAttribute("hPage", hPage);
+        model.addAttribute("hSize", hSize);
     }
 
     @GetMapping("/import")
