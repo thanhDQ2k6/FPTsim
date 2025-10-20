@@ -1,0 +1,88 @@
+<!doctype html>
+<html th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>My Orders - FPTsim</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold mb-6">My Purchase History</h1>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+
+        <!-- Orders List -->
+        <div class="space-y-4" th:if="${!orders.empty}">
+            <div class="d-card bg-base-100 shadow-md" th:each="order : ${orders.content}">
+                <div class="d-card-body">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold">
+                                Order #<span th:text="${order.maHD}">HD12345678</span>
+                            </h3>
+                            <div class="flex gap-4 mt-2 text-sm">
+                                <span>
+                                    <i class="fa-regular fa-calendar mr-1"></i>
+                                    <span th:text="${#temporals.format(order.ngayTao, 'dd/MM/yyyy HH:mm')}">20/10/2025 14:30</span>
+                                </span>
+                                <span class="d-badge" 
+                                      th:classappend="${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'd-badge-success' : 
+                                                     ${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'd-badge-warning' : 'd-badge-info'"
+                                      th:text="${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).ChoXacNhan} ? 'Pending' : 
+                                               ${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).DaHoanThanh} ? 'Completed' : ${order.trangThaiDon}">
+                                    Pending
+                                </span>
+                            </div>
+                            <div class="mt-2 text-sm">
+                                <span class="font-semibold">Total:</span>
+                                <span class="text-success font-bold" th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + ' VND'">150,000 VND</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <a class="d-btn d-btn-primary d-btn-sm" th:href="@{/orders/{id}(id=${order.maHD})}">
+                                <i class="fa-solid fa-eye"></i>
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="text-center py-12" th:if="${orders.empty}">
+            <i class="fa-solid fa-receipt text-6xl text-base-300 mb-4"></i>
+            <p class="text-xl text-base-content/70 mb-4">No orders yet</p>
+            <a class="d-btn d-btn-primary" th:href="@{/shop}">
+                <i class="fa-solid fa-shopping-bag mr-2"></i>
+                Start Shopping
+            </a>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-join flex justify-center mt-8" th:if="${totalPages > 1}">
+            <a class="d-join-item d-btn" 
+               th:classappend="${currentPage == 0} ? 'd-btn-disabled' : ''"
+               th:href="@{/orders(page=${currentPage - 1}, size=10)}">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            
+            <th:block th:with="startPage=${currentPage > 0 ? currentPage - 1 : 0}, 
+                                endPage=${currentPage < totalPages - 1 ? currentPage + 1 : totalPages - 1}">
+                <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a class="d-join-item d-btn" 
+                       th:classappend="${i == currentPage} ? 'd-btn-active' : ''"
+                       th:href="@{/orders(page=${i}, size=10)}"
+                       th:text="${i + 1}">1</a>
+                </th:block>
+            </th:block>
+            
+            <a class="d-join-item d-btn"
+               th:classappend="${currentPage >= totalPages - 1} ? 'd-btn-disabled' : ''"
+               th:href="@{/orders(page=${currentPage + 1}, size=10)}">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+</main>
+</html>
