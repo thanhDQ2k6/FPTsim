@@ -4,7 +4,10 @@
   <main>
     <div class="container mx-auto px-4 py-6">
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold">Shopping Cart</h1>
+        <h1 class="text-3xl font-bold">
+          <i class="fa-solid fa-cart-shopping text-primary mr-2"></i>
+          Shopping Cart
+        </h1>
         <a class="d-btn d-btn-ghost" th:href="@{/shop}">
           <i class="fa-solid fa-arrow-left mr-2"></i>
           Continue Shopping
@@ -35,10 +38,10 @@
                   </h3>
                   <div class="flex gap-4 mt-2 text-sm">
                     <span class="d-badge d-badge-primary" th:text="${item.sim.nhaMang}">Viettel</span>
-                    <span class="d-badge d-badge-secondary" th:text="${item.sim.loaiSim}">Prepaid</span>
+                    <span class="d-badge d-badge-secondary" th:text="${item.sim.loaiSim}">TraTruoc</span>
                   </div>
-                  <div class="mt-2 text-xs text-base-content/70" th:text="'Added: ' + ${#temporals.format(item.ngayThem, 'dd/MM/yyyy HH:mm')}">
-                    Added: 20/10/2025 14:30
+                  <div class="mt-2 text-xs text-base-content/70" th:text="'ICCID: ' + ${item.sim.iccid}">
+                    ICCID: 89840000000000000000
                   </div>
                 </div>
                 <div class="text-right">
@@ -48,7 +51,7 @@
                   <form method="post" th:action="@{/cart/remove}" class="mt-2">
                     <input name="itemId" th:value="${item.id}" type="hidden" />
                     <button class="d-btn d-btn-error d-btn-sm" type="submit">
-                      <i class="fa-solid fa-trash"></i>
+                      <i class="fa-solid fa-trash mr-1"></i>
                       Remove
                     </button>
                   </form>
@@ -62,50 +65,59 @@
         <div class="lg:col-span-1">
           <div class="d-card bg-base-100 shadow-md sticky top-4">
             <div class="d-card-body">
-              <h2 class="d-card-title">Order Summary</h2>
+              <h2 class="d-card-title">
+                <i class="fa-solid fa-receipt mr-2"></i>
+                Order Summary
+              </h2>
               
               <div class="divider"></div>
               
               <form method="post" th:action="@{/cart/checkout}">
                 <!-- SIM Owner Information -->
                 <div class="space-y-4">
-                  <h3 class="font-semibold">SIM Owner Information</h3>
+                  <h3 class="font-semibold text-sm uppercase text-base-content/70">SIM Owner Information</h3>
                   
                   <div class="d-form-control">
                     <label class="d-label">
-                      <span class="d-label-text">Full Name *</span>
+                      <span class="d-label-text"><i class="fa-solid fa-user mr-1"></i> Full Name *</span>
                     </label>
                     <input class="d-input d-input-bordered" name="ownerName" placeholder="Enter owner name" required type="text" />
                   </div>
                   
                   <div class="d-form-control">
                     <label class="d-label">
-                      <span class="d-label-text">Phone Number *</span>
+                      <span class="d-label-text"><i class="fa-solid fa-phone mr-1"></i> Phone Number *</span>
                     </label>
-                    <input class="d-input d-input-bordered" name="ownerPhone" placeholder="Enter phone number" required type="tel" />
+                    <input class="d-input d-input-bordered" name="ownerPhone" placeholder="0901234567" required type="tel" />
                   </div>
                   
                   <div class="d-form-control">
                     <label class="d-label">
-                      <span class="d-label-text">Address *</span>
+                      <span class="d-label-text"><i class="fa-solid fa-location-dot mr-1"></i> Address *</span>
                     </label>
-                    <textarea class="d-textarea d-textarea-bordered" name="ownerAddress" placeholder="Enter address" required rows="3"></textarea>
+                    <textarea class="d-textarea d-textarea-bordered" name="ownerAddress" placeholder="Enter full address" required rows="3"></textarea>
                   </div>
                   
                   <div class="d-form-control">
                     <label class="d-label">
-                      <span class="d-label-text">Discount Code (optional)</span>
+                      <span class="d-label-text"><i class="fa-solid fa-tag mr-1"></i> Discount Code</span>
                     </label>
-                    <input class="d-input d-input-bordered" name="discountCode" placeholder="Enter discount code" type="text" />
+                    <input class="d-input d-input-bordered" name="discountCode" placeholder="Enter code (optional)" type="text" />
                   </div>
                 </div>
                 
                 <div class="divider"></div>
                 
                 <!-- Total -->
-                <div class="flex justify-between items-center text-lg font-bold">
-                  <span>Total:</span>
-                  <span class="text-success" th:text="${#aggregates.sum(cartItems.![sim.giaBan])} + ' VND'">150,000 VND</span>
+                <div class="space-y-2">
+                  <div class="flex justify-between text-sm">
+                    <span>Items (<span th:text="${#lists.size(cartItems)}">3</span>):</span>
+                    <span th:text="${#numbers.formatDecimal(#aggregates.sum(cartItems.![sim.giaBan]), 0, 'COMMA', 0, 'POINT')} + ' VND'">150,000 VND</span>
+                  </div>
+                  <div class="flex justify-between items-center text-xl font-bold border-t pt-2">
+                    <span>Total:</span>
+                    <span class="text-success" th:text="${#numbers.formatDecimal(#aggregates.sum(cartItems.![sim.giaBan]), 0, 'COMMA', 0, 'POINT')} + ' VND'">150,000 VND</span>
+                  </div>
                 </div>
                 
                 <button class="d-btn d-btn-primary w-full mt-4" type="submit">
@@ -122,185 +134,12 @@
       <div class="text-center py-12" th:if="${cartItems.empty}">
         <i class="fa-solid fa-cart-shopping text-6xl text-base-300 mb-4"></i>
         <p class="text-xl text-base-content/70 mb-4">Your cart is empty</p>
+        <p class="text-sm text-base-content/50 mb-6">Add some SIM cards to get started!</p>
         <a class="d-btn d-btn-primary" th:href="@{/shop}">
           <i class="fa-solid fa-shopping-bag mr-2"></i>
           Start Shopping
         </a>
       </div>
     </div>
-  </main>
-</html>
-      <!-- Sorting selections -->
-      <div class="mb-4 flex justify-center gap-4">
-        <div>
-          <div class="mb-2 text-center" id="providerLabel">Network</div>
-          <select class="d-select d-select-bordered" id="sortProvider">
-            <option value="">none</option>
-            <option value="Viettel">Viettel</option>
-            <option value="Mobifone">Mobifone</option>
-            <option value="Vinaphone">Vinaphone</option>
-            <option value="Vietnamobile">Vietnamobile</option>
-          </select>
-        </div>
-        <div>
-          <div class="mb-2 text-center" id="typeLabel" style="display: none">none</div>
-          <select class="d-select d-select-bordered" id="sortType">
-            <option value="">none</option>
-            <option value="domestic">Domestic</option>
-            <option value="foreign">Foreign</option>
-            <option value="prepaid">Prepaid</option>
-            <option value="postpaid">Postpaid</option>
-          </select>
-        </div>
-      </div>
-      <div class="rounded-box bg-base-100 border-base-300 overflow-x-auto border shadow-lg">
-        <table class="d-table text-center">
-          <!-- head -->
-          <thead>
-            <tr>
-              <th class="text-center">
-                <label>
-                  <input class="d-checkbox" id="checkAll" type="checkbox" />
-                </label>
-              </th>
-              <th class="text-center">Phone Number</th>
-              <th class="text-center">Network Provider</th>
-              <th class="text-center">Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            <th:block th:each="item,iter : ${cartItems}">
-              <tr>
-                <td class="text-center">
-                  <label>
-                    <input
-                      class="d-checkbox item-checkbox"
-                      th:checked="${item.selected} ? 'checked' : null"
-                      type="checkbox"
-                    />
-                  </label>
-                </td>
-                <td class="text-center" th:text="${item.phoneNumber}">0123456789</td>
-                <td class="text-center" th:text="${item.networkProvider}">Viettel</td>
-                <td class="text-center" th:text="${item.type}">prepaid</td>
-              </tr>
-            </th:block>
-          </tbody>
-        </table>
-      </div>
-      <!-- Buttons -->
-      <div class="mt-4 flex justify-center gap-4">
-        <button class="d-btn d-btn-primary" id="payBtn">Pay</button>
-        <button class="d-btn d-btn-error" id="deleteSelectedBtn">Delete Selected</button>
-      </div>
-    </div>
-    <script>
-      // Function to update master checkbox
-      function updateMasterCheckbox() {
-        const checkboxes = document.querySelectorAll('.item-checkbox')
-        const visibleCheckboxes = Array.from(checkboxes).filter((cb) => cb.closest('tr').style.display !== 'none')
-        const allChecked = visibleCheckboxes.length > 0 && visibleCheckboxes.every((cb) => cb.checked)
-        document.getElementById('checkAll').checked = allChecked
-      }
-
-      // Check all functionality
-      document.getElementById('checkAll').addEventListener('change', function () {
-        const checkboxes = document.querySelectorAll('.item-checkbox')
-        checkboxes.forEach((cb) => {
-          if (cb.closest('tr').style.display !== 'none') {
-            cb.checked = this.checked
-          }
-        })
-        // No need to update master since it's the one changing
-      })
-
-      // Add change listeners to item checkboxes
-      document.querySelectorAll('.item-checkbox').forEach((cb) => {
-        cb.addEventListener('change', updateMasterCheckbox)
-      })
-
-      // Initial update
-      updateMasterCheckbox()
-
-      // Pay button
-      document.getElementById('payBtn').addEventListener('click', function () {
-        alert('Pay functionality not implemented yet.')
-      })
-
-      // Delete selected
-      document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
-        const form = document.createElement('form')
-        form.method = 'post'
-        form.action = '/cart/deleteSelected'
-        // CSRF if needed
-        const csrfInput = document.querySelector('input[name="_csrf"]')
-        if (csrfInput) {
-          const csrf = csrfInput.cloneNode()
-          form.appendChild(csrf)
-        }
-        document.querySelectorAll('.item-checkbox:checked').forEach((cb, index) => {
-          const input = document.createElement('input')
-          input.type = 'hidden'
-          input.name = 'indices'
-          input.value = index
-          form.appendChild(input)
-        })
-        if (form.querySelectorAll('input[name="indices"]').length > 0) {
-          document.body.appendChild(form)
-          form.submit()
-        } else {
-          alert('No items selected.')
-        }
-      })
-
-      // Filtering (show/hide rows based on selections)
-      function filterTable() {
-        const tbody = document.querySelector('tbody')
-        const rows = Array.from(tbody.querySelectorAll('tr'))
-        const providerFilter = document.getElementById('sortProvider').value
-        const typeFilter = document.getElementById('sortType').value
-        rows.forEach((row) => {
-          const provider = row.cells[2].textContent
-          const type = row.cells[3].textContent
-          const matchesProvider = !providerFilter || provider === providerFilter
-          const matchesType = !typeFilter || type === typeFilter
-          if (matchesProvider && matchesType) {
-            row.style.display = ''
-          } else {
-            row.style.display = 'none'
-          }
-        })
-      }
-
-      document.getElementById('sortProvider').addEventListener('change', filterTable)
-      document.getElementById('sortType').addEventListener('change', filterTable)
-
-      // Function to check and display common values
-      function checkCommonValues() {
-        const rows = document.querySelectorAll('tbody tr')
-        if (rows.length === 0) return
-        const providers = Array.from(rows).map((row) => row.cells[2].textContent)
-        const types = Array.from(rows).map((row) => row.cells[3].textContent)
-        const commonProvider = providers.every((p) => p === providers[0]) ? providers[0] : null
-        const commonType = types.every((t) => t === types[0]) ? types[0] : null
-        const providerLabel = document.getElementById('providerLabel')
-        if (commonProvider) {
-          providerLabel.textContent = commonProvider
-          providerLabel.style.display = 'block'
-        } else {
-          providerLabel.style.display = 'none'
-        }
-        const typeLabel = document.getElementById('typeLabel')
-        if (commonType) {
-          typeLabel.textContent = commonType
-          typeLabel.style.display = 'block'
-        } else {
-          typeLabel.style.display = 'none'
-        }
-      }
-
-      // Initial check
-      checkCommonValues()
-    </script>
   </main>
 </html>
