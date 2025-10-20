@@ -21,14 +21,6 @@ public class DashboardController {
         return "views/dashboard/home";
     }
 
-    @GetMapping("/sims/manage")
-    public String simsManage(HttpSession session) {
-        if (!isStaffOrAdmin(session)) {
-            return "redirect:/";
-        }
-        return "views/dashboard/simsManage";
-    }
-
     /**
      * Check if the current user is staff or admin.
      */
