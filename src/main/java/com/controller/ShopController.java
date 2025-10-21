@@ -55,6 +55,9 @@ public class ShopController {
         int cartCount = gioHangRepository.countByKhachHang_Email(nguoiDung.getEmail());
         model.addAttribute("cartCount", cartCount);
         
+        // Add isLoggedIn for layout
+        model.addAttribute("isLoggedIn", true);
+        
         return "views/shop";
     }
     

@@ -34,6 +34,7 @@ public class CartController {
         
         List<GioHang> cartItems = gioHangRepository.findByKhachHang_Email(nguoiDung.getEmail());
         model.addAttribute("cartItems", cartItems);
+        model.addAttribute("isLoggedIn", true);
         return "views/cart";
     }
 

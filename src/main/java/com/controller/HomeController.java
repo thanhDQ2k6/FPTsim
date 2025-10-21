@@ -19,7 +19,10 @@ public class HomeController {
     private final NguoiDungRepository nguoiDungRepository;
     
     @GetMapping("/")
-    public String index() {
+    public String index(Model model, HttpSession session) {
+        // Check if user is logged in
+        Object user = session.getAttribute("user");
+        model.addAttribute("isLoggedIn", user instanceof NguoiDung);
         return "views/index";
     }
     
@@ -34,6 +37,7 @@ public class HomeController {
         // Refresh user data from database
         nguoiDung = nguoiDungRepository.findById(nguoiDung.getEmail()).orElse(nguoiDung);
         model.addAttribute("user", nguoiDung);
+        model.addAttribute("isLoggedIn", true);
         return "views/profile";
     }
     

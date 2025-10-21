@@ -40,6 +40,7 @@ public class OrderController {
         model.addAttribute("orders", orders);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", orders.getTotalPages());
+        model.addAttribute("isLoggedIn", true);
         
         return "views/orders";
     }
@@ -58,6 +59,7 @@ public class OrderController {
         
         HoaDon order = orderService.getOrderDetails(orderId);
         model.addAttribute("order", order);
+        model.addAttribute("isLoggedIn", true);
         
         return "views/orderDetails";
     }
@@ -86,12 +88,17 @@ public class OrderController {
     @GetMapping("/ratings")
     public String viewRatings(@RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "10") int size,
-                             Model model) {
+                             Model model,
+                             HttpSession session) {
         Page<DanhGia> ratings = orderService.getAllRatings(page, size);
         
         model.addAttribute("ratings", ratings);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", ratings.getTotalPages());
+        
+        // Check if user is logged in
+        Object user = session.getAttribute("user");
+        model.addAttribute("isLoggedIn", user instanceof NguoiDung);
         
         return "views/ratings";
     }
