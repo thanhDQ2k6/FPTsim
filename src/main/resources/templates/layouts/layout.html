@@ -104,6 +104,7 @@
             </div>
             <li th:if="${isLoggedIn}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
             <li th:if="${isLoggedIn}"><a th:href="@{/orders}" th:text="#{menuUser.orders}">My Orders</a></li>
+            <li th:if="${isLoggedIn}"><a th:href="@{/feedback}">Feedback</a></li>
             <li th:if="${isLoggedIn}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
 
             <li th:unless="${isLoggedIn}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>

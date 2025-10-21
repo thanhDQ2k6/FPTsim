@@ -256,6 +256,16 @@ public class OrderService {
     }
     
     /**
+     * Get completed orders without ratings for a customer (for feedback page).
+     */
+    @Transactional(readOnly = true)
+    public Page<HoaDon> getOrdersWithoutRating(String customerEmail, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return hoaDonRepository.findCompletedOrdersWithoutRatingByCustomer(
+            customerEmail, HoaDon.TrangThaiDon.DaHoanThanh, pageable);
+    }
+    
+    /**
      * Get order details.
      */
     @Transactional(readOnly = true)

@@ -104,6 +104,30 @@ public class OrderController {
     }
     
     /**
+     * Feedback page - shows completed orders without ratings.
+     */
+    @GetMapping("/feedback")
+    public String feedbackPage(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "10") int size,
+                              Model model,
+                              HttpSession session) {
+        Object user = session.getAttribute("user");
+        if (!(user instanceof NguoiDung nguoiDung) || 
+            nguoiDung.getVaiTro() != NguoiDung.VaiTro.KhachHang) {
+            return "redirect:/";
+        }
+        
+        Page<HoaDon> orders = orderService.getOrdersWithoutRating(nguoiDung.getEmail(), page, size);
+        
+        model.addAttribute("orders", orders);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orders.getTotalPages());
+        model.addAttribute("isLoggedIn", true);
+        
+        return "views/feedback";
+    }
+    
+    /**
      * Staff bill processing page - shows next order in queue.
      */
     @GetMapping("/dashboard/bills/process")
