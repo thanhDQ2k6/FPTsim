@@ -110,7 +110,7 @@
                                             <i class="fas fa-user mr-2"></i>Full Name *
                                         </span>
                                     </label>
-                                    <input type="text" name="hoTen" required
+                                    <input type="text" name="ownerName" required
                                            class="d-input d-input-bordered" 
                                            placeholder="Enter full name"/>
                                 </div>
@@ -121,7 +121,7 @@
                                             <i class="fas fa-id-card mr-2"></i>ID Number (CCCD) *
                                         </span>
                                     </label>
-                                    <input type="text" name="cccd" required
+                                    <input type="text" name="ownerCccd" required
                                            pattern="[0-9]{9,12}"
                                            class="d-input d-input-bordered" 
                                            placeholder="Enter ID number"/>
@@ -136,7 +136,7 @@
                                             <i class="fas fa-calendar mr-2"></i>Date of Birth *
                                         </span>
                                     </label>
-                                    <input type="date" name="ngaySinh" required
+                                    <input type="date" name="ownerDateOfBirth" required
                                            class="d-input d-input-bordered"/>
                                 </div>
 
@@ -153,10 +153,10 @@
                                 <div class="d-form-control">
                                     <label class="d-label">
                                         <span class="d-label-text">
-                                            <i class="fas fa-phone mr-2"></i>Phone Number
+                                            <i class="fas fa-phone mr-2"></i>Phone Number *
                                         </span>
                                     </label>
-                                    <input type="tel" name="sdt"
+                                    <input type="tel" name="ownerPhone" required
                                            pattern="[0-9]{10}"
                                            class="d-input d-input-bordered" 
                                            placeholder="Enter phone number"/>
@@ -171,7 +171,7 @@
                                             <i class="fas fa-map-marker-alt mr-2"></i>Address *
                                         </span>
                                     </label>
-                                    <textarea name="diaChi" required rows="3"
+                                    <textarea name="ownerAddress" required rows="3"
                                               class="d-textarea d-textarea-bordered" 
                                               placeholder="Enter full address"></textarea>
                                 </div>
@@ -185,7 +185,7 @@
                                             <i class="fas fa-tag mr-2"></i>Promo Code (Optional)
                                         </span>
                                     </label>
-                                    <input type="text" name="maGiamGia"
+                                    <input type="text" name="discountCode"
                                            class="d-input d-input-bordered" 
                                            placeholder="Enter code"/>
                                 </div>

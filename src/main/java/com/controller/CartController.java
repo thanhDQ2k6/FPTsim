@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,6 +36,13 @@ public class CartController {
         List<GioHang> cartItems = gioHangRepository.findByKhachHang_Email(nguoiDung.getEmail());
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("isLoggedIn", true);
+        
+        // Calculate total price
+        BigDecimal totalPrice = cartItems.stream()
+            .map(item -> item.getSim().getGiaBan())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        model.addAttribute("totalPrice", totalPrice);
+        
         return "views/cart";
     }
 
