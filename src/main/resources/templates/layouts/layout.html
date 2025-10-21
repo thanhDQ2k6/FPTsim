@@ -16,8 +16,8 @@
     <title th:replace="${title}">FPTsim</title>
     <script>
       // Theme initialization - light by default
-      const theme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', theme);
+      const theme = localStorage.getItem('theme') || 'light'
+      document.documentElement.setAttribute('data-theme', theme)
     </script>
   </head>
 
@@ -55,8 +55,8 @@
           <button
             aria-label="cart"
             class="d-btn d-btn-circle"
-            th:classappend="${!isLoggedIn} ? ' d-btn-disabled' : ''"
-            th:disabled="${!isLoggedIn}"
+            th:classappend="${!authenticate} ? ' d-btn-disabled' : ''"
+            th:disabled="${!authenticate}"
             type="button"
           >
             <span class="d-indicator">
@@ -87,20 +87,34 @@
                   <li><a data-lang="en" href="javascript:void(0);">EN</a></li>
                 </ul>
               </div>
-              <label class="inline-flex cursor-pointer items-center gap-1">
-                <i class="fa-solid fa-sun"></i>
-                <input class="d-toggle d-theme-controller" id="themeToggle" type="checkbox" />
-                <i class="fa-solid fa-moon"></i>
-              </label>
+                <label class="d-toggle text-base-content" th:attr="aria-label=#{theme.toggle}">
+                    <input class="d-theme-controller" type="checkbox" value="synthwave"/>
+                    <svg aria-label="sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2"></path>
+                            <path d="M12 20v2"></path>
+                            <path d="m4.93 4.93 1.41 1.41"></path>
+                            <path d="m17.66 17.66 1.41 1.41"></path>
+                            <path d="M2 12h2"></path>
+                            <path d="M20 12h2"></path>
+                            <path d="m6.34 17.66-1.41 1.41"></path>
+                            <path d="m19.07 4.93-1.41 1.41"></path>
+                        </g>
+                    </svg>
+                    <svg aria-label="moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        </g>
+                    </svg>
+                </label>
             </div>
-            <li th:if="${isLoggedIn}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
-            <li th:if="${isLoggedIn}"><a th:href="@{/coupons}" th:text="#{menuUser.coupons}"></a></li>
-            <li th:if="${isLoggedIn}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
+            <li th:if="${authenticate}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
+            <li th:if="${authenticate}"><a th:href="@{/coupons}" th:text="#{menuUser.coupons}"></a></li>
+            <li th:if="${authenticate}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
 
-            <li th:unless="${isLoggedIn}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
-            <li th:unless="${isLoggedIn}">
-              <button onclick="signUp.showModal()" th:text="#{signUp}"></button>
-            </li>
+            <li th:unless="${authenticate}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
+            <li th:unless="${authenticate}"><a th:href="@{/signup}" th:text="#{signUp}"></a></li>
           </ul>
         </div>
       </div>
@@ -132,63 +146,20 @@
         <p th:text="#{footer.copyright}"></p>
       </aside>
     </footer>
-
-    <dialog class="d-modal" id="signIn">
-      <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signin}">
-        <fieldset class="d-fieldset w-full p-3">
-          <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signIn}"></legend>
-
-          <label class="d-label" for="email">Email</label>
-          <input class="d-input d-validator w-full" id="email" name="email" required type="email" />
-
-          <label class="d-label mt-2" for="password" th:text="#{password}"></label>
-          <input class="d-input d-validator w-full" id="password" name="password" required type="password" />
-
-          <div class="d-card-actions mt-4 flex justify-end gap-2">
-            <button class="d-btn d-btn-neutral" th:text="#{signIn}" type="submit"></button>
-          </div>
-        </fieldset>
-      </form>
-      <form class="d-modal-backdrop" method="dialog">
-        <button class="hover:cursor-default"></button>
-      </form>
-    </dialog>
-
-    <dialog class="d-modal" id="signUp">
-      <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signup}">
-        <fieldset class="d-fieldset w-full p-3">
-          <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signUp}"></legend>
-
-          <label class="d-label" for="email">Email</label>
-          <input class="d-input d-validator w-full" id="email" name="email" required type="email" />
-
-          <label class="d-label mt-2" for="password" th:text="#{password}"></label>
-          <input class="d-input d-validator w-full" id="password" name="password" required type="password" />
-
-          <div class="d-card-actions mt-4 flex justify-end gap-2">
-            <button class="d-btn d-btn-neutral" th:text="#{signUp}" type="submit"></button>
-          </div>
-        </fieldset>
-      </form>
-      <form class="d-modal-backdrop" method="dialog">
-        <button class="hover:cursor-default"></button>
-      </form>
-    </dialog>
-
     <script src="/scripts/langSelector.js"></script>
     <script>
       // Theme toggle functionality
-      const themeToggle = document.getElementById('themeToggle');
-      const currentTheme = localStorage.getItem('theme') || 'light';
-      
+      const themeToggle = document.getElementById('themeToggle')
+      const currentTheme = localStorage.getItem('theme') || 'light'
+
       // Set initial state
-      themeToggle.checked = currentTheme === 'dark';
-      
-      themeToggle.addEventListener('change', function() {
-        const newTheme = this.checked ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-      });
+      themeToggle.checked = currentTheme === 'dark'
+
+      themeToggle.addEventListener('change', function () {
+        const newTheme = this.checked ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', newTheme)
+        localStorage.setItem('theme', newTheme)
+      })
     </script>
   </body>
 </html>

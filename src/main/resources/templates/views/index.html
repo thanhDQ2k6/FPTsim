@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi" data-theme="retro">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,35 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="min-h-screen bg-base-200">
-    <!-- Header/Navbar -->
-    <div class="navbar bg-base-100 shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto">
-            <div class="flex-1">
-                <a href="/" class="d-btn d-btn-ghost text-xl">
-                    <i class="fas fa-sim-card mr-2 text-primary"></i>
-                    FPTsim
-                </a>
-            </div>
-            <div class="flex-none gap-2">
-                <!-- Theme Toggle -->
-                <label class="swap swap-rotate">
-                    <input type="checkbox" class="d-theme-controller" />
-                    <i class="swap-on fas fa-moon text-xl"></i>
-                    <i class="swap-off fas fa-sun text-xl"></i>
-                </label>
-                
-                <a th:href="@{/signin}" class="d-btn d-btn-ghost">
-                    <i class="fas fa-sign-in-alt mr-2"></i>
-                    Đăng nhập
-                </a>
-                <a th:href="@{/signup}" class="d-btn d-btn-primary">
-                    <i class="fas fa-user-plus mr-2"></i>
-                    Đăng ký
-                </a>
-            </div>
-        </div>
-    </div>
-
     <!-- Hero Section -->
     <div class="hero min-h-[500px] bg-gradient-to-r from-primary to-secondary text-primary-content">
         <div class="hero-content text-center">
