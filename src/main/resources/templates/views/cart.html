@@ -1,132 +1,192 @@
 <!doctype html>
-<html th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
-  <title>Shopping Cart - FPTsim</title>
-  <main>
-    <div class="container mx-auto px-4 py-6">
-      <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold">
-          <i class="fa-solid fa-cart-shopping text-primary mr-2"></i>
-          Shopping Cart
-        </h1>
-        <a class="d-btn d-btn-ghost" th:href="@{/shop}">
-          <i class="fa-solid fa-arrow-left mr-2"></i>
-          Continue Shopping
-        </a>
-      </div>
-
-      <!-- Flash Messages -->
-      <div class="d-alert d-alert-success mb-4" th:if="${success}">
-        <i class="fa-solid fa-check-circle"></i>
-        <span th:text="${success}"></span>
-      </div>
-      <div class="d-alert d-alert-error mb-4" th:if="${error}">
-        <i class="fa-solid fa-exclamation-circle"></i>
-        <span th:text="${error}"></span>
-      </div>
-
-      <!-- Cart Items -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" th:if="${!cartItems.empty}">
-        <!-- Items List -->
-        <div class="lg:col-span-2 space-y-4">
-          <div class="d-card bg-base-100 shadow-md" th:each="item : ${cartItems}">
-            <div class="d-card-body">
-              <div class="flex items-center justify-between">
-                <div class="flex-1">
-                  <h3 class="text-lg font-semibold">
-                    <i class="fa-solid fa-sim-card text-primary mr-2"></i>
-                    <span th:text="${item.sim.msisdn}">0901234567</span>
-                  </h3>
-                  <div class="flex gap-4 mt-2 text-sm">
-                    <span class="d-badge d-badge-primary" th:text="${item.sim.nhaMang}">Viettel</span>
-                    <span class="d-badge d-badge-secondary" th:text="${item.sim.loaiSim}">TraTruoc</span>
-                  </div>
-                  <div class="mt-2 text-xs text-base-content/70" th:text="'ICCID: ' + ${item.sim.iccid}">
-                    ICCID: 89840000000000000000
-                  </div>
-                </div>
-                <div class="text-right">
-                  <div class="text-2xl font-bold text-success" th:text="${#numbers.formatDecimal(item.sim.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'">
-                    50,000 VND
-                  </div>
-                  <form method="post" th:action="@{/cart/remove}" class="mt-2">
-                    <input name="itemId" th:value="${item.id}" type="hidden" />
-                    <button class="d-btn d-btn-error d-btn-sm" type="submit">
-                      <i class="fa-solid fa-trash mr-1"></i>
-                      Remove
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: layout(~{::title}, ~{::content})}">
+<title>Shopping Cart - FPTsim</title>
+<div th:fragment="content">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-shopping-cart"></i>
+                Shopping Cart
+            </h1>
+            <a th:href="@{/shop}" class="d-btn d-btn-outline d-btn-primary">
+                <i class="fa-solid fa-arrow-left"></i>
+                Continue Shopping
+            </a>
         </div>
 
-        <!-- Checkout Form -->
-        <div class="lg:col-span-1">
-          <div class="d-card bg-base-100 shadow-md sticky top-4">
-            <div class="d-card-body">
-              <h2 class="d-card-title">
-                <i class="fa-solid fa-receipt mr-2"></i>
-                Order Summary
-              </h2>
-              
-              <div class="divider"></div>
-              
-              <form method="post" th:action="@{/cart/checkout}">
-                <!-- SIM Owner Information -->
-                <div class="space-y-4">
-                  <h3 class="font-semibold text-sm uppercase text-base-content/70">SIM Owner Information</h3>
-                  
-                  <div class="d-form-control">
-                    <label class="d-label">
-                      <span class="d-label-text"><i class="fa-solid fa-user mr-1"></i> Full Name *</span>
-                    </label>
-                    <input class="d-input d-input-bordered" name="ownerName" placeholder="Enter owner name" required type="text" />
-                  </div>
-                  
-                  <div class="d-form-control">
-                    <label class="d-label">
-                      <span class="d-label-text"><i class="fa-solid fa-phone mr-1"></i> Phone Number *</span>
-                    </label>
-                    <input class="d-input d-input-bordered" name="ownerPhone" placeholder="0901234567" required type="tel" />
-                  </div>
-                  
-                  <div class="d-form-control">
-                    <label class="d-label">
-                      <span class="d-label-text"><i class="fa-solid fa-location-dot mr-1"></i> Address *</span>
-                    </label>
-                    <textarea class="d-textarea d-textarea-bordered" name="ownerAddress" placeholder="Enter full address" required rows="3"></textarea>
-                  </div>
-                  
-                  <div class="d-form-control">
-                    <label class="d-label">
-                      <span class="d-label-text"><i class="fa-solid fa-tag mr-1"></i> Discount Code</span>
-                    </label>
-                    <input class="d-input d-input-bordered" name="discountCode" placeholder="Enter code (optional)" type="text" />
-                  </div>
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="d-alert d-alert-success mb-6">
+            <i class="fa-solid fa-circle-check"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div th:if="${error}" class="d-alert d-alert-error mb-6">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Empty Cart State -->
+        <div th:if="${cartItems == null or cartItems.empty}" class="text-center py-16">
+            <div class="d-card bg-base-100 shadow-xl max-w-md mx-auto">
+                <div class="d-card-body items-center text-center">
+                    <i class="fa-solid fa-cart-shopping text-6xl text-base-content/30 mb-4"></i>
+                    <h2 class="d-card-title text-2xl">Your cart is empty</h2>
+                    <p class="text-base-content/70">Start shopping to add items to your cart!</p>
+                    <div class="d-card-actions mt-4">
+                        <a th:href="@{/shop}" class="d-btn d-btn-primary">
+                            <i class="fa-solid fa-shop"></i>
+                            Browse SIMs
+                        </a>
+                    </div>
                 </div>
-                
-                <div class="divider"></div>
-                
-                <!-- Total -->
-                <div class="space-y-2">
-                  <div class="flex justify-between text-sm">
-                    <span>Items (<span th:text="${#lists.size(cartItems)}">3</span>):</span>
-                    <span th:text="${#numbers.formatDecimal(#aggregates.sum(cartItems.![sim.giaBan]), 0, 'COMMA', 0, 'POINT')} + ' VND'">150,000 VND</span>
-                  </div>
-                  <div class="flex justify-between items-center text-xl font-bold border-t pt-2">
-                    <span>Total:</span>
-                    <span class="text-success" th:text="${#numbers.formatDecimal(#aggregates.sum(cartItems.![sim.giaBan]), 0, 'COMMA', 0, 'POINT')} + ' VND'">150,000 VND</span>
-                  </div>
-                </div>
-                
-                <button class="d-btn d-btn-primary w-full mt-4" type="submit">
-                  <i class="fa-solid fa-check mr-2"></i>
-                  Place Order
-                </button>
-              </form>
             </div>
-          </div>
+        </div>
+
+        <!-- Cart with Items -->
+        <div th:if="${cartItems != null and !cartItems.empty}" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Cart Items List -->
+            <div class="lg:col-span-2 space-y-4">
+                <div th:each="item : ${cartItems}" class="d-card bg-base-100 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="d-card-body">
+                        <div class="flex flex-col sm:flex-row gap-4 justify-between">
+                            <!-- SIM Info -->
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold font-mono text-primary mb-2" 
+                                    th:text="${item.sim.msisdn}">0901234567</h3>
+                                <div class="flex flex-wrap gap-2 mb-2">
+                                    <span class="d-badge d-badge-primary" th:text="${item.sim.nhaMang}">Viettel</span>
+                                    <span class="d-badge d-badge-secondary" th:text="${item.sim.loaiSim}">TraTruoc</span>
+                                </div>
+                                <p class="text-sm text-base-content/60" th:text="'ICCID: ' + ${item.sim.iccid}">
+                                    ICCID: 89840000000000000000
+                                </p>
+                            </div>
+                            
+                            <!-- Price & Actions -->
+                            <div class="text-right flex flex-col justify-between">
+                                <div class="text-2xl font-bold text-success mb-2" 
+                                     th:text="${#numbers.formatDecimal(item.sim.giaBan, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                    50,000 VND
+                                </div>
+                                <form method="post" th:action="@{/cart/remove}">
+                                    <input type="hidden" name="itemId" th:value="${item.id}" />
+                                    <button type="submit" class="d-btn d-btn-error d-btn-sm">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Form -->
+            <div class="lg:col-span-1">
+                <div class="d-card bg-base-100 shadow-md sticky top-4">
+                    <div class="d-card-body">
+                        <h2 class="d-card-title mb-4">
+                            <i class="fa-solid fa-receipt"></i>
+                            Order Summary
+                        </h2>
+                        
+                        <form method="post" th:action="@{/cart/checkout}" class="space-y-4">
+                            <!-- SIM Owner Information -->
+                            <div class="space-y-3">
+                                <h3 class="font-semibold text-sm uppercase text-base-content/70">
+                                    <i class="fa-solid fa-user-pen"></i> SIM Owner Details
+                                </h3>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fa-solid fa-user"></i> Full Name *
+                                        </span>
+                                    </label>
+                                    <input type="text" 
+                                           name="ownerName" 
+                                           class="d-input d-input-bordered" 
+                                           placeholder="Enter full name" 
+                                           required />
+                                </div>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fa-solid fa-phone"></i> Phone Number *
+                                        </span>
+                                    </label>
+                                    <input type="tel" 
+                                           name="ownerPhone" 
+                                           class="d-input d-input-bordered" 
+                                           placeholder="0901234567" 
+                                           pattern="[0-9]{10}"
+                                           required />
+                                </div>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fa-solid fa-location-dot"></i> Address *
+                                        </span>
+                                    </label>
+                                    <textarea name="ownerAddress" 
+                                              class="d-textarea d-textarea-bordered" 
+                                              placeholder="Enter full address" 
+                                              rows="2" 
+                                              required></textarea>
+                                </div>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fa-solid fa-tag"></i> Discount Code
+                                        </span>
+                                    </label>
+                                    <input type="text" 
+                                           name="discountCode" 
+                                           class="d-input d-input-bordered" 
+                                           placeholder="Optional" />
+                                </div>
+                            </div>
+                            
+                            <div class="divider my-2"></div>
+                            
+                            <!-- Order Total -->
+                            <div class="space-y-2 bg-base-200 p-4 rounded-lg">
+                                <div class="flex justify-between text-sm">
+                                    <span>Items:</span>
+                                    <span class="font-semibold" th:text="${#lists.size(cartItems)}">0</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span>Subtotal:</span>
+                                    <span class="font-semibold" 
+                                          th:text="${#numbers.formatDecimal(#aggregates.sum(cartItems.![sim.giaBan]), 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                        0 VND
+                                    </span>
+                                </div>
+                                <div class="divider my-1"></div>
+                                <div class="flex justify-between items-center text-lg font-bold">
+                                    <span>Total:</span>
+                                    <span class="text-success" 
+                                          th:text="${#numbers.formatDecimal(#aggregates.sum(cartItems.![sim.giaBan]), 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                        0 VND
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="d-btn d-btn-primary w-full">
+                                <i class="fa-solid fa-check"></i>
+                                Place Order
+                            </button>
+                            
+                            <p class="text-xs text-center text-base-content/60">
+                                By placing order, you agree to our Terms & Conditions
+                            </p>
+                        </form>
+                    </div>
+                </div>
         </div>
       </div>
 
