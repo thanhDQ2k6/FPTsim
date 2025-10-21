@@ -50,6 +50,8 @@ public class CartController {
 
     @PostMapping("/checkout")
     public String checkout(@RequestParam String ownerName,
+                          @RequestParam String ownerCccd,
+                          @RequestParam String ownerDateOfBirth,
                           @RequestParam String ownerPhone,
                           @RequestParam String ownerAddress,
                           @RequestParam(required = false) String discountCode,
@@ -62,7 +64,8 @@ public class CartController {
         
         try {
             HoaDon order = orderService.createOrderFromCart(
-                nguoiDung.getEmail(), ownerName, ownerPhone, ownerAddress, discountCode);
+                nguoiDung.getEmail(), ownerName, ownerCccd, ownerDateOfBirth, 
+                ownerPhone, ownerAddress, discountCode);
             
             redirectAttributes.addFlashAttribute("success", 
                 "Order created successfully: " + order.getMaHD());

@@ -38,6 +38,7 @@ public class OrderService {
      */
     @Transactional
     public HoaDon createOrderFromCart(String customerEmail, String ownerName, 
+                                      String ownerCccd, String ownerDateOfBirth,
                                       String ownerPhone, String ownerAddress,
                                       String discountCode) {
         NguoiDung customer = nguoiDungRepository.findById(customerEmail)
@@ -51,6 +52,12 @@ public class OrderService {
         // Validate owner info
         if (ownerName == null || ownerName.isBlank()) {
             throw new BusinessException("INVALID_OWNER", "Owner name is required");
+        }
+        if (ownerCccd == null || ownerCccd.isBlank()) {
+            throw new BusinessException("INVALID_OWNER", "Owner CCCD is required");
+        }
+        if (ownerDateOfBirth == null || ownerDateOfBirth.isBlank()) {
+            throw new BusinessException("INVALID_OWNER", "Owner date of birth is required");
         }
         if (ownerPhone == null || ownerPhone.isBlank()) {
             throw new BusinessException("INVALID_OWNER", "Owner phone is required");
@@ -84,15 +91,20 @@ public class OrderService {
             detail.setGiaCuoi(sim.getGiaBan()); // Before discount
             order.getHoaDonChiTiets().add(detail);
             
-            // Create SIM owner info - requires CCCD but we use phone as placeholder for now
+            // Create SIM owner info with proper CCCD
             ThongTinChuSim ownerInfo = new ThongTinChuSim();
             ownerInfo.setSim(sim);
             ownerInfo.setHoaDon(order);
             ownerInfo.setHoTen(ownerName);
-            ownerInfo.setCccd(ownerPhone); // Using phone as CCCD placeholder
+            ownerInfo.setCccd(ownerCccd); // Now using proper CCCD
             ownerInfo.setSdt(ownerPhone);
             ownerInfo.setDiaChi(ownerAddress);
-            ownerInfo.setNgaySinh(java.time.LocalDate.now().minusYears(20)); // Default age 20
+            // Parse date of birth
+            try {
+                ownerInfo.setNgaySinh(java.time.LocalDate.parse(ownerDateOfBirth));
+            } catch (Exception e) {
+                throw new BusinessException("INVALID_DATE", "Invalid date of birth format");
+            }
             thongTinChuSimRepository.save(ownerInfo);
             
             // Update SIM status to DaBan

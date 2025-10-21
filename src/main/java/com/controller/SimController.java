@@ -95,12 +95,25 @@ public class SimController {
         PageRequest pageable = PageRequest.of(page, size, sort);
         
         Page<com.model.Sim> sims;
+        // Apply filters based on parameters
+        boolean hasFilters = (nhaMang != null && !nhaMang.isBlank()) || 
+                            (loaiSim != null && !loaiSim.isBlank()) || 
+                            (trangThai != null && !trangThai.isBlank());
+        
         if (isAdmin) {
-            // Admin sees all SIMs
-            sims = simService.getAllSims(pageable);
+            // Admin sees all SIMs with optional filters
+            if (hasFilters) {
+                sims = simService.getFilteredSims(nhaMang, loaiSim, trangThai, pageable);
+            } else {
+                sims = simService.getAllSims(pageable);
+            }
         } else {
-            // Staff sees only SIMs they imported
-            sims = simService.getSimsByStaff(nguoiDung.getEmail(), pageable);
+            // Staff sees only SIMs they imported with optional filters
+            if (hasFilters) {
+                sims = simService.getFilteredSimsByStaff(nguoiDung.getEmail(), nhaMang, loaiSim, trangThai, pageable);
+            } else {
+                sims = simService.getSimsByStaff(nguoiDung.getEmail(), pageable);
+            }
         }
         
         model.addAttribute("sims", sims);
