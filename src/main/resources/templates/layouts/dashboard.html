@@ -1,5 +1,5 @@
 <!doctype html>
-<html data-theme="retro" lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
@@ -14,6 +14,11 @@
     />
     <link href="/images/logo.svg" rel="icon"/>
     <title th:replace="${title}"></title>
+    <script>
+      // Theme initialization - load from localStorage before page renders
+      const theme = localStorage.getItem('theme') || 'retro';
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
 </head>
 
 <body class="d-drawer d-drawer-open">
@@ -141,5 +146,25 @@
         </ul>
     </div>
 </div>
+
+<script>
+  // Theme initialization and persistence
+  (function() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    const themeToggle = document.querySelector('.d-theme-controller');
+    if (themeToggle) {
+      // Set initial state: checked = synthwave (dark), unchecked = retro (light)
+      themeToggle.checked = (theme === 'synthwave' || theme === 'dark');
+      
+      themeToggle.addEventListener('change', function() {
+        const newTheme = this.checked ? 'synthwave' : 'retro';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    }
+  })();
+</script>
 </body>
 </html>
