@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::content})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPTsim - Sim số đẹp giá rẻ</title>
-    <link href="/styles/tailwind.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="min-h-screen bg-base-200">
+<body>
+<div th:fragment="content">
     <!-- Hero Section -->
     <div class="hero min-h-[500px] bg-gradient-to-r from-primary to-secondary text-primary-content">
         <div class="hero-content text-center">
@@ -119,41 +117,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer footer-center p-10 bg-base-100 text-base-content">
-        <div>
-            <div class="text-3xl font-bold text-primary mb-4">
-                <i class="fas fa-sim-card mr-2"></i>
-                FPTsim
-            </div>
-            <p class="font-medium">Sim số đẹp giá rẻ - Uy tín chất lượng</p>
-            <p>&copy; 2025 FPTsim. Powered by FPT University</p>
-        </div>
-        <div>
-            <div class="grid grid-flow-col gap-4">
-                <a href="#" class="d-link d-link-hover"><i class="fab fa-facebook text-2xl"></i></a>
-                <a href="#" class="d-link d-link-hover"><i class="fab fa-twitter text-2xl"></i></a>
-                <a href="#" class="d-link d-link-hover"><i class="fab fa-youtube text-2xl"></i></a>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Theme initialization and toggle
-        const theme = localStorage.getItem('theme') || 'retro';
-        document.documentElement.setAttribute('data-theme', theme);
-        
-        const themeToggle = document.querySelector('.d-theme-controller');
-        if (themeToggle) {
-            themeToggle.checked = (theme === 'synthwave' || theme === 'dark');
-            
-            themeToggle.addEventListener('change', function() {
-                const newTheme = this.checked ? 'synthwave' : 'retro';
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-            });
-        }
-    </script>
+</div>
 </body>
 </html>

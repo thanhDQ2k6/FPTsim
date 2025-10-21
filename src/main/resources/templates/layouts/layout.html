@@ -51,29 +51,22 @@
       </div>
 
       <div class="d-navbar-end inline-flex items-center gap-4">
-        <div class="d-dropdown d-dropdown-end">
-          <button
-            aria-label="cart"
-            class="d-btn d-btn-circle"
-            th:classappend="${!authenticate} ? ' d-btn-disabled' : ''"
-            th:disabled="${!authenticate}"
-            type="button"
-          >
-            <span class="d-indicator">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span class="d-badge d-badge-xs d-indicator-item">0</span>
-            </span>
-          </button>
-          <div class="d-card d-dropdown-content bg-base-200 shadow">
-            <div class="d-card-body w-52">
-              <div class="font-bold">In cart: 8 Items</div>
-              <div class="text-warning">Subtotal: $999</div>
-              <div class="d-card-actions">
-                <a class="d-btn d-btn-primary d-btn-block" th:href="@{/cart}">View cart</a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Cart Button - Only navigate to cart page -->
+        <a th:href="@{/cart}" 
+           class="d-btn d-btn-circle d-btn-ghost"
+           th:classappend="${!isLoggedIn} ? ' d-btn-disabled' : ''"
+           th:if="${!isLoggedIn}"
+           aria-label="cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <a th:href="@{/cart}" 
+           class="d-btn d-btn-circle d-btn-ghost"
+           th:if="${isLoggedIn}"
+           aria-label="cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        
+        <!-- User Profile Dropdown -->
         <div class="d-dropdown d-dropdown-end">
           <button aria-label="profile" class="d-btn d-btn-circle inline-flex items-center" type="button">
             <i class="fa-solid fa-user"></i>
@@ -109,12 +102,12 @@
                     </svg>
                 </label>
             </div>
-            <li th:if="${authenticate}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
-            <li th:if="${authenticate}"><a th:href="@{/coupons}" th:text="#{menuUser.coupons}"></a></li>
-            <li th:if="${authenticate}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
+            <li th:if="${isLoggedIn}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
+            <li th:if="${isLoggedIn}"><a th:href="@{/orders}" th:text="#{menuUser.orders}">My Orders</a></li>
+            <li th:if="${isLoggedIn}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
 
-            <li th:unless="${authenticate}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
-            <li th:unless="${authenticate}"><a th:href="@{/signup}" th:text="#{signUp}"></a></li>
+            <li th:unless="${isLoggedIn}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
+            <li th:unless="${isLoggedIn}"><a th:href="@{/signup}" th:text="#{signUp}"></a></li>
           </ul>
         </div>
       </div>

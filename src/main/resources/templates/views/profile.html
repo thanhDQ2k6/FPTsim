@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::content})}">
+<head>
+    <title>My Profile - FPTsim</title>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">My Profile</h1>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Profile Form -->
+        <div class="d-card bg-base-100 shadow-lg max-w-3xl">
+            <div class="d-card-body">
+                <h2 class="d-card-title mb-4">
+                    <i class="fa-solid fa-user-edit mr-2"></i>
+                    Edit Profile Information
+                </h2>
+                
+                <form method="post" th:action="@{/profile}" th:object="${user}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Personal Information -->
+                        <div class="md:col-span-2">
+                            <h3 class="text-lg font-semibold mb-3">Personal Information</h3>
+                        </div>
+                        
+                        <div class="d-form-control">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-user mr-2"></i>Full Name *
+                                </span>
+                            </label>
+                            <input type="text" name="hoTen" th:value="*{hoTen}"
+                                   class="d-input d-input-bordered" required/>
+                        </div>
+
+                        <div class="d-form-control">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-envelope mr-2"></i>Email
+                                </span>
+                            </label>
+                            <input type="email" th:value="*{email}"
+                                   class="d-input d-input-bordered bg-base-200" disabled/>
+                            <label class="d-label">
+                                <span class="d-label-text-alt">Email cannot be changed</span>
+                            </label>
+                        </div>
+
+                        <div class="d-form-control">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-phone mr-2"></i>Phone Number
+                                </span>
+                            </label>
+                            <input type="tel" name="sdt" th:value="*{sdt}"
+                                   class="d-input d-input-bordered" pattern="[0-9]{10}"/>
+                        </div>
+
+                        <div class="d-form-control">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-calendar mr-2"></i>Date of Birth
+                                </span>
+                            </label>
+                            <input type="date" name="ngaySinh" th:value="*{ngaySinh}"
+                                   class="d-input d-input-bordered"/>
+                        </div>
+
+                        <div class="d-form-control md:col-span-2">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-map-marker-alt mr-2"></i>Address
+                                </span>
+                            </label>
+                            <textarea name="diaChi" th:text="*{diaChi}"
+                                      class="d-textarea d-textarea-bordered" rows="3"></textarea>
+                        </div>
+
+                        <!-- Password Change -->
+                        <div class="md:col-span-2">
+                            <div class="divider">Change Password (Optional)</div>
+                        </div>
+
+                        <div class="d-form-control">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-lock mr-2"></i>New Password
+                                </span>
+                            </label>
+                            <input type="password" name="newPassword"
+                                   class="d-input d-input-bordered" placeholder="Leave blank to keep current password"
+                                   minlength="6"/>
+                            <label class="d-label">
+                                <span class="d-label-text-alt">Leave empty to keep current password</span>
+                            </label>
+                        </div>
+
+                        <div class="d-form-control">
+                            <label class="d-label">
+                                <span class="d-label-text">
+                                    <i class="fa-solid fa-lock mr-2"></i>Confirm New Password
+                                </span>
+                            </label>
+                            <input type="password" name="confirmPassword"
+                                   class="d-input d-input-bordered" placeholder="Confirm new password"/>
+                        </div>
+                    </div>
+
+                    <div class="d-card-actions justify-end mt-6">
+                        <a href="/" class="d-btn d-btn-ghost">Cancel</a>
+                        <button type="submit" class="d-btn d-btn-primary">
+                            <i class="fa-solid fa-save mr-2"></i>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,264 +1,126 @@
 <!doctype html>
 <html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
-<title th:text="#{nav.accounts}"></title>
+<title th:text="#{nav.accounts}">Account Management</title>
 <main>
-    <div class="d-tabs d-tabs-lift min-h-full w-full">
-        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.accounts}" th:checked="${activeTab == 'list'}" type="radio"/>
-        <div class="d-tab-content bg-base-100 border-base-300 p-6">
-            <div class="flex items-center justify-between">
-                <div class="w-2/3">
-                    <fieldset class="d-fieldset">
-                        <legend class="d-fieldset-legend text-lg font-bold" th:text="#{accounts.legend}"></legend>
-                        <form class="flex items-center gap-3" method="get" th:action="@{/dashboard/accounts}">
-                            <label class="d-label" for="accountFilter" th:text="#{accounts.select.label}"></label>
-                            <select
-                                    class="d-select d-select-bordered w-full"
-                                    id="accountFilter"
-                                    name="role"
-                                    th:attr="aria-label=#{accounts.select.aria}"
-                            >
-                                <option th:selected="${roleFilter == null or roleFilter == ''}" th:text="#{accounts.filter.all}" value=""></option>
-                                <option th:selected="${roleFilter == 'admin'}" th:text="#{accounts.filter.admin}" value="admin"></option>
-                                <option th:selected="${roleFilter == 'staff'}" th:text="#{accounts.filter.staff}" value="staff"></option>
-                                <option th:selected="${roleFilter == 'user'}" th:text="#{accounts.filter.user}" value="user"></option>
-                            </select>
-                            <button class="d-btn d-btn-primary d-btn-sm" type="submit">Apply</button>
-                            <a class="d-btn d-btn-ghost d-btn-sm" th:href="@{/dashboard/accounts}" th:text="#{accounts.reset}"></a>
-                        </form>
-                    </fieldset>
-                </div>
-
-                <div class="flex w-1/3 justify-end">
-                    <a class="d-btn d-btn-primary" th:href="@{/dashboard/accounts/new}"
-                       th:text="#{accounts.create}"></a>
-                </div>
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header with Filter and Create Button -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold mb-4">Account Management</h1>
+                <fieldset class="d-fieldset max-w-2xl">
+                    <legend class="d-fieldset-legend text-lg font-bold" th:text="#{accounts.legend}">Filter Accounts</legend>
+                    <form class="flex items-center gap-3" method="get" th:action="@{/dashboard/accounts}">
+                        <label class="d-label" for="accountFilter" th:text="#{accounts.select.label}">Role:</label>
+                        <select class="d-select d-select-bordered w-full"
+                                id="accountFilter"
+                                name="role"
+                                th:attr="aria-label=#{accounts.select.aria}">
+                            <option th:selected="${roleFilter == null or roleFilter == ''}" 
+                                    th:text="#{accounts.filter.all}" value="">All</option>
+                            <option th:selected="${roleFilter == 'admin'}" 
+                                    th:text="#{accounts.filter.admin}" value="admin">Admin</option>
+                            <option th:selected="${roleFilter == 'staff'}" 
+                                    th:text="#{accounts.filter.staff}" value="staff">Staff</option>
+                            <option th:selected="${roleFilter == 'user'}" 
+                                    th:text="#{accounts.filter.user}" value="user">User</option>
+                        </select>
+                        <button class="d-btn d-btn-primary d-btn-sm" type="submit">Apply</button>
+                        <a class="d-btn d-btn-ghost d-btn-sm" th:href="@{/dashboard/accounts}" 
+                           th:text="#{accounts.reset}">Reset</a>
+                    </form>
+                </fieldset>
             </div>
-
-            <div class="mt-6 overflow-x-auto">
-                <table class="d-table w-full">
-                    <thead>
-                    <tr>
-                        <th class="text-left" th:text="#{accounts.table.no}"></th>
-                        <th class="text-left" th:text="#{accounts.table.fullName}"></th>
-                        <th class="text-left" th:text="#{accounts.table.email}"></th>
-                        <th class="text-left" th:text="#{accounts.table.phone}"></th>
-                        <th class="text-left" th:text="#{accounts.table.role}"></th>
-                        <th class="text-left" th:text="#{table.action}"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="acct, idx : ${accounts}">
-                        <td th:text="${idx.index + 1}"></td>
-                        <td th:text="${acct.fullName}"></td>
-                        <td th:text="${acct.email}"></td>
-                        <td th:text="${acct.phone}"></td>
-                        <td th:text="${acct.role}"></td>
-                        <td>
-                            <div class="flex gap-2">
-                                <a class="d-btn d-btn-sm" th:href="@{/dashboard/accounts/{id}(id=${acct.id})}"
-                                   th:text="#{action.detail}"></a>
-                                <form method="post" th:action="@{/dashboard/accounts}" onsubmit="return confirm('Xoá tài khoản này?');">
-                                    <input name="email" th:value="${acct.email}" type="hidden"/>
-                                    <input name="action" type="hidden" value="delete"/>
-                                    <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}" type="submit"></button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <!-- Empty state when accounts list exists but has no items -->
-                    <tr th:if="${accounts != null} and ${#lists.isEmpty(accounts)}">
-                        <td class="text-center" colspan="6" th:text="#{accounts.empty}">No accounts found</td>
-                    </tr>
-
-                    <!-- Demo rows shown when accounts is not provided (FE demo) -->
-                    <tr th:if="${accounts == null}">
-                        <td>1</td>
-                        <td>Nguyen Van A</td>
-                        <td>a@example.com</td>
-                        <td>0123456789</td>
-                        <td>User</td>
-                        <td>
-                            <div class="flex gap-2">
-                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
-                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
-                                        type="button"></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${accounts == null}">
-                        <td>2</td>
-                        <td>Le Thi B</td>
-                        <td>b@example.com</td>
-                        <td>0987654321</td>
-                        <td>Admin</td>
-                        <td>
-                            <div class="flex gap-2">
-                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
-                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
-                                        type="button"></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${accounts == null}">
-                        <td>3</td>
-                        <td>Tran Van C</td>
-                        <td>c@example.com</td>
-                        <td>0912345678</td>
-                        <td>User</td>
-                        <td>
-                            <div class="flex gap-2">
-                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
-                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
-                                        type="button"></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${accounts == null}">
-                        <td>4</td>
-                        <td>Pham Thi D</td>
-                        <td>d@example.com</td>
-                        <td>0901234567</td>
-                        <td>Staff</td>
-                        <td>
-                            <div class="flex gap-2">
-                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
-                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
-                                        type="button"></button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr th:if="${accounts == null}">
-                        <td>5</td>
-                        <td>Hoang Van E</td>
-                        <td>e@example.com</td>
-                        <td>0934567890</td>
-                        <td>User</td>
-                        <td>
-                            <div class="flex gap-2">
-                                <button class="d-btn d-btn-sm" th:text="#{action.detail}" type="button"></button>
-                                <button class="d-btn d-btn-sm d-btn-error" th:text="#{action.delete}"
-                                        type="button"></button>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-6 flex items-center justify-center gap-4" th:with="p=${page}">
-                <div class="flex gap-2">
-                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.first} ? ' d-btn-disabled' : ''"
-                       th:href="@{/dashboard/accounts(page=0, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.first}"></a>
-                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.first} ? ' d-btn-disabled' : ''"
-                       th:href="@{/dashboard/accounts(page=${p.number-1}, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.prev}"></a>
-                </div>
-
-                <div class="hidden gap-2 sm:flex">
-                    <span class="d-btn d-btn-sm" th:text="${p.number + 1}"></span>
-                </div>
-
-                <div class="flex gap-2">
-                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.last} ? ' d-btn-disabled' : ''"
-                       th:href="@{/dashboard/accounts(page=${p.number+1}, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.next}"></a>
-                    <a class="d-btn d-btn-sm d-btn-outline" th:classappend="${p.last} ? ' d-btn-disabled' : ''"
-                       th:href="@{/dashboard/accounts(page=${p.totalPages-1}, size=${p.size}, role=${roleFilter})}" th:text="#{pagination.last}"></a>
-                </div>
+            <div>
+                <a class="d-btn d-btn-primary" th:href="@{/dashboard/accounts/new}">
+                    <i class="fa-solid fa-plus mr-2"></i>
+                    <span th:text="#{accounts.create}">Create Account</span>
+                </a>
             </div>
         </div>
 
-        <input class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.detail}" th:checked="${activeTab == 'detail'}" type="radio"/>
-        <div class="d-tab-content bg-base-100 border-base-300 p-6">
-            <div th:if="${error}" class="d-alert d-alert-error mb-3" th:text="${error}"></div>
-            <form class="w-full" method="post" th:action="@{/dashboard/accounts}">
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Credentials -->
-                    <fieldset class="d-fieldset">
-                        <legend class="d-fieldset-legend" th:text="#{form.credentials}"></legend>
-                        <div class="mt-2 grid grid-cols-2 gap-4">
-                            <div class="col-span-2">
-                                <label class="d-label" for="email" th:text="#{form.email}"></label>
-                                <input class="d-input d-input-bordered w-full" id="email" name="email" placeholder=""
-                                       th:value="${detail != null} ? ${detail.email} : ''"
-                                       type="email"/>
-                            </div>
-                            <div class="col-span-1">
-                                <label class="d-label" for="password" th:text="#{form.password}"></label>
-                                <input class="d-input d-input-bordered w-full" id="password" name="password"
-                                       placeholder="••••••"
-                                       type="password"/>
-                            </div>
-                            <!-- Role -->
-                            <div class="col-span-1">
-                                <label class="d-label" for="role" th:text="#{form.role}"></label>
-                                <select class="d-select d-select-bordered w-full" id="role" name="role">
-                                    <option th:selected="${detail == null || detail.vaiTro == null}" th:text="#{accounts.filter.all}" value=""></option>
-                                    <option th:selected="${detail != null && detail.vaiTro?.name() == 'Admin'}" th:text="#{accounts.filter.admin}" value="admin"></option>
-                                    <option th:selected="${detail != null && detail.vaiTro?.name() == 'NhanVien'}" th:text="#{accounts.filter.staff}" value="staff"></option>
-                                    <option th:selected="${detail != null && detail.vaiTro?.name() == 'KhachHang'}" th:text="#{accounts.filter.user}" value="user"></option>
-                                </select>
-                            </div>
-                        </div>
-                    </fieldset>
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
 
-                    <!-- Personal info -->
-                    <fieldset class="d-fieldset">
-                        <legend class="d-fieldset-legend" th:text="#{form.personal}"></legend>
-                        <div class="mt-2 grid grid-cols-3 gap-4">
-                            <div class="col-span-3">
-                                <label class="d-label" for="fullName" th:text="#{form.fullName}"></label>
-                                <input class="d-input d-input-bordered w-full" id="fullName" name="fullName"
-                                       th:value="${detail != null} ? ${detail.hoTen} : ''"
-                                       type="text"/>
-                            </div>
-                            <div class="col-span-2">
-                                <label class="d-label" for="phone" th:text="#{form.phone}"></label>
-                                <input class="d-input d-input-bordered w-full" id="phone" name="phone" th:value="${detail != null} ? ${detail.sdt} : ''" type="tel"/>
-                            </div>
-                            <div class="col-span-1">
-                                <label class="d-label" for="dob" th:text="#{form.dob}"></label>
-                                <input class="d-input d-input-bordered w-full" id="dob" name="dob" th:value="${detail != null && detail.ngaySinh != null} ? ${detail.ngaySinh} : ''" type="date"/>
-                            </div>
-                        </div>
-                    </fieldset>
+        <!-- Accounts Table -->
+        <div class="d-card bg-base-100 shadow-md">
+            <div class="d-card-body">
+                <div class="overflow-x-auto">
+                    <table class="d-table w-full">
+                        <thead>
+                        <tr>
+                            <th class="text-left" th:text="#{accounts.table.no}">No</th>
+                            <th class="text-left" th:text="#{accounts.table.fullName}">Full Name</th>
+                            <th class="text-left" th:text="#{accounts.table.email}">Email</th>
+                            <th class="text-left" th:text="#{accounts.table.phone}">Phone</th>
+                            <th class="text-left" th:text="#{accounts.table.role}">Role</th>
+                            <th class="text-left" th:text="#{table.action}">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="acct, idx : ${accounts}">
+                            <td th:text="${idx.index + 1}">1</td>
+                            <td th:text="${acct.hoTen}">John Doe</td>
+                            <td th:text="${acct.email}">john@example.com</td>
+                            <td th:text="${acct.sdt}">0123456789</td>
+                            <td>
+                                <span class="d-badge d-badge-sm" 
+                                      th:classappend="${acct.vaiTro?.name() == 'Admin'} ? 'd-badge-error' : 
+                                                     (${acct.vaiTro?.name() == 'NhanVien'} ? 'd-badge-warning' : 'd-badge-info')"
+                                      th:text="${acct.vaiTro}">User</span>
+                            </td>
+                            <td>
+                                <a class="d-btn d-btn-sm d-btn-primary" 
+                                   th:href="@{/dashboard/accounts/{email}/edit(email=${acct.email})}">
+                                    <i class="fa-solid fa-edit"></i>
+                                    <span th:text="#{action.edit}">Edit</span>
+                                </a>
+                            </td>
+                        </tr>
 
-                    <!-- Address -->
-                    <fieldset class="d-fieldset col-span-2">
-                        <legend class="d-fieldset-legend" th:text="#{form.addressLegend}"></legend>
-                        <div class="mt-2">
-                            <label class="d-label sr-only" for="address" th:text="#{form.address}"></label>
-                            <textarea
-                                    class="d-textarea d-textarea-bordered w-full"
-                                    id="address"
-                                    name="address"
-                                    placeholder=""
-                                    rows="4"
-                                    th:attr="aria-label=#{form.address}"
-                                    th:text="${detail != null} ? ${detail.diaChi} : ''"
-                            ></textarea>
-                        </div>
-                    </fieldset>
+                        <!-- Empty state -->
+                        <tr th:if="${accounts != null && #lists.isEmpty(accounts)}">
+                            <td class="text-center" colspan="6" th:text="#{accounts.empty}">No accounts found</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="mt-4 flex flex-wrap justify-end gap-2">
-                    <button
-                            class="d-btn d-btn-primary"
-                            name="action"
-                            th:text="#{form.create}"
-                            type="submit"
-                            value="create"
-                    ></button>
-                    <button class="d-btn d-btn-ghost" th:text="#{form.reset}" type="reset"></button>
-                    <button class="d-btn" name="action" th:text="#{form.update}" type="submit" value="update"></button>
-                    <button
-                            class="d-btn d-btn-error"
-                            name="action"
-                            th:text="#{form.delete}"
-                            type="submit"
-                            value="delete"
-                    ></button>
+                <!-- Pagination -->
+                <div class="mt-6 flex items-center justify-center gap-4" th:if="${page != null}">
+                    <div class="flex gap-2">
+                        <a class="d-btn d-btn-sm d-btn-outline" 
+                           th:classappend="${page.first} ? ' d-btn-disabled' : ''"
+                           th:href="@{/dashboard/accounts(page=0, size=${page.size}, role=${roleFilter})}" 
+                           th:text="#{pagination.first}">First</a>
+                        <a class="d-btn d-btn-sm d-btn-outline" 
+                           th:classappend="${page.first} ? ' d-btn-disabled' : ''"
+                           th:href="@{/dashboard/accounts(page=${page.number-1}, size=${page.size}, role=${roleFilter})}" 
+                           th:text="#{pagination.prev}">Prev</a>
+                    </div>
+
+                    <div class="hidden gap-2 sm:flex">
+                        <span class="d-btn d-btn-sm" th:text="${page.number + 1} + ' / ' + ${page.totalPages}">1 / 5</span>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <a class="d-btn d-btn-sm d-btn-outline" 
+                           th:classappend="${page.last} ? ' d-btn-disabled' : ''"
+                           th:href="@{/dashboard/accounts(page=${page.number+1}, size=${page.size}, role=${roleFilter})}" 
+                           th:text="#{pagination.next}">Next</a>
+                        <a class="d-btn d-btn-sm d-btn-outline" 
+                           th:classappend="${page.last} ? ' d-btn-disabled' : ''"
+                           th:href="@{/dashboard/accounts(page=${page.totalPages-1}, size=${page.size}, role=${roleFilter})}" 
+                           th:text="#{pagination.last}">Last</a>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </main>
