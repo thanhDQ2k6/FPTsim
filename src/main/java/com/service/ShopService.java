@@ -23,7 +23,7 @@ public class ShopService {
     private final SimRepository simRepository;
     
     /**
-     * Get available SIMs for shop with multi-sort and pagination.
+     * Get available SIMs for shop with filtering and pagination.
      * @param nhaMang filter by provider (null for all)
      * @param loaiSim filter by type (null for all)
      * @param sortBy sort field (price, nice, etc.)
@@ -46,19 +46,42 @@ public class ShopService {
             orders.add(Sort.Order.desc("giaBan"));
         }
         
-        // Add multi-sort for filtering
-        if (nhaMang != null && !nhaMang.isBlank()) {
-            orders.add(Sort.Order.asc("nhaMang"));
-        }
-        if (loaiSim != null && !loaiSim.isBlank()) {
-            orders.add(Sort.Order.asc("loaiSim"));
-        }
-        
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
         
-        // For now, just get all available SIMs
-        // TODO: Add specification for dynamic filtering
-        return simRepository.findByTrangThai(Sim.TrangThai.SanSang, pageable);
+        // Apply filters - if both filters provided, both must match
+        if (nhaMang != null && !nhaMang.isBlank() && loaiSim != null && !loaiSim.isBlank()) {
+            // Filter by both provider and type
+            try {
+                Sim.NhaMang providerEnum = Sim.NhaMang.valueOf(nhaMang);
+                Sim.LoaiSim typeEnum = Sim.LoaiSim.valueOf(loaiSim);
+                return simRepository.findByTrangThaiAndNhaMangAndLoaiSim(
+                    Sim.TrangThai.SanSang, providerEnum, typeEnum, pageable);
+            } catch (IllegalArgumentException e) {
+                // Invalid enum value, return empty page
+                return Page.empty(pageable);
+            }
+        } else if (nhaMang != null && !nhaMang.isBlank()) {
+            // Filter by provider only
+            try {
+                Sim.NhaMang providerEnum = Sim.NhaMang.valueOf(nhaMang);
+                return simRepository.findByTrangThaiAndNhaMang(
+                    Sim.TrangThai.SanSang, providerEnum, pageable);
+            } catch (IllegalArgumentException e) {
+                return Page.empty(pageable);
+            }
+        } else if (loaiSim != null && !loaiSim.isBlank()) {
+            // Filter by type only
+            try {
+                Sim.LoaiSim typeEnum = Sim.LoaiSim.valueOf(loaiSim);
+                return simRepository.findByTrangThaiAndLoaiSim(
+                    Sim.TrangThai.SanSang, typeEnum, pageable);
+            } catch (IllegalArgumentException e) {
+                return Page.empty(pageable);
+            }
+        } else {
+            // No filters, get all available SIMs
+            return simRepository.findByTrangThai(Sim.TrangThai.SanSang, pageable);
+        }
     }
     
     /**
