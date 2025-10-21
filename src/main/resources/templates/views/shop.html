@@ -59,9 +59,8 @@
                         </label>
                         <select name="sortBy" class="d-select d-select-bordered w-full">
                             <option value="">Latest</option>
-                            <option value="price-asc" th:selected="${sortBy == 'price-asc'}">Price: Low to High</option>
+                            <option value="price" th:selected="${sortBy == 'price'}">Price: Low to High</option>
                             <option value="price-desc" th:selected="${sortBy == 'price-desc'}">Price: High to Low</option>
-                            <option value="number-asc" th:selected="${sortBy == 'number-asc'}">Number: Ascending</option>
                         </select>
                     </div>
 

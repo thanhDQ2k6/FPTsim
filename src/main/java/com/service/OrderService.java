@@ -73,7 +73,7 @@ public class OrderService {
         
         BigDecimal totalAmount = BigDecimal.ZERO;
         
-        // Add order details and SIM owner info
+        // Add order details - prepare but don't save ThongTinChuSim yet
         for (GioHang cartItem : cartItems) {
             Sim sim = cartItem.getSim();
             
@@ -91,10 +91,53 @@ public class OrderService {
             detail.setGiaCuoi(sim.getGiaBan()); // Before discount
             order.getHoaDonChiTiets().add(detail);
             
+            // Update SIM status to DaBan
+            sim.setTrangThai(Sim.TrangThai.DaBan);
+            simRepository.save(sim);
+            
+            totalAmount = totalAmount.add(sim.getGiaBan());
+        }
+        
+        // Apply discount if provided
+        BigDecimal finalTotalAmount = totalAmount;
+        UuDai appliedDiscount = null;
+        if (discountCode != null && !discountCode.isBlank()) {
+            appliedDiscount = uuDaiRepository.findById(discountCode).orElse(null);
+            if (appliedDiscount != null && isDiscountValid(appliedDiscount)) {
+                BigDecimal discountAmount;
+                if (appliedDiscount.getLoaiGiam() == UuDai.LoaiGiam.PhanTram) {
+                    discountAmount = finalTotalAmount.multiply(
+                        appliedDiscount.getGiaTriGiam().divide(BigDecimal.valueOf(100)));
+                } else {
+                    discountAmount = appliedDiscount.getGiaTriGiam();
+                }
+                BigDecimal newTotal = finalTotalAmount.subtract(discountAmount);
+                order.setTongTien(newTotal.max(BigDecimal.ZERO));
+                
+                ApDungUuDai apDung = new ApDungUuDai();
+                apDung.setHoaDon(order);
+                apDung.setUuDai(appliedDiscount);
+                apDung.setKhachHang(customer);
+                order.getApDungUuDais().add(apDung);
+            }
+        }
+        
+        // Set total if no discount applied
+        if (order.getTongTien() == null || order.getTongTien().equals(BigDecimal.ZERO)) {
+            order.setTongTien(totalAmount);
+        }
+        
+        // Save order first (this will cascade save HoaDonChiTiet due to CascadeType.ALL)
+        HoaDon savedOrder = hoaDonRepository.save(order);
+        
+        // Now save ThongTinChuSim for each SIM after order is persisted
+        for (GioHang cartItem : cartItems) {
+            Sim sim = cartItem.getSim();
+            
             // Create SIM owner info with proper CCCD
             ThongTinChuSim ownerInfo = new ThongTinChuSim();
             ownerInfo.setSim(sim);
-            ownerInfo.setHoaDon(order);
+            ownerInfo.setHoaDon(savedOrder);
             ownerInfo.setHoTen(ownerName);
             ownerInfo.setCccd(ownerCccd); // Now using proper CCCD
             ownerInfo.setSdt(ownerPhone);
@@ -106,49 +149,12 @@ public class OrderService {
                 throw new BusinessException("INVALID_DATE", "Invalid date of birth format");
             }
             thongTinChuSimRepository.save(ownerInfo);
-            
-            // Update SIM status to DaBan
-            sim.setTrangThai(Sim.TrangThai.DaBan);
-            simRepository.save(sim);
-            
-            totalAmount = totalAmount.add(sim.getGiaBan());
         }
-        
-        // Apply discount if provided
-        BigDecimal finalTotalAmount = totalAmount;
-        if (discountCode != null && !discountCode.isBlank()) {
-            uuDaiRepository.findById(discountCode).ifPresent(discount -> {
-                if (isDiscountValid(discount)) {
-                    BigDecimal discountAmount;
-                    if (discount.getLoaiGiam() == UuDai.LoaiGiam.PhanTram) {
-                        discountAmount = finalTotalAmount.multiply(
-                            discount.getGiaTriGiam().divide(BigDecimal.valueOf(100)));
-                    } else {
-                        discountAmount = discount.getGiaTriGiam();
-                    }
-                    BigDecimal newTotal = finalTotalAmount.subtract(discountAmount);
-                    order.setTongTien(newTotal.max(BigDecimal.ZERO));
-                    
-                    ApDungUuDai appliedDiscount = new ApDungUuDai();
-                    appliedDiscount.setHoaDon(order);
-                    appliedDiscount.setUuDai(discount);
-                    appliedDiscount.setKhachHang(customer);
-                    order.getApDungUuDais().add(appliedDiscount);
-                }
-            });
-        }
-        
-        // Set total if no discount applied
-        if (order.getTongTien() == null || order.getTongTien().equals(BigDecimal.ZERO)) {
-            order.setTongTien(totalAmount);
-        }
-        
-        hoaDonRepository.save(order);
         
         // Clear cart
         gioHangRepository.deleteAll(cartItems);
         
-        return order;
+        return savedOrder;
     }
     
     /**
