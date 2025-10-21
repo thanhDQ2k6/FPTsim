@@ -66,20 +66,20 @@
                         <tbody>
                         <tr th:each="acct, idx : ${accounts}">
                             <td th:text="${idx.index + 1}">1</td>
-                            <td th:text="${acct.hoTen}">John Doe</td>
+                            <td th:text="${acct.fullName}">John Doe</td>
                             <td th:text="${acct.email}">john@example.com</td>
-                            <td th:text="${acct.sdt}">0123456789</td>
+                            <td th:text="${acct.phone}">0123456789</td>
                             <td>
                                 <span class="d-badge d-badge-sm" 
-                                      th:classappend="${acct.vaiTro?.name() == 'Admin'} ? 'd-badge-error' : 
-                                                     (${acct.vaiTro?.name() == 'NhanVien'} ? 'd-badge-warning' : 'd-badge-info')"
-                                      th:text="${acct.vaiTro}">User</span>
+                                      th:classappend="${acct.role?.toString() == 'Admin'} ? 'd-badge-error' :
+                                                     (${acct.role?.toString() == 'NhanVien'} ? 'd-badge-warning' : 'd-badge-info')"
+                                      th:text="${acct.role}">User</span>
                             </td>
                             <td>
                                 <a class="d-btn d-btn-sm d-btn-primary" 
                                    th:href="@{/dashboard/accounts/{email}/edit(email=${acct.email})}">
                                     <i class="fa-solid fa-edit"></i>
-                                    <span th:text="#{action.edit}">Edit</span>
+                                    <span th:text="#{action.detail}">Edit</span>
                                 </a>
                             </td>
                         </tr>
@@ -101,7 +101,7 @@
                            th:text="#{pagination.first}">First</a>
                         <a class="d-btn d-btn-sm d-btn-outline" 
                            th:classappend="${page.first} ? ' d-btn-disabled' : ''"
-                           th:href="@{/dashboard/accounts(page=${page.number-1}, size=${page.size}, role=${roleFilter})}" 
+                           th:href="@{/dashboard/accounts(page=${page.number - 1}, size=${page.size}, role=${roleFilter})}"
                            th:text="#{pagination.prev}">Prev</a>
                     </div>
 
@@ -112,11 +112,11 @@
                     <div class="flex gap-2">
                         <a class="d-btn d-btn-sm d-btn-outline" 
                            th:classappend="${page.last} ? ' d-btn-disabled' : ''"
-                           th:href="@{/dashboard/accounts(page=${page.number+1}, size=${page.size}, role=${roleFilter})}" 
+                           th:href="@{/dashboard/accounts(page=${page.number +1}, size=${page.size}, role=${roleFilter})}"
                            th:text="#{pagination.next}">Next</a>
                         <a class="d-btn d-btn-sm d-btn-outline" 
                            th:classappend="${page.last} ? ' d-btn-disabled' : ''"
-                           th:href="@{/dashboard/accounts(page=${page.totalPages-1}, size=${page.size}, role=${roleFilter})}" 
+                           th:href="@{/dashboard/accounts(page=${page.totalPages -1}, size=${page.size}, role=${roleFilter})}"
                            th:text="#{pagination.last}">Last</a>
                     </div>
                 </div>
