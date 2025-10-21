@@ -43,9 +43,9 @@
                                       th:classappend="${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'd-badge-success' : 
                                                      ${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'd-badge-warning' : 
                                                      ${order.trangThaiDon.name() == 'DangXuLy'} ? 'd-badge-info' : 'd-badge-error'"
-                                      th:text="${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).ChoXacNhan} ? 'Pending' : 
-                                               ${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).DangXuLy} ? 'Processing' :
-                                               ${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).DaHoanThanh} ? 'Completed' : 'Cancelled'">
+                                      th:text="${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'Pending' : 
+                                               ${order.trangThaiDon.name() == 'DangXuLy'} ? 'Processing' :
+                                               ${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'Completed' : 'Cancelled'">
                                     Pending
                                 </span>
                             </div>
