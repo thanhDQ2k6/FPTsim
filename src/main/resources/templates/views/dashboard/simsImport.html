@@ -174,69 +174,81 @@
         <h2 class="mb-4 text-xl font-semibold" th:text="#{import.history.title}"></h2>
 
         <div class="mt-2 overflow-x-auto">
-          <table class="d-table w-full">
+          <table class="d-table d-table-zebra w-full">
             <thead>
               <tr>
-                <th th:text="#{import.history.col.manv}"></th>
-                <th th:text="#{import.history.col.ngaynhap}"></th>
-                <th th:text="#{import.history.col.nhacungcap}"></th>
-                <th th:text="#{import.history.col.tongsoluong}"></th>
-                <th th:text="#{import.history.col.tonggianhap}"></th>
-                <th th:text="#{import.history.col.ghichu}"></th>
+                <th>Staff</th>
+                <th>Import Date</th>
+                <th>Provider</th>
+                <th>Quantity</th>
+                <th>Total Cost</th>
               </tr>
             </thead>
             <tbody>
-              <!-- Real data binding: th:each="imp,idx : ${importHistories}" -->
-              <tr th:each="imp,idx : ${importHistories}">
-                <td th:text="${imp.manv}"></td>
-                <td th:text="${imp.ngayNhap}"></td>
+              <tr th:each="imp : ${importHeaders.content}">
+                <td th:text="${imp.nhanVienHoTen}"></td>
+                <td th:text="${#temporals.format(imp.ngayNhap, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${imp.nhaCungCap}"></td>
-                <td th:text="${imp.tongSoLuong}"></td>
-                <td th:text="${imp.tongGiaNhap}"></td>
-                <td th:text="${imp.ghiChu}"></td>
+                <td th:text="${imp.soLuong}"></td>
+                <td th:text="${#numbers.formatDecimal(imp.tongGiaNhap, 0, 0)} + ' VND'"></td>
               </tr>
 
-              <!-- Demo rows when no data provided (FE only) -->
-              <tr th:if="${importHistories == null}">
-                <td>NV001</td>
-                <td>2025-10-01</td>
-                <td>Viettel</td>
-                <td>10</td>
-                <td>1,500,000</td>
-                <td>Đợt nhập đầu tháng</td>
-              </tr>
-              <tr th:if="${importHistories == null}">
-                <td>NV002</td>
-                <td>2025-09-15</td>
-                <td>Mobifone</td>
-                <td>5</td>
-                <td>750,000</td>
-                <td>Nhập bổ sung</td>
-              </tr>
-
-              <tr th:if="${importHistories != null} and ${#lists.isEmpty(importHistories)}">
-                <td class="text-center" colspan="6" th:text="#{import.history.empty}"></td>
+              <tr th:if="${importHeaders.empty}">
+                <td class="text-center" colspan="5">
+                  <div class="d-alert d-alert-info">
+                    <i class="fa-solid fa-info-circle"></i>
+                    <span>No import history found</span>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div class="mt-6 flex items-center justify-center gap-4">
+        <!-- Functional Pagination -->
+        <div th:if="${!importHeaders.empty}" class="mt-6 flex items-center justify-center gap-4">
           <div class="flex gap-2">
-            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.first}">First</button>
-            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.prev}">Prev</button>
+            <a th:href="@{/dashboard/sims/import(hPage=0)}" 
+               th:classappend="${importHeaders.first} ? 'd-btn-disabled' : ''"
+               class="d-btn d-btn-sm d-btn-outline">
+              <i class="fa-solid fa-angles-left"></i> First
+            </a>
+            <a th:href="@{/dashboard/sims/import(hPage=${importHeaders.number - 1})}" 
+               th:classappend="${importHeaders.first} ? 'd-btn-disabled' : ''"
+               class="d-btn d-btn-sm d-btn-outline">
+              <i class="fa-solid fa-angle-left"></i> Prev
+            </a>
           </div>
 
           <div class="hidden gap-2 sm:flex">
-            <button class="d-btn d-btn-sm">1</button>
-            <button class="d-btn d-btn-sm d-btn-ghost">2</button>
-            <button class="d-btn d-btn-sm d-btn-ghost">3</button>
+            <!-- Show max 3 page numbers centered on current page -->
+            <th:block th:with="start=${importHeaders.number > 0 ? importHeaders.number - 1 : 0},
+                              end=${start + 2 < importHeaders.totalPages ? start + 2 : importHeaders.totalPages - 1}">
+              <a th:each="i : ${#numbers.sequence(start, end)}"
+                 th:href="@{/dashboard/sims/import(hPage=${i})}"
+                 th:text="${i + 1}"
+                 th:classappend="${i == importHeaders.number} ? 'd-btn-active' : 'd-btn-ghost'"
+                 class="d-btn d-btn-sm"></a>
+            </th:block>
           </div>
 
           <div class="flex gap-2">
-            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.next}">Next</button>
-            <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.last}">Last</button>
+            <a th:href="@{/dashboard/sims/import(hPage=${importHeaders.number + 1})}" 
+               th:classappend="${importHeaders.last} ? 'd-btn-disabled' : ''"
+               class="d-btn d-btn-sm d-btn-outline">
+              Next <i class="fa-solid fa-angle-right"></i>
+            </a>
+            <a th:href="@{/dashboard/sims/import(hPage=${importHeaders.totalPages - 1})}" 
+               th:classappend="${importHeaders.last} ? 'd-btn-disabled' : ''"
+               class="d-btn d-btn-sm d-btn-outline">
+              Last <i class="fa-solid fa-angles-right"></i>
+            </a>
           </div>
+        </div>
+        
+        <div th:if="${!importHeaders.empty}" class="mt-4 text-center text-sm text-base-content/70">
+          Page <span th:text="${importHeaders.number + 1}"></span> of <span th:text="${importHeaders.totalPages}"></span>
+          (Total: <span th:text="${importHeaders.totalElements}"></span> records)
         </div>
       </div>
     </div>
