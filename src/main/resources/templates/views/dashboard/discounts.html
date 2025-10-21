@@ -1,0 +1,201 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>Discount Management - Dashboard</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold mb-6">Discount & Promotion Management</h1>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Create Discount Form -->
+            <div class="lg:col-span-1">
+                <div class="d-card bg-base-100 shadow-md sticky top-4">
+                    <div class="d-card-body">
+                        <h2 class="d-card-title">
+                            <i class="fa-solid fa-plus-circle mr-2"></i>
+                            Create New Discount
+                        </h2>
+                        
+                        <form method="post" th:action="@{/dashboard/discounts/new}" th:object="${req}">
+                            <div class="d-form-control">
+                                <label class="d-label">
+                                    <span class="d-label-text">Discount Code *</span>
+                                </label>
+                                <input class="d-input d-input-bordered" 
+                                       maxlength="20" 
+                                       name="maUD" 
+                                       placeholder="e.g., SUMMER2025" 
+                                       required 
+                                       th:field="*{maUD}" 
+                                       type="text" />
+                            </div>
+                            
+                            <div class="d-form-control mt-4">
+                                <label class="d-label">
+                                    <span class="d-label-text">Description</span>
+                                </label>
+                                <input class="d-input d-input-bordered" 
+                                       name="moTa" 
+                                       placeholder="Brief description" 
+                                       th:field="*{moTa}" 
+                                       type="text" />
+                            </div>
+                            
+                            <div class="d-form-control mt-4">
+                                <label class="d-label">
+                                    <span class="d-label-text">Discount Type *</span>
+                                </label>
+                                <select class="d-select d-select-bordered" name="loaiGiam" required th:field="*{loaiGiam}">
+                                    <option value="PhanTram">Percentage (%)</option>
+                                    <option value="TienMat">Fixed Amount (VND)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-form-control mt-4">
+                                <label class="d-label">
+                                    <span class="d-label-text">Discount Value *</span>
+                                </label>
+                                <input class="d-input d-input-bordered" 
+                                       min="0" 
+                                       name="giaTriGiam" 
+                                       placeholder="e.g., 10 or 50000" 
+                                       required 
+                                       step="0.01" 
+                                       th:field="*{giaTriGiam}" 
+                                       type="number" />
+                                <label class="d-label">
+                                    <span class="d-label-text-alt">For percentage: 1-100, for fixed: amount in VND</span>
+                                </label>
+                            </div>
+                            
+                            <div class="d-form-control mt-4">
+                                <label class="d-label">
+                                    <span class="d-label-text">Start Date *</span>
+                                </label>
+                                <input class="d-input d-input-bordered" 
+                                       name="ngayBatDau" 
+                                       required 
+                                       th:field="*{ngayBatDau}" 
+                                       type="date" />
+                            </div>
+                            
+                            <div class="d-form-control mt-4">
+                                <label class="d-label">
+                                    <span class="d-label-text">End Date *</span>
+                                </label>
+                                <input class="d-input d-input-bordered" 
+                                       name="ngayHetHan" 
+                                       required 
+                                       th:field="*{ngayHetHan}" 
+                                       type="date" />
+                            </div>
+                            
+                            <button class="d-btn d-btn-primary w-full mt-6" type="submit">
+                                <i class="fa-solid fa-plus mr-2"></i>
+                                Create Discount
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discount List -->
+            <div class="lg:col-span-2">
+                <div class="d-card bg-base-100 shadow-md">
+                    <div class="d-card-body">
+                        <h2 class="d-card-title">
+                            <i class="fa-solid fa-list mr-2"></i>
+                            Active Discounts
+                        </h2>
+                        
+                        <div class="overflow-x-auto mt-4" th:if="${!uudais.empty}">
+                            <table class="d-table d-table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Type</th>
+                                        <th>Value</th>
+                                        <th>Validity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="discount : ${uudais}">
+                                        <td>
+                                            <span class="font-mono font-bold" th:text="${discount.maUD}">SUMMER2025</span>
+                                        </td>
+                                        <td th:text="${discount.moTa}">Summer Sale</td>
+                                        <td>
+                                            <span class="d-badge d-badge-sm" 
+                                                  th:classappend="${discount.loaiGiam == 'PhanTram'} ? 'd-badge-primary' : 'd-badge-secondary'"
+                                                  th:text="${discount.loaiGiam == 'PhanTram'} ? 'Percentage' : 'Fixed'">
+                                                Percentage
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span th:if="${discount.loaiGiam == 'PhanTram'}" 
+                                                  th:text="${#numbers.formatDecimal(discount.giaTriGiam, 1, 'DEFAULT', 1, 'DEFAULT')} + '%'">
+                                                10%
+                                            </span>
+                                            <span th:if="${discount.loaiGiam == 'TienMat'}" 
+                                                  th:text="${#numbers.formatDecimal(discount.giaTriGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                                                50,000 VND
+                                            </span>
+                                        </td>
+                                        <td class="text-xs">
+                                            <div th:text="${#temporals.format(discount.ngayBatDau, 'dd/MM/yyyy')}">01/01/2025</div>
+                                            <div th:text="'to ' + ${#temporals.format(discount.ngayHetHan, 'dd/MM/yyyy')}">to 31/12/2025</div>
+                                        </td>
+                                        <td>
+                                            <span class="d-badge d-badge-sm" 
+                                                  th:classappend="${discount.trangThai} ? 'd-badge-success' : 'd-badge-error'"
+                                                  th:text="${discount.trangThai} ? 'Active' : 'Inactive'">
+                                                Active
+                                            </span>
+                                            <br/>
+                                            <span class="d-badge d-badge-sm d-badge-ghost mt-1" 
+                                                  th:classappend="${discount.conHieuLuc} ? 'd-badge-info' : ''"
+                                                  th:text="${discount.conHieuLuc} ? 'Valid' : 'Expired'">
+                                                Valid
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <form method="post" 
+                                                  th:action="@{/dashboard/discounts/{code}/deactivate(code=${discount.maUD})}" 
+                                                  th:if="${discount.trangThai}">
+                                                <button class="d-btn d-btn-error d-btn-xs" type="submit">
+                                                    <i class="fa-solid fa-ban"></i>
+                                                    Deactivate
+                                                </button>
+                                            </form>
+                                            <span class="text-base-content/50" th:if="${!discount.trangThai}">—</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div class="text-center py-12" th:if="${uudais.empty}">
+                            <i class="fa-solid fa-tags text-6xl text-base-300 mb-4"></i>
+                            <p class="text-xl text-base-content/70">No discounts created yet</p>
+                            <p class="text-sm text-base-content/50 mt-2">Create your first discount using the form</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

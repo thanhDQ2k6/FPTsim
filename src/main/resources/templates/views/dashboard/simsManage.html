@@ -6,7 +6,7 @@
         <input checked class="d-tab" name="my_tabs_3" th:attr="aria-label=#{nav.sims}" type="radio"/>
         <div class="d-tab-content bg-base-100 border-base-300 p-6">
             <div class="flex items-center justify-between gap-4">
-                <div class="w-2/3">
+                <form class="w-2/3" method="get" th:action="@{/dashboard/sims/manage}">
                     <fieldset class="d-fieldset">
                         <legend class="d-fieldset-legend text-lg font-bold" th:text="#{sortByOrder}"></legend>
                         <div class="flex items-center gap-3">
@@ -15,14 +15,13 @@
                                 <select
                                         class="d-select d-select-bordered w-full"
                                         id="filterProvider"
-                                        name="provider"
+                                        name="nhaMang"
                                         th:attr="aria-label=#{sim.filter.provider}"
                                 >
                                     <option th:text="#{sim.filter.all}" value=""></option>
-                                    <option th:text="#{sim.provider.viettel}" value="viettel"></option>
-                                    <option th:text="#{sim.provider.mobifone}" value="mobifone"></option>
-                                    <option th:text="#{sim.provider.vinaphone}" value="vinaphone"></option>
-                                    <option th:text="#{sim.provider.other}" value="other"></option>
+                                    <option th:selected="${nhaMang == 'Viettel'}" value="Viettel">Viettel</option>
+                                    <option th:selected="${nhaMang == 'Mobiphone'}" value="Mobiphone">Mobiphone</option>
+                                    <option th:selected="${nhaMang == 'Vinaphone'}" value="Vinaphone">Vinaphone</option>
                                 </select>
                             </div>
 
@@ -31,12 +30,13 @@
                                 <select
                                         class="d-select d-select-bordered w-full"
                                         id="filterType"
-                                        name="type"
+                                        name="loaiSim"
                                         th:attr="aria-label=#{sim.filter.type}"
                                 >
                                     <option th:text="#{sim.filter.all}" value=""></option>
-                                    <option th:text="#{sim.type.prepaid}" value="prepaid"></option>
-                                    <option th:text="#{sim.type.postpaid}" value="postpaid"></option>
+                                    <option th:selected="${loaiSim == 'TraTruoc'}" value="TraTruoc">Prepaid (Trả Trước)</option>
+                                    <option th:selected="${loaiSim == 'TraSau'}" value="TraSau">Postpaid (Trả Sau)</option>
+                                    <option th:selected="${loaiSim == 'NgoaiDia'}" value="NgoaiDia">International (Ngoại Địa)</option>
                                 </select>
                             </div>
 
@@ -45,29 +45,29 @@
                                 <select
                                         class="d-select d-select-bordered w-full"
                                         id="filterStatus"
-                                        name="status"
+                                        name="trangThai"
                                         th:attr="aria-label=#{sim.filter.status}"
                                 >
                                     <option th:text="#{sim.filter.all}" value=""></option>
-                                    <option th:text="#{sim.status.active}" value="active"></option>
-                                    <option th:text="#{sim.status.inactive}" value="inactive"></option>
-                                    <option th:text="#{sim.status.suspended}" value="suspended"></option>
+                                    <option th:selected="${trangThai == 'SanSang'}" value="SanSang">Available (Sẵn Sàng)</option>
+                                    <option th:selected="${trangThai == 'DaBan'}" value="DaBan">Sold (Đã Bán)</option>
+                                    <option th:selected="${trangThai == 'HoatDong'}" value="HoatDong">Active (Hoạt Động)</option>
+                                    <option th:selected="${trangThai == 'Chet'}" value="Chet">Inactive (Chết)</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="mt-4 flex gap-2 justify-end">
+                            <button class="d-btn d-btn-primary" type="submit">
+                                <i class="fa-solid fa-filter"></i>
+                                Apply Filters
+                            </button>
+                            <a class="d-btn d-btn-ghost" th:href="@{/dashboard/sims/manage}" th:text="#{accounts.reset}">Reset</a>
+                        </div>
                     </fieldset>
-                </div>
+                </form>
 
                 <div class="flex w-1/3 justify-end">
-                    <button
-                            class="d-btn d-btn-ghost"
-                            onclick="
-              document.getElementById('filterProvider').value='';
-              document.getElementById('filterType').value='';
-              document.getElementById('filterStatus').value='';"
-                            th:text="#{accounts.reset}"
-                            type="button"
-                    ></button>
+                    <!-- Placeholder for future actions -->
                 </div>
             </div>
 
@@ -88,28 +88,29 @@
                     <tr th:each="sim, idx : ${sims}">
                         <td th:text="${idx.index + 1}"></td>
                         <td th:text="${sim.msisdn}">0987654321</td>
-                        <td th:text="${sim.provider}">Viettel</td>
-                        <td th:text="${sim.type}">Prepaid</td>
-                        <td th:text="${sim.status}">Active</td>
+                        <td th:text="${sim.nhaMang}">Viettel</td>
+                        <td th:text="${sim.loaiSim}">TraTruoc</td>
+                        <td th:text="${sim.trangThai}">SanSang</td>
                         <td>
                             <div class="flex gap-2">
                                 <a
                                         class="d-btn d-btn-sm"
-                                        th:href="@{/dashboard/sims/{id}(id=${sim.id})}"
+                                        th:href="@{/dashboard/sims/{iccid}(iccid=${sim.iccid})}"
                                         th:text="#{action.detail}"
                                 ></a>
-                                <button
-                                        class="d-btn d-btn-sm d-btn-error"
-                                        th:attr="data-id=${sim.id}"
-                                        th:text="#{action.delete}"
-                                        type="button"
-                                ></button>
+                                <form method="post" th:action="@{/dashboard/sims/{iccid}/deactivate(iccid=${sim.iccid})}" class="inline">
+                                    <button
+                                            class="d-btn d-btn-sm d-btn-error"
+                                            th:text="#{action.delete}"
+                                            type="submit"
+                                    ></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
 
                     <!-- Empty state when sims list exists but empty -->
-                    <tr th:if="${sims != null} and ${#lists.isEmpty(sims)}">
+                    <tr th:if="${sims != null and sims.content != null and sims.content.isEmpty()}">
                         <td class="text-center" colspan="6" th:text="#{sim.empty}">No sims found</td>
                     </tr>
 
@@ -189,21 +190,43 @@
             </div>
 
             <!-- Pagination -->
-            <div class="mt-6 flex items-center justify-center gap-4">
+            <div class="mt-6 flex items-center justify-center gap-4" th:if="${sims != null and !sims.content.isEmpty()}">
                 <div class="flex gap-2">
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.first}">First</button>
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.prev}">Prev</button>
+                    <a class="d-btn d-btn-sm d-btn-outline" 
+                       th:classappend="${sims.first} ? 'd-btn-disabled' : ''"
+                       th:href="@{/dashboard/sims/manage(page=0,size=${sims.size},nhaMang=${nhaMang},loaiSim=${loaiSim},trangThai=${trangThai})}" 
+                       th:text="#{pagination.first}">First</a>
+                    <a class="d-btn d-btn-sm d-btn-outline" 
+                       th:classappend="${sims.first} ? 'd-btn-disabled' : ''"
+                       th:href="@{/dashboard/sims/manage(page=${sims.number - 1},size=${sims.size},nhaMang=${nhaMang},loaiSim=${loaiSim},trangThai=${trangThai})}" 
+                       th:text="#{pagination.prev}">Prev</a>
                 </div>
 
                 <div class="hidden gap-2 sm:flex">
-                    <button class="d-btn d-btn-sm">1</button>
-                    <button class="d-btn d-btn-sm d-btn-ghost">2</button>
-                    <button class="d-btn d-btn-sm d-btn-ghost">3</button>
+                    <!-- Show current page and surrounding pages -->
+                    <th:block th:if="${totalPages > 0}">
+                        <a th:if="${currentPage > 0}" 
+                           class="d-btn d-btn-sm d-btn-ghost"
+                           th:href="@{/dashboard/sims/manage(page=${currentPage - 1},size=${sims.size},nhaMang=${nhaMang},loaiSim=${loaiSim},trangThai=${trangThai})}"
+                           th:text="${currentPage}">1</a>
+                        <a class="d-btn d-btn-sm d-btn-primary"
+                           th:text="${currentPage + 1}">2</a>
+                        <a th:if="${currentPage < totalPages - 1}" 
+                           class="d-btn d-btn-sm d-btn-ghost"
+                           th:href="@{/dashboard/sims/manage(page=${currentPage + 1},size=${sims.size},nhaMang=${nhaMang},loaiSim=${loaiSim},trangThai=${trangThai})}"
+                           th:text="${currentPage + 2}">3</a>
+                    </th:block>
                 </div>
 
                 <div class="flex gap-2">
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.next}">Next</button>
-                    <button class="d-btn d-btn-sm d-btn-outline" th:text="#{pagination.last}">Last</button>
+                    <a class="d-btn d-btn-sm d-btn-outline" 
+                       th:classappend="${sims.last} ? 'd-btn-disabled' : ''"
+                       th:href="@{/dashboard/sims/manage(page=${sims.number + 1},size=${sims.size},nhaMang=${nhaMang},loaiSim=${loaiSim},trangThai=${trangThai})}" 
+                       th:text="#{pagination.next}">Next</a>
+                    <a class="d-btn d-btn-sm d-btn-outline" 
+                       th:classappend="${sims.last} ? 'd-btn-disabled' : ''"
+                       th:href="@{/dashboard/sims/manage(page=${totalPages - 1},size=${sims.size},nhaMang=${nhaMang},loaiSim=${loaiSim},trangThai=${trangThai})}" 
+                       th:text="#{pagination.last}">Last</a>
                 </div>
             </div>
         </div>

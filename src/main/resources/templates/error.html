@@ -1,0 +1,33 @@
+<!doctype html>
+<html data-theme="retro" lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link href="/styles/tailwind.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet" />
+    <link href="/images/logo.svg" rel="icon" />
+    <title th:text="'Error ' + ${status}">Error</title>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-base-200">
+    <div class="d-card w-96 bg-base-100 shadow-xl">
+        <div class="d-card-body items-center text-center">
+            <i class="fa-solid fa-triangle-exclamation text-6xl text-error mb-4"></i>
+            <h1 class="d-card-title text-4xl" th:text="${status}">500</h1>
+            <h2 class="text-xl font-semibold" th:text="${message}">Internal Server Error</h2>
+            <p class="text-sm text-base-content/70 mt-2" th:if="${path}" th:text="'Path: ' + ${path}"></p>
+            
+            <div class="d-card-actions justify-center mt-4">
+                <a class="d-btn d-btn-primary" th:href="@{/}">
+                    <i class="fa-solid fa-home mr-2"></i>
+                    Go Home
+                </a>
+                <button class="d-btn d-btn-ghost" onclick="history.back()">
+                    <i class="fa-solid fa-arrow-left mr-2"></i>
+                    Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

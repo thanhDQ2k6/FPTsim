@@ -1,10 +1,11 @@
 <!doctype html>
-<html data-theme="retro" lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
-    <link href="/styles/tailwind.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
             crossorigin="anonymous"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -14,6 +15,11 @@
     />
     <link href="/images/logo.svg" rel="icon"/>
     <title th:replace="${title}"></title>
+    <script>
+      // Theme initialization - load from localStorage before page renders
+      const theme = localStorage.getItem('theme') || 'retro';
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
 </head>
 
 <body class="d-drawer d-drawer-open">
@@ -105,19 +111,35 @@
                 </details>
           </li>
           <li class="text-lg font-semibold">
-            <a class="flex items-center gap-4" th:href="@{/dashboard/coupons}">
+            <a class="flex items-center gap-4" th:href="@{/dashboard/discounts}">
               <i aria-hidden="true" class="fa-solid fa-ticket w-5 text-center"></i>
               <span th:text="#{nav.coupons}"></span>
             </a>
           </li>
-          <li class="text-lg font-semibold">
-            <a class="flex items-center gap-4" th:href="@{/dashboard/bills}">
-              <i aria-hidden="true" class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
-              <span th:text="#{nav.bills}"></span>
-            </a>
+          <li>
+                <details open>
+                    <summary class="text-lg font-semibold">
+                        <i aria-hidden="true" class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
+                        <span th:text="#{nav.bills}"></span>
+                    </summary>
+                    <ul>
+                        <li class="text-lg">
+                            <a class="flex items-center gap-4" th:href="@{/dashboard/bills/process}">
+                                <i aria-hidden="true" class="fa-solid fa-clock w-5 text-center"></i>
+                                <span>Process Orders</span>
+                            </a>
+                        </li>
+                        <li class="text-lg">
+                            <a class="flex items-center gap-4" th:href="@{/dashboard/bills/history}">
+                                <i aria-hidden="true" class="fa-solid fa-history w-5 text-center"></i>
+                                <span>Order History</span>
+                            </a>
+                        </li>
+                    </ul>
+                </details>
           </li>
           <li class="text-lg font-semibold">
-            <a class="flex items-center gap-4" th:href="@{/dashboard/signout}">
+            <a class="flex items-center gap-4" th:href="@{/signout}">
               <i aria-hidden="true" class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
               <span th:text="#{nav.signout}"></span>
             </a>
@@ -125,5 +147,25 @@
         </ul>
     </div>
 </div>
+
+<script>
+  // Theme initialization and persistence
+  (function() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    const themeToggle = document.querySelector('.d-theme-controller');
+    if (themeToggle) {
+      // Set initial state: checked = synthwave (dark), unchecked = retro (light)
+      themeToggle.checked = (theme === 'synthwave' || theme === 'dark');
+      
+      themeToggle.addEventListener('change', function() {
+        const newTheme = this.checked ? 'synthwave' : 'retro';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    }
+  })();
+</script>
 </body>
 </html>

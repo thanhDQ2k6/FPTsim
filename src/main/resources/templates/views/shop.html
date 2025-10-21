@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Shop - FPTsim</title>
+</head>
+<body>
+<div th:fragment="content">
+    <!-- Shop Page -->
+    <div class="container mx-auto px-4 py-8">
+        
+        <!-- Page Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold">Browse SIM Cards</h1>
+                <p class="text-base-content/70 mt-2">Find the perfect SIM card for your needs</p>
+            </div>
+            <a href="/cart" class="d-btn d-btn-primary">
+                <i class="fas fa-shopping-cart mr-2"></i>
+                Cart (<span th:text="${cartCount}">0</span>)
+            </a>
+        </div>
+
+        <!-- Filters and Sort -->
+        <div class="d-card bg-base-100 shadow-lg mb-6">
+            <div class="d-card-body">
+                <form method="get" action="/shop" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    
+                    <!-- Provider Filter -->
+                    <div class="d-form-control">
+                        <label class="d-label">
+                            <span class="d-label-text"><i class="fas fa-signal mr-2"></i>Provider</span>
+                        </label>
+                        <select name="nhaMang" class="d-select d-select-bordered w-full">
+                            <option value="">All Providers</option>
+                            <option value="Viettel" th:selected="${nhaMang == 'Viettel'}">Viettel</option>
+                            <option value="Mobiphone" th:selected="${nhaMang == 'Mobiphone'}">Mobiphone</option>
+                            <option value="Vinaphone" th:selected="${nhaMang == 'Vinaphone'}">Vinaphone</option>
+                        </select>
+                    </div>
+
+                    <!-- Type Filter -->
+                    <div class="d-form-control">
+                        <label class="d-label">
+                            <span class="d-label-text"><i class="fas fa-tag mr-2"></i>Type</span>
+                        </label>
+                        <select name="loaiSim" class="d-select d-select-bordered w-full">
+                            <option value="">All Types</option>
+                            <option value="TraTruoc" th:selected="${loaiSim == 'TraTruoc'}">Prepaid</option>
+                            <option value="TraSau" th:selected="${loaiSim == 'TraSau'}">Postpaid</option>
+                            <option value="NgoaiDia" th:selected="${loaiSim == 'NgoaiDia'}">International</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="d-form-control">
+                        <label class="d-label">
+                            <span class="d-label-text"><i class="fas fa-sort mr-2"></i>Sort By</span>
+                        </label>
+                        <select name="sortBy" class="d-select d-select-bordered w-full">
+                            <option value="">Latest</option>
+                            <option value="price-asc" th:selected="${sortBy == 'price-asc'}">Price: Low to High</option>
+                            <option value="price-desc" th:selected="${sortBy == 'price-desc'}">Price: High to Low</option>
+                            <option value="number-asc" th:selected="${sortBy == 'number-asc'}">Number: Ascending</option>
+                        </select>
+                    </div>
+
+                    <!-- Apply Button -->
+                    <div class="d-form-control">
+                        <label class="d-label">
+                            <span class="d-label-text">&nbsp;</span>
+                        </label>
+                        <button type="submit" class="d-btn d-btn-primary w-full">
+                            <i class="fas fa-filter mr-2"></i>Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="d-alert d-alert-success mb-4">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        
+        <div th:if="${error}" class="d-alert d-alert-error mb-4">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- SIM Cards Grid -->
+        <div th:if="${sims != null and !sims.content.isEmpty()}">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div th:each="sim : ${sims.content}" class="d-card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+                    <div class="d-card-body">
+                        <!-- SIM Number (Large) -->
+                        <h2 class="d-card-title text-2xl font-mono justify-center text-primary" th:text="${sim.msisdn}">
+                            0123456789
+                        </h2>
+                        
+                        <!-- Provider Badge -->
+                        <div class="flex justify-center my-2">
+                            <span class="d-badge d-badge-lg" 
+                                  th:classappend="${sim.nhaMang.name() == 'Viettel'} ? 'badge-error' : 
+                                                 (${sim.nhaMang.name() == 'Mobiphone'} ? 'badge-info' : 'badge-success')"
+                                  th:text="${sim.nhaMang}">
+                                Provider
+                            </span>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">Type:</span>
+                                <span class="font-semibold" th:text="${sim.loaiSim == T(com.model.Sim$LoaiSim).TraTruoc} ? 'Prepaid' : 
+                                                                      (${sim.loaiSim == T(com.model.Sim$LoaiSim).TraSau} ? 'Postpaid' : 'International')">
+                                    Type
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-base-content/70">ICCID:</span>
+                                <span class="font-mono text-xs" th:text="${sim.iccid}">ID</span>
+                            </div>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="d-divider my-2"></div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary">
+                                <span th:text="${#numbers.formatDecimal(sim.giaBan, 0, 0)}">0</span>
+                                <span class="text-lg">VND</span>
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <div class="d-card-actions justify-center mt-4">
+                            <form method="post" action="/shop/add-to-cart" class="w-full">
+                                <input type="hidden" name="iccid" th:value="${sim.iccid}"/>
+                                <button type="submit" class="d-btn d-btn-primary w-full">
+                                    <i class="fas fa-cart-plus mr-2"></i>
+                                    Add to Cart
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-8" th:if="${sims.totalPages > 1}">
+                <div class="d-join">
+                    <!-- First Page -->
+                    <a th:href="@{/shop(page=0, size=${sims.size}, nhaMang=${nhaMang}, loaiSim=${loaiSim}, sortBy=${sortBy})}"
+                       th:class="${currentPage == 0} ? 'd-join-item d-btn d-btn-disabled' : 'd-join-item d-btn'"
+                       th:disabled="${currentPage == 0}">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                    
+                    <!-- Previous Page -->
+                    <a th:href="@{/shop(page=${currentPage - 1}, size=${sims.size}, nhaMang=${nhaMang}, loaiSim=${loaiSim}, sortBy=${sortBy})}"
+                       th:class="${currentPage == 0} ? 'd-join-item d-btn d-btn-disabled' : 'd-join-item d-btn'"
+                       th:disabled="${currentPage == 0}">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+
+                    <!-- Page Numbers (3 numbers centered on current page) -->
+                    <th:block th:each="pageNum : ${#numbers.sequence(
+                        T(java.lang.Math).max(0, currentPage - 1), 
+                        T(java.lang.Math).min(sims.totalPages - 1, currentPage + 1)
+                    )}">
+                        <a th:href="@{/shop(page=${pageNum}, size=${sims.size}, nhaMang=${nhaMang}, loaiSim=${loaiSim}, sortBy=${sortBy})}"
+                           th:class="${pageNum == currentPage} ? 'd-join-item d-btn d-btn-active' : 'd-join-item d-btn'"
+                           th:text="${pageNum + 1}">
+                            1
+                        </a>
+                    </th:block>
+
+                    <!-- Next Page -->
+                    <a th:href="@{/shop(page=${currentPage + 1}, size=${sims.size}, nhaMang=${nhaMang}, loaiSim=${loaiSim}, sortBy=${sortBy})}"
+                       th:class="${currentPage >= sims.totalPages - 1} ? 'd-join-item d-btn d-btn-disabled' : 'd-join-item d-btn'"
+                       th:disabled="${currentPage >= sims.totalPages - 1}">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    
+                    <!-- Last Page -->
+                    <a th:href="@{/shop(page=${sims.totalPages - 1}, size=${sims.size}, nhaMang=${nhaMang}, loaiSim=${loaiSim}, sortBy=${sortBy})}"
+                       th:class="${currentPage >= sims.totalPages - 1} ? 'd-join-item d-btn d-btn-disabled' : 'd-join-item d-btn'"
+                       th:disabled="${currentPage >= sims.totalPages - 1}">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Page Info -->
+            <div class="text-center mt-4 text-sm text-base-content/70" th:if="${sims.totalPages > 1}">
+                Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${sims.totalPages}">1</span>
+                (<span th:text="${sims.totalElements}">0</span> total SIMs)
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${sims == null or sims.content.isEmpty()}" class="text-center py-16">
+            <i class="fas fa-sim-card text-6xl text-base-content/20 mb-4"></i>
+            <h3 class="text-2xl font-semibold mb-2">No SIM Cards Found</h3>
+            <p class="text-base-content/70 mb-6">Try adjusting your filters or check back later</p>
+            <a href="/shop" class="d-btn d-btn-primary">
+                <i class="fas fa-redo mr-2"></i>
+                Clear Filters
+            </a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
