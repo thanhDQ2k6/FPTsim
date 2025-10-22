@@ -123,7 +123,7 @@ Edit `src/main/resources/application.properties`:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/fptsim
 spring.datasource.username=root
-spring.datasource.password=1234
+spring.datasource.password=root
 ```
 
 ### Internationalization
@@ -228,22 +228,9 @@ The application has comprehensive exception handling:
 
 The system includes a stub user account for testing:
 - **Email**: root@mail.com
-- **Password**: (check database or create your own)
+- **Password**: root
 
 You can insert additional test data through the admin dashboard or directly into the database.
-
-## Future Enhancements
-
-- [ ] Implement Spring Security for robust authentication
-- [ ] Add password encryption (BCrypt)
-- [ ] Implement database-backed shopping cart
-- [ ] Add payment gateway integration
-- [ ] Implement email notifications
-- [ ] Add unit and integration tests
-- [ ] Create REST API endpoints
-- [ ] Implement search and filtering
-- [ ] Add pagination for all lists
-- [ ] Implement file upload for bulk import
 
 ## Contributing
 
