@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
+<head>
+    <title>My Orders - FPTsim</title>
+</head>
+<body>
+<main>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">My Purchase History</h1>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Orders List -->
+        <div class="space-y-4" th:if="${orders != null and !orders.content.isEmpty()}">
+            <div class="d-card bg-base-100 shadow-md hover:shadow-lg transition-shadow" th:each="order : ${orders.content}">
+                <div class="d-card-body">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                        <!-- Order Info -->
+                        <div class="flex-1">
+                            <h3 class="d-card-title text-xl">
+                                Order #<span th:text="${order.maHD}">HD12345678</span>
+                            </h3>
+                            
+                            <div class="flex flex-wrap gap-3 mt-3 text-sm text-base-content/70">
+                                <span class="flex items-center gap-1">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <span th:text="${#temporals.format(order.ngayTao, 'dd/MM/yyyy HH:mm')}">20/10/2025 14:30</span>
+                                </span>
+                                
+                                <span class="d-badge" 
+                                      th:classappend="${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'd-badge-success' : (${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'd-badge-warning' : (${order.trangThaiDon.name() == 'DangXuLy'} ? 'd-badge-info' : 'd-badge-error'))"
+                                      th:text="${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'Pending' : (${order.trangThaiDon.name() == 'DangXuLy'} ? 'Processing' : (${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'Completed' : 'Cancelled'))">
+                                    Pending
+                                </span>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <span class="text-sm text-base-content/70">Total:</span>
+                                <span class="text-lg font-bold text-success ml-2" th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + ' VND'">150,000 VND</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex gap-2">
+                            <a class="d-btn d-btn-primary d-btn-sm" th:href="@{/orders/{id}(id=${order.maHD})}">
+                                <i class="fa-solid fa-eye"></i>
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="d-card bg-base-100 shadow-md" th:if="${orders == null or orders.content.isEmpty()}">
+            <div class="d-card-body items-center text-center py-12">
+                <i class="fa-solid fa-shopping-bag text-6xl text-base-content/30 mb-4"></i>
+                <h3 class="text-2xl font-bold mb-2">No Orders Yet</h3>
+                <p class="text-base-content/70 mb-4">You haven't placed any orders. Start shopping for SIM cards!</p>
+                <a href="/shop" class="d-btn d-btn-primary">
+                    <i class="fa-solid fa-shopping-cart"></i>
+                    Browse SIMs
+                </a>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-8" th:if="${orders != null and orders.totalPages > 1}">
+            <div class="d-join">
+                <!-- First -->
+                <a th:href="@{/orders(page=0)}" 
+                   class="d-join-item d-btn d-btn-sm"
+                   th:classappend="${orders.first} ? 'd-btn-disabled' : ''"
+                   th:disabled="${orders.first}">
+                    <i class="fa-solid fa-angles-left"></i>
+                </a>
+                
+                <!-- Previous -->
+                <a th:href="@{/orders(page=${orders.number - 1})}" 
+                   class="d-join-item d-btn d-btn-sm"
+                   th:classappend="${orders.first} ? 'd-btn-disabled' : ''"
+                   th:disabled="${orders.first}">
+                    <i class="fa-solid fa-angle-left"></i>
+                </a>
+                
+                <!-- Page Numbers (3 numbers: current ± 1) -->
+                <th:block th:with="currentPage=${orders.number}, totalPages=${orders.totalPages}">
+                    <!-- Previous page -->
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/orders(page=${currentPage - 1})}"
+                       th:text="${currentPage}"
+                       class="d-join-item d-btn d-btn-sm">
+                    </a>
+                    
+                    <!-- Current page -->
+                    <button class="d-join-item d-btn d-btn-sm d-btn-active" 
+                            th:text="${currentPage + 1}">
+                        1
+                    </button>
+                    
+                    <!-- Next page -->
+                    <a th:if="${currentPage + 1 < totalPages}"
+                       th:href="@{/orders(page=${currentPage + 1})}"
+                       th:text="${currentPage + 2}"
+                       class="d-join-item d-btn d-btn-sm">
+                    </a>
+                </th:block>
+                
+                <!-- Next -->
+                <a th:href="@{/orders(page=${orders.number + 1})}" 
+                   class="d-join-item d-btn d-btn-sm"
+                   th:classappend="${orders.last} ? 'd-btn-disabled' : ''"
+                   th:disabled="${orders.last}">
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
+                
+                <!-- Last -->
+                <a th:href="@{/orders(page=${orders.totalPages - 1})}" 
+                   class="d-join-item d-btn d-btn-sm"
+                   th:classappend="${orders.last} ? 'd-btn-disabled' : ''"
+                   th:disabled="${orders.last}">
+                    <i class="fa-solid fa-angles-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pagination Info -->
+        <div class="text-center mt-4 text-sm text-base-content/70" th:if="${orders != null and orders.totalPages > 0}">
+            Page <span th:text="${orders.number + 1}">1</span> of <span th:text="${orders.totalPages}">10</span>
+            • Total <span th:text="${orders.totalElements}">100</span> order(s)
+        </div>
+    </div>
+</main>
+</body>
+</html>

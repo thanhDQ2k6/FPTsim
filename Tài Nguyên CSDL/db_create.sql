@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS fptsim;
 USE fptsim;
 
 -- Bảng người dùng (gộp User và ThongTinCaNhan)
-CREATE TABLE IF NOT EXISTS `NguoiDung`
+CREATE TABLE IF NOT EXISTS `nguoidung`
 (
     `Email`      VARCHAR(255)                            NOT NULL,
     `Password`   VARCHAR(255)                            NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `NguoiDung`
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng SIM
-CREATE TABLE IF NOT EXISTS `SIM`
+CREATE TABLE IF NOT EXISTS `sim`
 (
     `iccid`      VARCHAR(255)                               NOT NULL,
     `msisdn`     VARCHAR(20) UNIQUE,         -- Số điện thoại, unique để tránh trùng lặp
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `SIM`
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng nhập SIM
-CREATE TABLE IF NOT EXISTS `NhapSim`
+CREATE TABLE IF NOT EXISTS `nhapsim`
 (
     `MaNhap`      INT AUTO_INCREMENT,
     `MaNV`        VARCHAR(255) NOT NULL,       -- Email của nhân viên nhập SIM
@@ -52,12 +52,12 @@ CREATE TABLE IF NOT EXISTS `NhapSim`
     `TongGiaNhap` DECIMAL(10, 2) DEFAULT 0,    -- Tự động cập nhật bởi trigger
     PRIMARY KEY (`MaNhap`),
     INDEX `idx_nhapsim_ngaynhap` (`NgayNhap`), -- Tìm kiếm theo ngày nhập
-    FOREIGN KEY (`MaNV`) REFERENCES `NguoiDung` (`Email`) ON UPDATE CASCADE
+    FOREIGN KEY (`MaNV`) REFERENCES `nguoidung` (`Email`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Chi tiết nhập SIM
-CREATE TABLE IF NOT EXISTS `ChiTietNhapSim`
+CREATE TABLE IF NOT EXISTS `chitietnhapsim`
 (
     `ID`      INT AUTO_INCREMENT,
     `MaNhap`  INT            NOT NULL,
@@ -66,13 +66,13 @@ CREATE TABLE IF NOT EXISTS `ChiTietNhapSim`
     PRIMARY KEY (`ID`),
     UNIQUE KEY (`MaNhap`, `iccid`), -- Mỗi SIM chỉ nhập một lần trong mỗi đợt
     INDEX `idx_chitietnhap_iccid` (`iccid`),
-    FOREIGN KEY (`MaNhap`) REFERENCES `NhapSim` (`MaNhap`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (`iccid`) REFERENCES `SIM` (`iccid`) ON UPDATE CASCADE
+    FOREIGN KEY (`MaNhap`) REFERENCES `nhapsim` (`MaNhap`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`iccid`) REFERENCES `sim` (`iccid`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng giỏ hàng
-CREATE TABLE IF NOT EXISTS `GioHang`
+CREATE TABLE IF NOT EXISTS `giohang`
 (
     `ID`       INT AUTO_INCREMENT,
     `MaKH`     VARCHAR(255) NOT NULL, -- Email của khách hàng
@@ -81,13 +81,13 @@ CREATE TABLE IF NOT EXISTS `GioHang`
     PRIMARY KEY (`ID`),
     UNIQUE KEY (`MaKH`, `iccid`),     -- Mỗi SIM chỉ được thêm một lần vào giỏ hàng của mỗi KH
     INDEX `idx_giohang_makh` (`MaKH`),
-    FOREIGN KEY (`MaKH`) REFERENCES `NguoiDung` (`Email`) ON DELETE CASCADE,
-    FOREIGN KEY (`iccid`) REFERENCES `SIM` (`iccid`) ON DELETE CASCADE
+    FOREIGN KEY (`MaKH`) REFERENCES `nguoidung` (`Email`) ON DELETE CASCADE,
+    FOREIGN KEY (`iccid`) REFERENCES `sim` (`iccid`) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng hóa đơn
-CREATE TABLE IF NOT EXISTS `HoaDon`
+CREATE TABLE IF NOT EXISTS `hoadon`
 (
     `MaHD`         VARCHAR(20)                                             NOT NULL,           -- Mã hóa đơn có thể tạo theo format riêng
     `MaKH`         VARCHAR(255)                                            NOT NULL,
@@ -102,13 +102,13 @@ CREATE TABLE IF NOT EXISTS `HoaDon`
     INDEX `idx_hoadon_manv` (`MaNV`),
     INDEX `idx_hoadon_ngaytao` (`NgayTao`),
     INDEX `idx_hoadon_trangthai` (`TrangThaiDon`),
-    FOREIGN KEY (`MaKH`) REFERENCES `NguoiDung` (`Email`) ON UPDATE CASCADE,
-    FOREIGN KEY (`MaNV`) REFERENCES `NguoiDung` (`Email`) ON UPDATE CASCADE
+    FOREIGN KEY (`MaKH`) REFERENCES `nguoidung` (`Email`) ON UPDATE CASCADE,
+    FOREIGN KEY (`MaNV`) REFERENCES `nguoidung` (`Email`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Chi tiết hóa đơn
-CREATE TABLE IF NOT EXISTS `HoaDonChiTiet`
+CREATE TABLE IF NOT EXISTS `hoadonchitiet`
 (
     `ID`      INT AUTO_INCREMENT,
     `MaHD`    VARCHAR(20)    NOT NULL,
@@ -118,13 +118,13 @@ CREATE TABLE IF NOT EXISTS `HoaDonChiTiet`
     PRIMARY KEY (`ID`),
     UNIQUE KEY (`MaHD`, `iccid`),      -- Mỗi SIM chỉ xuất hiện một lần trong hóa đơn
     INDEX `idx_hdct_iccid` (`iccid`),
-    FOREIGN KEY (`MaHD`) REFERENCES `HoaDon` (`MaHD`) ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (`iccid`) REFERENCES `SIM` (`iccid`) ON UPDATE CASCADE
+    FOREIGN KEY (`MaHD`) REFERENCES `hoadon` (`MaHD`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`iccid`) REFERENCES `sim` (`iccid`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Thông tin chủ SIM
-CREATE TABLE IF NOT EXISTS `ThongTinChuSIM`
+CREATE TABLE IF NOT EXISTS `thongtinchusim`
 (
     `ID`       INT AUTO_INCREMENT,
     `iccid`    VARCHAR(255) NOT NULL,
@@ -139,13 +139,13 @@ CREATE TABLE IF NOT EXISTS `ThongTinChuSIM`
     UNIQUE KEY (`iccid`),               -- Mỗi SIM chỉ có một chủ sở hữu
     INDEX `idx_chusim_cccd` (`CCCD`),   -- Tìm kiếm theo CCCD
     INDEX `idx_chusim_hoten` (`HoTen`), -- Tìm kiếm theo tên chủ
-    FOREIGN KEY (`iccid`) REFERENCES `SIM` (`iccid`) ON UPDATE CASCADE,
-    FOREIGN KEY (`MaHD`) REFERENCES `HoaDon` (`MaHD`) ON UPDATE CASCADE
+    FOREIGN KEY (`iccid`) REFERENCES `sim` (`iccid`) ON UPDATE CASCADE,
+    FOREIGN KEY (`MaHD`) REFERENCES `hoadon` (`MaHD`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng ưu đãi
-CREATE TABLE IF NOT EXISTS `UuDai`
+CREATE TABLE IF NOT EXISTS `uudai`
 (
     `MaUD`       VARCHAR(20)                  NOT NULL,
     `MoTa`       VARCHAR(255),
@@ -173,14 +173,14 @@ CREATE TABLE IF NOT EXISTS `ApDungUuDai`
     `GiaTriApDung` DECIMAL(10, 2) NOT NULL, -- Giá trị thực tế được giảm
     PRIMARY KEY (`MaApDung`),
     INDEX `idx_apdung_mahd` (`MaHD`),
-    FOREIGN KEY (`MaKH`) REFERENCES `NguoiDung` (`Email`) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (`MaHD`) REFERENCES `HoaDon` (`MaHD`) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (`MaUD`) REFERENCES `UuDai` (`MaUD`) ON UPDATE CASCADE ON DELETE RESTRICT
+    FOREIGN KEY (`MaKH`) REFERENCES `nguoidung` (`Email`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`MaHD`) REFERENCES `hoadon` (`MaHD`) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (`MaUD`) REFERENCES `uudai` (`MaUD`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng đánh giá
-CREATE TABLE IF NOT EXISTS `DanhGia`
+CREATE TABLE IF NOT EXISTS `danhgia`
 (
     `ID`          INT AUTO_INCREMENT,
     `MaHD`        VARCHAR(20) NOT NULL,
@@ -190,13 +190,13 @@ CREATE TABLE IF NOT EXISTS `DanhGia`
     PRIMARY KEY (`ID`),
     UNIQUE KEY (`MaHD`),             -- Mỗi hóa đơn chỉ được đánh giá một lần
     INDEX `idx_danhgia_sao` (`Sao`), -- Tìm kiếm theo số sao
-    FOREIGN KEY (`MaHD`) REFERENCES `HoaDon` (`MaHD`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`MaHD`) REFERENCES `hoadon` (`MaHD`) ON UPDATE CASCADE ON DELETE CASCADE,
     CHECK (Sao BETWEEN 1 AND 5)      -- Đảm bảo số sao từ 1-5
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng lịch sử giao dịch
-CREATE TABLE IF NOT EXISTS `LichSuGiaoDich`
+CREATE TABLE IF NOT EXISTS `lichsugiaodich`
 (
     `MaGiaoDich`    INT AUTO_INCREMENT,
     `MaHD`          VARCHAR(20)                                         NOT NULL,
@@ -208,13 +208,13 @@ CREATE TABLE IF NOT EXISTS `LichSuGiaoDich`
     INDEX `idx_lichsu_mahd` (`MaHD`),
     INDEX `idx_lichsu_thoigian` (`ThoiGian`),
     INDEX `idx_lichsu_hanhdong` (`HanhDong`),
-    FOREIGN KEY (`MaHD`) REFERENCES `HoaDon` (`MaHD`) ON UPDATE CASCADE,
-    FOREIGN KEY (`NguoiThucHien`) REFERENCES `NguoiDung` (`Email`) ON UPDATE CASCADE
+    FOREIGN KEY (`MaHD`) REFERENCES `hoadon` (`MaHD`) ON UPDATE CASCADE,
+    FOREIGN KEY (`NguoiThucHien`) REFERENCES `nguoidung` (`Email`) ON UPDATE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 -- Bảng lưu trữ thống kê bán hàng theo ngày (hỗ trợ báo cáo nhanh)
-CREATE TABLE IF NOT EXISTS `ThongKeBanHang`
+CREATE TABLE IF NOT EXISTS `thongkebanhang`
 (
     `Ngay`      DATE NOT NULL,
     `SoDonHang` INT            DEFAULT 0,

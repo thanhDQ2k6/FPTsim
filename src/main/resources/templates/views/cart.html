@@ -1,180 +1,236 @@
-<!doctype html>
-<html th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
-  <title th:text="#{cart}"></title>
-  <main>
-    <div class="container px-9 py-6">
-      <h1 class="mb-3 ml-3 text-3xl font-bold" th:text="#{cart}"></h1>
-      <!-- Sorting selections -->
-      <div class="mb-4 flex justify-center gap-4">
-        <div>
-          <div class="mb-2 text-center" id="providerLabel">Network</div>
-          <select class="d-select d-select-bordered" id="sortProvider">
-            <option value="">none</option>
-            <option value="Viettel">Viettel</option>
-            <option value="Mobifone">Mobifone</option>
-            <option value="Vinaphone">Vinaphone</option>
-            <option value="Vietnamobile">Vietnamobile</option>
-          </select>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
+<head>
+    <title>Shopping Cart - FPTsim</title>
+</head>
+<body>
+<main>
+    <!-- Cart Page -->
+    <div class="container mx-auto px-4 py-8">
+        
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold">Shopping Cart</h1>
+            <p class="text-base-content/70 mt-2">Review your items and proceed to checkout</p>
         </div>
-        <div>
-          <div class="mb-2 text-center" id="typeLabel" style="display: none">none</div>
-          <select class="d-select d-select-bordered" id="sortType">
-            <option value="">none</option>
-            <option value="domestic">Domestic</option>
-            <option value="foreign">Foreign</option>
-            <option value="prepaid">Prepaid</option>
-            <option value="postpaid">Postpaid</option>
-          </select>
+
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="d-alert d-alert-success mb-4">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}"></span>
         </div>
-      </div>
-      <div class="rounded-box bg-base-100 border-base-300 overflow-x-auto border shadow-lg">
-        <table class="d-table text-center">
-          <!-- head -->
-          <thead>
-            <tr>
-              <th class="text-center">
-                <label>
-                  <input class="d-checkbox" id="checkAll" type="checkbox" />
-                </label>
-              </th>
-              <th class="text-center">Phone Number</th>
-              <th class="text-center">Network Provider</th>
-              <th class="text-center">Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            <th:block th:each="item,iter : ${cartItems}">
-              <tr>
-                <td class="text-center">
-                  <label>
-                    <input
-                      class="d-checkbox item-checkbox"
-                      th:checked="${item.selected} ? 'checked' : null"
-                      type="checkbox"
-                    />
-                  </label>
-                </td>
-                <td class="text-center" th:text="${item.phoneNumber}">0123456789</td>
-                <td class="text-center" th:text="${item.networkProvider}">Viettel</td>
-                <td class="text-center" th:text="${item.type}">prepaid</td>
-              </tr>
-            </th:block>
-          </tbody>
-        </table>
-      </div>
-      <!-- Buttons -->
-      <div class="mt-4 flex justify-center gap-4">
-        <button class="d-btn d-btn-primary" id="payBtn">Pay</button>
-        <button class="d-btn d-btn-error" id="deleteSelectedBtn">Delete Selected</button>
-      </div>
+        
+        <div th:if="${error}" class="d-alert d-alert-error mb-4">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Cart Content -->
+        <div th:if="${cartItems != null and !cartItems.isEmpty()}">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Cart Items (Left - 2 columns) -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div th:each="item : ${cartItems}" class="d-card bg-base-100 shadow-lg">
+                        <div class="d-card-body">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <!-- SIM Number -->
+                                    <h3 class="text-2xl font-mono font-bold text-primary" th:text="${item.sim.msisdn}">
+                                        0123456789
+                                    </h3>
+                                    
+                                    <!-- Details -->
+                                    <div class="mt-3 space-y-2 text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-signal text-base-content/50"></i>
+                                            <span class="text-base-content/70">Provider:</span>
+                                            <span class="d-badge" 
+                                                  th:classappend="${item.sim.nhaMang.name() == 'Viettel'} ? 'badge-error' : 
+                                                                 (${item.sim.nhaMang.name() == 'Mobiphone'} ? 'badge-info' : 'badge-success')"
+                                                  th:text="${item.sim.nhaMang}">
+                                                Provider
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-tag text-base-content/50"></i>
+                                            <span class="text-base-content/70">Type:</span>
+                                            <span th:text="${item.sim.loaiSim == T(com.model.Sim$LoaiSim).TraTruoc} ? 'Prepaid' : 
+                                                           (${item.sim.loaiSim == T(com.model.Sim$LoaiSim).TraSau} ? 'Postpaid' : 'International')">
+                                                Type
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-id-card text-base-content/50"></i>
+                                            <span class="text-base-content/70">ICCID:</span>
+                                            <span class="font-mono text-xs" th:text="${item.sim.iccid}">ID</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-clock text-base-content/50"></i>
+                                            <span class="text-base-content/70">Added:</span>
+                                            <span th:text="${#temporals.format(item.ngayThem, 'dd/MM/yyyy HH:mm')}">Date</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Price and Remove -->
+                                <div class="text-right">
+                                    <div class="text-2xl font-bold text-primary mb-3">
+                                        <span th:text="${#numbers.formatDecimal(item.sim.giaBan, 0, 0)}">0</span>
+                                        <span class="text-sm">VND</span>
+                                    </div>
+                                    <form method="post" action="/cart/remove">
+                                        <input type="hidden" name="itemId" th:value="${item.id}"/>
+                                        <button type="submit" class="d-btn d-btn-error d-btn-sm">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Form (Right - 1 column sticky) -->
+                <div class="lg:col-span-1">
+                    <div class="d-card bg-base-100 shadow-xl sticky top-4">
+                        <div class="d-card-body">
+                            <h2 class="d-card-title">Checkout</h2>
+                            
+                            <form method="post" action="/cart/checkout" id="checkoutForm">
+                                
+                                <!-- Owner Information -->
+                                <div class="d-divider my-2">SIM Owner Information</div>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-user mr-2"></i>Full Name *
+                                        </span>
+                                    </label>
+                                    <input type="text" name="ownerName" required
+                                           class="d-input d-input-bordered" 
+                                           placeholder="Enter full name"/>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-id-card mr-2"></i>ID Number (CCCD) *
+                                        </span>
+                                    </label>
+                                    <input type="text" name="ownerCccd" required
+                                           pattern="[0-9]{9,12}"
+                                           class="d-input d-input-bordered" 
+                                           placeholder="Enter ID number"/>
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt">9-12 digits</span>
+                                    </label>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-calendar mr-2"></i>Date of Birth *
+                                        </span>
+                                    </label>
+                                    <input type="date" name="ownerDateOfBirth" required
+                                           class="d-input d-input-bordered"/>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-calendar-check mr-2"></i>ID Issue Date
+                                        </span>
+                                    </label>
+                                    <input type="date" name="ngayCap"
+                                           class="d-input d-input-bordered"/>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-phone mr-2"></i>Phone Number *
+                                        </span>
+                                    </label>
+                                    <input type="tel" name="ownerPhone" required
+                                           pattern="[0-9]{10}"
+                                           class="d-input d-input-bordered" 
+                                           placeholder="Enter phone number"/>
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt">10 digits</span>
+                                    </label>
+                                </div>
+
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>Address *
+                                        </span>
+                                    </label>
+                                    <textarea name="ownerAddress" required rows="3"
+                                              class="d-textarea d-textarea-bordered" 
+                                              placeholder="Enter full address"></textarea>
+                                </div>
+
+                                <!-- Discount Code -->
+                                <div class="d-divider my-2">Discount Code</div>
+                                
+                                <div class="d-form-control">
+                                    <label class="d-label">
+                                        <span class="d-label-text">
+                                            <i class="fas fa-tag mr-2"></i>Promo Code (Optional)
+                                        </span>
+                                    </label>
+                                    <input type="text" name="discountCode"
+                                           class="d-input d-input-bordered" 
+                                           placeholder="Enter code"/>
+                                </div>
+
+                                <!-- Order Summary -->
+                                <div class="d-divider my-2">Order Summary</div>
+                                
+                                <div class="space-y-2 text-sm mb-4">
+                                    <div class="flex justify-between">
+                                        <span>Items:</span>
+                                        <span th:text="${cartItems.size()}">0</span>
+                                    </div>
+                                    <div class="flex justify-between font-bold text-lg">
+                                        <span>Total:</span>
+                                        <span class="text-primary">
+                                            <span th:text="${#numbers.formatDecimal(totalPrice, 0, 0)}">0</span>
+                                            <span class="text-sm">VND</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="d-btn d-btn-primary w-full">
+                                    <i class="fas fa-check mr-2"></i>
+                                    Place Order
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Cart -->
+        <div th:if="${cartItems == null or cartItems.isEmpty()}" class="text-center py-16">
+            <i class="fas fa-shopping-cart text-6xl text-base-content/20 mb-4"></i>
+            <h3 class="text-2xl font-semibold mb-2">Your Cart is Empty</h3>
+            <p class="text-base-content/70 mb-6">Browse our SIM cards and add some to your cart</p>
+            <a href="/shop" class="d-btn d-btn-primary">
+                <i class="fas fa-shopping-bag mr-2"></i>
+                Browse SIM Cards
+            </a>
+        </div>
+
     </div>
-    <script>
-      // Function to update master checkbox
-      function updateMasterCheckbox() {
-        const checkboxes = document.querySelectorAll('.item-checkbox')
-        const visibleCheckboxes = Array.from(checkboxes).filter((cb) => cb.closest('tr').style.display !== 'none')
-        const allChecked = visibleCheckboxes.length > 0 && visibleCheckboxes.every((cb) => cb.checked)
-        document.getElementById('checkAll').checked = allChecked
-      }
-
-      // Check all functionality
-      document.getElementById('checkAll').addEventListener('change', function () {
-        const checkboxes = document.querySelectorAll('.item-checkbox')
-        checkboxes.forEach((cb) => {
-          if (cb.closest('tr').style.display !== 'none') {
-            cb.checked = this.checked
-          }
-        })
-        // No need to update master since it's the one changing
-      })
-
-      // Add change listeners to item checkboxes
-      document.querySelectorAll('.item-checkbox').forEach((cb) => {
-        cb.addEventListener('change', updateMasterCheckbox)
-      })
-
-      // Initial update
-      updateMasterCheckbox()
-
-      // Pay button
-      document.getElementById('payBtn').addEventListener('click', function () {
-        alert('Pay functionality not implemented yet.')
-      })
-
-      // Delete selected
-      document.getElementById('deleteSelectedBtn').addEventListener('click', function () {
-        const form = document.createElement('form')
-        form.method = 'post'
-        form.action = '/cart/deleteSelected'
-        // CSRF if needed
-        const csrfInput = document.querySelector('input[name="_csrf"]')
-        if (csrfInput) {
-          const csrf = csrfInput.cloneNode()
-          form.appendChild(csrf)
-        }
-        document.querySelectorAll('.item-checkbox:checked').forEach((cb, index) => {
-          const input = document.createElement('input')
-          input.type = 'hidden'
-          input.name = 'indices'
-          input.value = index
-          form.appendChild(input)
-        })
-        if (form.querySelectorAll('input[name="indices"]').length > 0) {
-          document.body.appendChild(form)
-          form.submit()
-        } else {
-          alert('No items selected.')
-        }
-      })
-
-      // Filtering (show/hide rows based on selections)
-      function filterTable() {
-        const tbody = document.querySelector('tbody')
-        const rows = Array.from(tbody.querySelectorAll('tr'))
-        const providerFilter = document.getElementById('sortProvider').value
-        const typeFilter = document.getElementById('sortType').value
-        rows.forEach((row) => {
-          const provider = row.cells[2].textContent
-          const type = row.cells[3].textContent
-          const matchesProvider = !providerFilter || provider === providerFilter
-          const matchesType = !typeFilter || type === typeFilter
-          if (matchesProvider && matchesType) {
-            row.style.display = ''
-          } else {
-            row.style.display = 'none'
-          }
-        })
-      }
-
-      document.getElementById('sortProvider').addEventListener('change', filterTable)
-      document.getElementById('sortType').addEventListener('change', filterTable)
-
-      // Function to check and display common values
-      function checkCommonValues() {
-        const rows = document.querySelectorAll('tbody tr')
-        if (rows.length === 0) return
-        const providers = Array.from(rows).map((row) => row.cells[2].textContent)
-        const types = Array.from(rows).map((row) => row.cells[3].textContent)
-        const commonProvider = providers.every((p) => p === providers[0]) ? providers[0] : null
-        const commonType = types.every((t) => t === types[0]) ? types[0] : null
-        const providerLabel = document.getElementById('providerLabel')
-        if (commonProvider) {
-          providerLabel.textContent = commonProvider
-          providerLabel.style.display = 'block'
-        } else {
-          providerLabel.style.display = 'none'
-        }
-        const typeLabel = document.getElementById('typeLabel')
-        if (commonType) {
-          typeLabel.textContent = commonType
-          typeLabel.style.display = 'block'
-        } else {
-          typeLabel.style.display = 'none'
-        }
-      }
-
-      // Initial check
-      checkCommonValues()
-    </script>
-  </main>
+</main>
+</body>
 </html>

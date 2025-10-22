@@ -1,10 +1,10 @@
 <!doctype html>
-<html data-theme="retro" lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" th:fragment="view(title, content)" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-    <link href="/styles/tailwind.css" rel="stylesheet" />
+    <link href="/styles/tailwind.css" rel="stylesheet" type="text/css" />
     <link
       crossorigin="anonymous"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -14,162 +14,103 @@
     />
     <link href="/images/logo.svg" rel="icon" />
     <title th:replace="${title}">FPTsim</title>
+    <script>
+      // Theme initialization - retro by default
+      const theme = localStorage.getItem('theme') || 'retro'
+      document.documentElement.setAttribute('data-theme', theme)
+    </script>
   </head>
 
   <body>
     <nav class="d-navbar bg-base-100 sticky top-0 z-50 shadow-sm">
       <div class="d-navbar-start">
-        <div class="d-dropdown">
-          <button aria-label="menu" class="d-btn d-btn-circle" type="button">
-            <i class="fa-solid fa-bars"></i>
-          </button>
-          <ul class="d-menu d-dropdown-content bg-base-200 rounded-box mt-2 p-2 shadow">
-            <li><a th:text="#{menu.about}"></a></li>
-            <li>
-              <details>
-                <summary th:text="#{menu.products}"></summary>
-                <ul class="w-40">
-                  <li><a>Submenu 1</a></li>
-                  <li><a>Submenu 2</a></li>
-                </ul>
-              </details>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="d-navbar-center">
-        <a class="d-btn d-btn-ghost inline-flex items-center gap-0 text-xl font-bold">
+        <a th:href="@{/}" class="d-btn d-btn-ghost inline-flex items-center gap-0 text-xl font-bold">
           <i class="fa-solid fa-sim-card"></i>
           <span>FPTsim</span>
         </a>
       </div>
 
+      <div class="d-navbar-center">
+      </div>
+
       <div class="d-navbar-end inline-flex items-center gap-4">
-        <div class="d-dropdown d-dropdown-end">
-          <button
-            aria-label="cart"
-            class="d-btn d-btn-circle"
-            th:classappend="${!isLoggedIn} ? ' d-btn-disabled' : ''"
-            th:disabled="${!isLoggedIn}"
-            type="button"
-          >
-            <span class="d-indicator">
-              <i class="fa-solid fa-cart-shopping"></i>
-              <span class="d-badge d-badge-xs d-indicator-item">0</span>
-            </span>
-          </button>
-          <div class="d-card d-dropdown-content bg-base-200 shadow">
-            <div class="d-card-body w-52">
-              <div class="font-bold">In cart: 8 Items</div>
-              <div class="text-warning">Subtotal: $999</div>
-              <div class="d-card-actions">
-                <a class="d-btn d-btn-primary d-btn-block" th:href="@{/cart}">View cart</a>
-              </div>
-            </div>
+          <div class="d-dropdown d-dropdown-left">
+              <button class="d-btn d-btn-outline d-btn-xs"><span id="langLabel"></span></button>
+              <ul class="d-dropdown-content d-menu bg-base-300 rounded-box p-3 shadow-sm" id="langMenu">
+                  <li><a data-lang="vi" href="javascript:void(0);">VI</a></li>
+                  <li><a data-lang="en" href="javascript:void(0);">EN</a></li>
+              </ul>
           </div>
-        </div>
-        <div class="d-dropdown d-dropdown-end">
+          <label class="d-toggle text-base-content" th:attr="aria-label=#{theme.toggle}">
+              <input class="d-theme-controller" type="checkbox" value="synthwave"/>
+              <svg aria-label="sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <path d="M12 2v2"></path>
+                      <path d="M12 20v2"></path>
+                      <path d="m4.93 4.93 1.41 1.41"></path>
+                      <path d="m17.66 17.66 1.41 1.41"></path>
+                      <path d="M2 12h2"></path>
+                      <path d="M20 12h2"></path>
+                      <path d="m6.34 17.66-1.41 1.41"></path>
+                      <path d="m19.07 4.93-1.41 1.41"></path>
+                  </g>
+              </svg>
+              <svg aria-label="moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                  </g>
+              </svg>
+          </label>
+        <!-- Cart Button - Only navigate to cart page -->
+        <a th:href="@{/cart}" 
+           class="d-btn d-btn-circle d-btn-ghost"
+           th:classappend="${!isLoggedIn} ? ' d-btn-disabled' : ''"
+           th:if="${!isLoggedIn}"
+           aria-label="cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <a th:href="@{/cart}" 
+           class="d-btn d-btn-circle d-btn-ghost"
+           th:if="${isLoggedIn}"
+           aria-label="cart">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        
+        <!-- User Profile Dropdown -->
+        <div class="d-dropdown d-dropdown-end ">
           <button aria-label="profile" class="d-btn d-btn-circle inline-flex items-center" type="button">
             <i class="fa-solid fa-user"></i>
           </button>
-          <ul class="d-menu d-dropdown-content bg-base-200 rounded-box mt-2 p-2 shadow">
-            <div class="inline-flex items-center justify-between gap-2 p-2">
-              <div class="d-dropdown d-dropdown-left">
-                <button class="d-btn d-btn-outline d-btn-xs"><span id="langLabel"></span></button>
-                <ul class="d-dropdown-content d-menu bg-base-300 rounded-box p-3 shadow-sm" id="langMenu">
-                  <li><a data-lang="vi" href="javascript:void(0);">VI</a></li>
-                  <li><a data-lang="en" href="javascript:void(0);">EN</a></li>
-                </ul>
-              </div>
-              <label class="inline-flex cursor-pointer items-center gap-1">
-                <i class="fa-solid fa-sun"></i>
-                <input class="d-toggle d-theme-controller" type="checkbox" value="synthwave" />
-                <i class="fa-solid fa-moon"></i>
-              </label>
-            </div>
+          <ul class="d-menu d-dropdown-content bg-base-200 rounded-box mt-2 p-2 shadow min-w-30">
             <li th:if="${isLoggedIn}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
-            <li th:if="${isLoggedIn}"><a th:href="@{/coupons}" th:text="#{menuUser.coupons}"></a></li>
+            <li th:if="${isLoggedIn}"><a th:href="@{/orders}" th:text="#{menuUser.orders}">My Orders</a></li>
+            <li th:if="${isLoggedIn}"><a th:href="@{/feedback}" th:text="#{menuUser.feedback}">Feedback</a></li>
             <li th:if="${isLoggedIn}"><a th:href="@{/logout}" th:text="#{signOut}"></a></li>
 
             <li th:unless="${isLoggedIn}"><a th:href="@{/signin}" th:text="#{signIn}"></a></li>
-            <li th:unless="${isLoggedIn}">
-              <button onclick="signUp.showModal()" th:text="#{signUp}"></button>
-            </li>
+            <li th:unless="${isLoggedIn}"><a th:href="@{/signup}" th:text="#{signUp}"></a></li>
           </ul>
         </div>
       </div>
     </nav>
 
     <main class="container mx-auto h-screen w-full p-3" th:include="${content}"></main>
-
-    <footer class="d-footer d-footer-center d-footer-horizontal bg-neutral text-neutral-content p-9">
-      <nav class="grid grid-flow-col gap-3">
-        <a class="d-link d-link-hover" th:text="#{footer.about}"></a>
-        <a class="d-link d-link-hover" th:text="#{footer.contact}"></a>
-        <a class="d-link d-link-hover" th:text="#{footer.jobs}"></a>
-        <a class="d-link d-link-hover" th:text="#{footer.source}"></a>
-      </nav>
-      <nav>
-        <div class="grid grid-flow-col gap-4">
-          <a>
-            <i class="fa-brands fa-facebook fa-2xl"></i>
-          </a>
-          <a>
-            <i class="fa-brands fa-youtube fa-2xl"></i>
-          </a>
-          <a>
-            <i class="fa-brands fa-github fa-2xl"></i>
-          </a>
-        </div>
-      </nav>
-      <aside>
-        <p th:text="#{footer.copyright}"></p>
-      </aside>
-    </footer>
-
-    <dialog class="d-modal" id="signIn">
-      <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signin}">
-        <fieldset class="d-fieldset w-full p-3">
-          <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signIn}"></legend>
-
-          <label class="d-label" for="email">Email</label>
-          <input class="d-input d-validator w-full" id="email" name="email" required type="email" />
-
-          <label class="d-label mt-2" for="password" th:text="#{password}"></label>
-          <input class="d-input d-validator w-full" id="password" name="password" required type="password" />
-
-          <div class="d-card-actions mt-4 flex justify-end gap-2">
-            <button class="d-btn d-btn-neutral" th:text="#{signIn}" type="submit"></button>
-          </div>
-        </fieldset>
-      </form>
-      <form class="d-modal-backdrop" method="dialog">
-        <button class="hover:cursor-default"></button>
-      </form>
-    </dialog>
-
-    <dialog class="d-modal" id="signUp">
-      <form class="d-modal-box rounded-box bg-base-100" method="post" th:action="@{/signup}">
-        <fieldset class="d-fieldset w-full p-3">
-          <legend class="d-fieldset-legend text-5xl font-bold" th:text="#{signUp}"></legend>
-
-          <label class="d-label" for="email">Email</label>
-          <input class="d-input d-validator w-full" id="email" name="email" required type="email" />
-
-          <label class="d-label mt-2" for="password" th:text="#{password}"></label>
-          <input class="d-input d-validator w-full" id="password" name="password" required type="password" />
-
-          <div class="d-card-actions mt-4 flex justify-end gap-2">
-            <button class="d-btn d-btn-neutral" th:text="#{signUp}" type="submit"></button>
-          </div>
-        </fieldset>
-      </form>
-      <form class="d-modal-backdrop" method="dialog">
-        <button class="hover:cursor-default"></button>
-      </form>
-    </dialog>
-
     <script src="/scripts/langSelector.js"></script>
+    <script>
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle')
+      const currentTheme = localStorage.getItem('theme') || 'retro'
+
+      // Set initial state
+      themeToggle.checked = currentTheme === 'synthwave'
+      document.documentElement.setAttribute('data-theme', currentTheme)
+
+      themeToggle.addEventListener('change', function () {
+        const newTheme = this.checked ? 'synthwave' : 'retro'
+        document.documentElement.setAttribute('data-theme', newTheme)
+        localStorage.setItem('theme', newTheme)
+      })
+    </script>
   </body>
 </html>

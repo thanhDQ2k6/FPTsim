@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -13,7 +14,9 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "nguoidung")
-public class NguoiDung {
+public class NguoiDung implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     @Id
     @Column(name = "Email", nullable = false)
     private String email;

@@ -1,0 +1,140 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>Edit Account - Dashboard</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">Edit Account</h1>
+            <a class="d-btn d-btn-ghost" th:href="@{/dashboard/accounts}">
+                <i class="fa-solid fa-arrow-left mr-2"></i>
+                Back to List
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+
+        <!-- Edit Form -->
+        <div class="d-card bg-base-100 shadow-md" th:if="${account != null}">
+            <div class="d-card-body">
+                <form method="post" th:action="@{/dashboard/accounts/{email}/edit(email=${account.email})}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Credentials -->
+                        <fieldset class="d-fieldset">
+                            <legend class="d-fieldset-legend" th:text="#{form.credentials}">Credentials</legend>
+                            <div class="space-y-4 mt-4">
+                                <div>
+                                    <label class="d-label" for="email">
+                                        <span class="d-label-text" th:text="#{form.email}">Email</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full bg-base-200" id="email" 
+                                           th:value="${account.email}" type="email" disabled/>
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt">Email cannot be changed</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="password">
+                                        <span class="d-label-text" th:text="#{form.password}">Password</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="password" name="password"
+                                           type="password" placeholder="Leave blank to keep current password" minlength="6"/>
+                                    <label class="d-label">
+                                        <span class="d-label-text-alt">Leave empty to keep current password</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="role">
+                                        <span class="d-label-text" th:text="#{form.role}">Role</span>
+                                    </label>
+                                    <select class="d-select d-select-bordered w-full" id="role" name="role">
+                                        <option value="KhachHang" 
+                                                th:selected="${account.vaiTro?.name() == 'KhachHang'}"
+                                                th:text="#{accounts.filter.user}">User</option>
+                                        <option value="NhanVien" 
+                                                th:selected="${account.vaiTro?.name() == 'NhanVien'}"
+                                                th:text="#{accounts.filter.staff}">Staff</option>
+                                        <option value="Admin" 
+                                                th:selected="${account.vaiTro?.name() == 'Admin'}"
+                                                th:text="#{accounts.filter.admin}">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Personal Info -->
+                        <fieldset class="d-fieldset">
+                            <legend class="d-fieldset-legend" th:text="#{form.personal}">Personal Information</legend>
+                            <div class="space-y-4 mt-4">
+                                <div>
+                                    <label class="d-label" for="fullName">
+                                        <span class="d-label-text" th:text="#{form.fullName}">Full Name</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="fullName" name="fullName"
+                                           type="text" th:value="${account.hoTen}"/>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="phone">
+                                        <span class="d-label-text" th:text="#{form.phone}">Phone</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="phone" name="phone" 
+                                           type="tel" th:value="${account.sdt}"/>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="dob">
+                                        <span class="d-label-text" th:text="#{form.dob}">Date of Birth</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="dob" name="dob" 
+                                           type="date" th:value="${account.ngaySinh}"/>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Address -->
+                        <fieldset class="d-fieldset md:col-span-2">
+                            <legend class="d-fieldset-legend" th:text="#{form.addressLegend}">Address</legend>
+                            <div class="mt-4">
+                                <textarea class="d-textarea d-textarea-bordered w-full" name="address"
+                                          rows="3" th:text="${account.diaChi}"></textarea>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-2">
+                        <a class="d-btn d-btn-ghost" th:href="@{/dashboard/accounts}">Cancel</a>
+                        <button class="d-btn d-btn-primary" type="submit">
+                            <i class="fa-solid fa-save mr-2"></i>
+                            <span th:text="#{form.update}">Update Account</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="d-divider"></div>
+
+                <!-- Danger Zone -->
+                <div class="d-alert d-alert-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div class="flex-1">
+                        <h3 class="font-bold">Danger Zone</h3>
+                        <p class="text-sm">Deleting an account is permanent and cannot be undone.</p>
+                    </div>
+                    <form method="post" th:action="@{/dashboard/accounts/{email}/delete(email=${account.email})}"
+                          onsubmit="return confirm('Are you sure you want to delete this account? This action cannot be undone.');">
+                        <button class="d-btn d-btn-error d-btn-sm" type="submit">
+                            <i class="fa-solid fa-trash mr-2"></i>
+                            Delete Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

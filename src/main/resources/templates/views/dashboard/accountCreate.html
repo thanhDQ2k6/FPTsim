@@ -1,0 +1,109 @@
+<!doctype html>
+<html th:replace="~{layouts/dashboard :: view(~{::title}, ~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<title>Create Account - Dashboard</title>
+<main>
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">Create New Account</h1>
+            <a class="d-btn d-btn-ghost" th:href="@{/dashboard/accounts}">
+                <i class="fa-solid fa-arrow-left mr-2"></i>
+                Back to List
+            </a>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="d-alert d-alert-error mb-4" th:if="${error}">
+            <i class="fa-solid fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
+        <div class="d-alert d-alert-success mb-4" th:if="${success}">
+            <i class="fa-solid fa-check-circle"></i>
+            <span th:text="${success}"></span>
+        </div>
+
+        <!-- Create Form -->
+        <div class="d-card bg-base-100 shadow-md">
+            <div class="d-card-body">
+                <form method="post" th:action="@{/dashboard/accounts/create}">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Credentials -->
+                        <fieldset class="d-fieldset">
+                            <legend class="d-fieldset-legend" th:text="#{form.credentials}">Credentials</legend>
+                            <div class="space-y-4 mt-4">
+                                <div>
+                                    <label class="d-label" for="email">
+                                        <span class="d-label-text" th:text="#{form.email}">Email</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="email" name="email" 
+                                           type="email" required placeholder="user@example.com"/>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="password">
+                                        <span class="d-label-text" th:text="#{form.password}">Password</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="password" name="password"
+                                           type="password" required placeholder="••••••" minlength="6"/>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="role">
+                                        <span class="d-label-text" th:text="#{form.role}">Role</span>
+                                    </label>
+                                    <select class="d-select d-select-bordered w-full" id="role" name="role" required>
+                                        <option value="KhachHang" th:text="#{accounts.filter.user}">User</option>
+                                        <option value="NhanVien" th:text="#{accounts.filter.staff}">Staff</option>
+                                        <option value="Admin" th:text="#{accounts.filter.admin}">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Personal Info -->
+                        <fieldset class="d-fieldset">
+                            <legend class="d-fieldset-legend" th:text="#{form.personal}">Personal Information</legend>
+                            <div class="space-y-4 mt-4">
+                                <div>
+                                    <label class="d-label" for="fullName">
+                                        <span class="d-label-text" th:text="#{form.fullName}">Full Name</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="fullName" name="fullName"
+                                           type="text" required placeholder="John Doe"/>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="phone">
+                                        <span class="d-label-text" th:text="#{form.phone}">Phone</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="phone" name="phone" 
+                                           type="tel" placeholder="0123456789"/>
+                                </div>
+                                <div>
+                                    <label class="d-label" for="dob">
+                                        <span class="d-label-text" th:text="#{form.dob}">Date of Birth</span>
+                                    </label>
+                                    <input class="d-input d-input-bordered w-full" id="dob" name="dob" type="date"/>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <!-- Address -->
+                        <fieldset class="d-fieldset md:col-span-2">
+                            <legend class="d-fieldset-legend" th:text="#{form.addressLegend}">Address</legend>
+                            <div class="mt-4">
+                                <textarea class="d-textarea d-textarea-bordered w-full" name="address"
+                                          placeholder="123 Main Street, City, Country" rows="3"></textarea>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-2">
+                        <a class="d-btn d-btn-ghost" th:href="@{/dashboard/accounts}">Cancel</a>
+                        <button class="d-btn d-btn-primary" type="submit">
+                            <i class="fa-solid fa-plus mr-2"></i>
+                            <span th:text="#{form.create}">Create Account</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+</html>

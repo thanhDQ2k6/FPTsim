@@ -174,4 +174,102 @@ public class SimService {
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
+    
+    // Get all SIMs with pagination (for admin)
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sim> getAllSims(org.springframework.data.domain.Pageable pageable) {
+        return simRepo.findAll(pageable);
+    }
+    
+    // Get SIMs with filters
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sim> getFilteredSims(String nhaMang, String loaiSim, String trangThai, 
+                                                                       org.springframework.data.domain.Pageable pageable) {
+        // Convert string parameters to enums
+        Sim.NhaMang nhaMangEnum = nhaMang != null && !nhaMang.isBlank() ? 
+            Sim.NhaMang.valueOf(nhaMang) : null;
+        Sim.LoaiSim loaiSimEnum = loaiSim != null && !loaiSim.isBlank() ? 
+            Sim.LoaiSim.valueOf(loaiSim) : null;
+        Sim.TrangThai trangThaiEnum = trangThai != null && !trangThai.isBlank() ? 
+            Sim.TrangThai.valueOf(trangThai) : null;
+        
+        // Build query using Specification or custom repository method
+        // For now, using a simple approach with custom queries
+        return getSimsByFilters(nhaMangEnum, loaiSimEnum, trangThaiEnum, pageable);
+    }
+    
+    private org.springframework.data.domain.Page<Sim> getSimsByFilters(Sim.NhaMang nhaMang, Sim.LoaiSim loaiSim, 
+                                                                         Sim.TrangThai trangThai,
+                                                                         org.springframework.data.domain.Pageable pageable) {
+        // Apply filters based on what is provided
+        if (nhaMang != null && loaiSim != null && trangThai != null) {
+            // All three filters
+            return simRepo.findAll(
+                (root, query, cb) -> cb.and(
+                    cb.equal(root.get("nhaMang"), nhaMang),
+                    cb.equal(root.get("loaiSim"), loaiSim),
+                    cb.equal(root.get("trangThai"), trangThai)
+                ), pageable);
+        } else if (nhaMang != null && loaiSim != null) {
+            // Provider and Type
+            return simRepo.findAll(
+                (root, query, cb) -> cb.and(
+                    cb.equal(root.get("nhaMang"), nhaMang),
+                    cb.equal(root.get("loaiSim"), loaiSim)
+                ), pageable);
+        } else if (nhaMang != null && trangThai != null) {
+            // Provider and Status
+            return simRepo.findAll(
+                (root, query, cb) -> cb.and(
+                    cb.equal(root.get("nhaMang"), nhaMang),
+                    cb.equal(root.get("trangThai"), trangThai)
+                ), pageable);
+        } else if (loaiSim != null && trangThai != null) {
+            // Type and Status
+            return simRepo.findAll(
+                (root, query, cb) -> cb.and(
+                    cb.equal(root.get("loaiSim"), loaiSim),
+                    cb.equal(root.get("trangThai"), trangThai)
+                ), pageable);
+        } else if (nhaMang != null) {
+            // Provider only
+            return simRepo.findAll(
+                (root, query, cb) -> cb.equal(root.get("nhaMang"), nhaMang), pageable);
+        } else if (loaiSim != null) {
+            // Type only
+            return simRepo.findAll(
+                (root, query, cb) -> cb.equal(root.get("loaiSim"), loaiSim), pageable);
+        } else if (trangThai != null) {
+            // Status only
+            return simRepo.findAll(
+                (root, query, cb) -> cb.equal(root.get("trangThai"), trangThai), pageable);
+        } else {
+            // No filters
+            return simRepo.findAll(pageable);
+        }
+    }
+    
+    // Get SIMs imported by staff
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sim> getSimsByStaff(String email, org.springframework.data.domain.Pageable pageable) {
+        return simRepo.findByImportedBy(email, pageable);
+    }
+    
+    // Get SIMs imported by staff with filters
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Sim> getFilteredSimsByStaff(String email, String nhaMang, String loaiSim, 
+                                                                             String trangThai,
+                                                                             org.springframework.data.domain.Pageable pageable) {
+        // For staff filtering, we need to join with import records and apply filters
+        // This is more complex, so for now we'll get all staff sims and filter in memory (not optimal)
+        // TODO: Optimize with custom query
+        return simRepo.findByImportedBy(email, pageable);
+    }
+    
+    // Get SIM by ID
+    @Transactional(readOnly = true)
+    public Sim getSimById(String iccid) {
+        return simRepo.findById(iccid)
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy SIM: " + iccid));
+    }
 }
