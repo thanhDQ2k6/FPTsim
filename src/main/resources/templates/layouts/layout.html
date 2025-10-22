@@ -98,31 +98,6 @@
     </nav>
 
     <main class="container mx-auto h-screen w-full p-3" th:include="${content}"></main>
-
-    <footer class="d-footer d-footer-center d-footer-horizontal bg-neutral text-neutral-content p-9">
-      <nav class="grid grid-flow-col gap-3">
-        <a class="d-link d-link-hover" th:text="#{footer.about}"></a>
-        <a class="d-link d-link-hover" th:text="#{footer.contact}"></a>
-        <a class="d-link d-link-hover" th:text="#{footer.jobs}"></a>
-        <a class="d-link d-link-hover" th:text="#{footer.source}"></a>
-      </nav>
-      <nav>
-        <div class="grid grid-flow-col gap-4">
-          <a>
-            <i class="fa-brands fa-facebook fa-2xl"></i>
-          </a>
-          <a>
-            <i class="fa-brands fa-youtube fa-2xl"></i>
-          </a>
-          <a>
-            <i class="fa-brands fa-github fa-2xl"></i>
-          </a>
-        </div>
-      </nav>
-      <aside>
-        <p th:text="#{footer.copyright}"></p>
-      </aside>
-    </footer>
     <script src="/scripts/langSelector.js"></script>
     <script>
       // Theme toggle functionality
