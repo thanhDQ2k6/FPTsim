@@ -19,11 +19,11 @@
                 <div class="flex gap-4 justify-center flex-wrap">
                     <a th:href="@{/shop}" class="d-btn d-btn-lg d-btn-accent">
                         <i class="fas fa-shopping-cart mr-2"></i>
-                        Xem sim ngay
+                        <span th:text="#{home.shopNow}">Xem sim ngay</span>
                     </a>
-                    <a th:href="@{/signin}" class="d-btn d-btn-lg d-btn-ghost bg-white/20 hover:bg-white/30">
-                        <i class="fas fa-sign-in-alt mr-2"></i>
-                        Đăng nhập
+                    <a th:href="@{/signup}" class="d-btn d-btn-lg d-btn-ghost bg-white/20 hover:bg-white/30">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        <span th:text="#{signUp}">Đăng ký</span>
                     </a>
                 </div>
             </div>
@@ -108,11 +108,11 @@
             <div class="flex gap-4 justify-center flex-wrap">
                 <a th:href="@{/signup}" class="d-btn d-btn-lg d-btn-primary">
                     <i class="fas fa-user-plus mr-2"></i>
-                    Đăng ký miễn phí
+                    <span th:text="#{signUp}">Đăng ký miễn phí</span>
                 </a>
                 <a th:href="@{/shop}" class="d-btn d-btn-lg d-btn-ghost bg-white/20 hover:bg-white/30">
                     <i class="fas fa-shopping-cart mr-2"></i>
-                    Xem sim ngay
+                    <span th:text="#{home.shopNow}">Xem sim ngay</span>
                 </a>
             </div>
         </div>

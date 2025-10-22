@@ -36,7 +36,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, String> {
                                            @Param("status") HoaDon.TrangThaiDon status);
     
     // Find completed orders without ratings for a customer
-    @Query("SELECT h FROM HoaDon h WHERE h.khachHang.email = :email AND h.trangThaiDon = :status AND h.danhGia IS NULL ORDER BY h.ngayCapNhat DESC")
+    @Query("SELECT h FROM HoaDon h WHERE h.khachHang.email = :email AND h.trangThaiDon = :status AND NOT EXISTS (SELECT d FROM DanhGia d WHERE d.hoaDon = h) ORDER BY h.ngayCapNhat DESC")
     Page<HoaDon> findCompletedOrdersWithoutRatingByCustomer(@Param("email") String email, 
                                                               @Param("status") HoaDon.TrangThaiDon status,
                                                               Pageable pageable);

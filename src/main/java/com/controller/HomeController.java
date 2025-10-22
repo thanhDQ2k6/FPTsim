@@ -2,6 +2,7 @@ package com.controller;
 
 import com.model.NguoiDung;
 import com.repository.NguoiDungRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,10 +20,24 @@ public class HomeController {
     private final NguoiDungRepository nguoiDungRepository;
     
     @GetMapping("/")
-    public String index(Model model, HttpSession session) {
+    public String index(Model model, HttpSession session, HttpServletRequest request) {
         // Check if user is logged in
         Object user = session.getAttribute("user");
-        model.addAttribute("isLoggedIn", user instanceof NguoiDung);
+        if (user instanceof NguoiDung) {
+            model.addAttribute("isLoggedIn", true);
+            
+            // If there's a saved URI, redirect there
+            String savedUri = (String) session.getAttribute("redirectUri");
+            if (savedUri != null && !savedUri.isEmpty() && !savedUri.equals("/")) {
+                session.removeAttribute("redirectUri");
+                return "redirect:" + savedUri;
+            }
+            
+            // Otherwise redirect to shop page
+            return "redirect:/shop";
+        }
+        
+        model.addAttribute("isLoggedIn", false);
         return "views/index";
     }
     
