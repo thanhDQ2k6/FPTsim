@@ -1,10 +1,11 @@
-<!doctype html>
-<html th:replace="~{layouts/layout :: layout(~{::title}, ~{::content})}" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
 <head>
     <title>My Orders - FPTsim</title>
 </head>
 <body>
-<div th:fragment="content">
+<main>
     <div class="container mx-auto px-4 py-8">
         <!-- Page Header -->
         <div class="flex items-center justify-between mb-6">
@@ -39,12 +40,8 @@
                                 </span>
                                 
                                 <span class="d-badge" 
-                                      th:classappend="${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'd-badge-success' : 
-                                                     ${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'd-badge-warning' : 
-                                                     ${order.trangThaiDon.name() == 'DangXuLy'} ? 'd-badge-info' : 'd-badge-error'"
-                                      th:text="${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).ChoXacNhan} ? 'Pending' : 
-                                               ${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).DangXuLy} ? 'Processing' :
-                                               ${order.trangThaiDon == T(com.model.HoaDon$TrangThaiDon).DaHoanThanh} ? 'Completed' : 'Cancelled'">
+                                      th:classappend="${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'd-badge-success' : (${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'd-badge-warning' : (${order.trangThaiDon.name() == 'DangXuLy'} ? 'd-badge-info' : 'd-badge-error'))"
+                                      th:text="${order.trangThaiDon.name() == 'ChoXacNhan'} ? 'Pending' : (${order.trangThaiDon.name() == 'DangXuLy'} ? 'Processing' : (${order.trangThaiDon.name() == 'DaHoanThanh'} ? 'Completed' : 'Cancelled'))">
                                     Pending
                                 </span>
                             </div>
@@ -146,6 +143,6 @@
             • Total <span th:text="${orders.totalElements}">100</span> order(s)
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>

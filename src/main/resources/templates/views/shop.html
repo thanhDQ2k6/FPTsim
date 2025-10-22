@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/layout :: layout(~{::title}, ~{::content})}">
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
 <head>
     <title>Shop - FPTsim</title>
 </head>
 <body>
-<div th:fragment="content">
+<main>
     <!-- Shop Page -->
     <div class="container mx-auto px-4 py-8">
         
@@ -59,9 +59,8 @@
                         </label>
                         <select name="sortBy" class="d-select d-select-bordered w-full">
                             <option value="">Latest</option>
-                            <option value="price-asc" th:selected="${sortBy == 'price-asc'}">Price: Low to High</option>
+                            <option value="price" th:selected="${sortBy == 'price'}">Price: Low to High</option>
                             <option value="price-desc" th:selected="${sortBy == 'price-desc'}">Price: High to Low</option>
-                            <option value="number-asc" th:selected="${sortBy == 'number-asc'}">Number: Ascending</option>
                         </select>
                     </div>
 
@@ -211,6 +210,6 @@
         </div>
 
     </div>
-</div>
+</main>
 </body>
 </html>

@@ -38,6 +38,7 @@ public class OrderService {
      */
     @Transactional
     public HoaDon createOrderFromCart(String customerEmail, String ownerName, 
+                                      String ownerCccd, String ownerDateOfBirth,
                                       String ownerPhone, String ownerAddress,
                                       String discountCode) {
         NguoiDung customer = nguoiDungRepository.findById(customerEmail)
@@ -51,6 +52,12 @@ public class OrderService {
         // Validate owner info
         if (ownerName == null || ownerName.isBlank()) {
             throw new BusinessException("INVALID_OWNER", "Owner name is required");
+        }
+        if (ownerCccd == null || ownerCccd.isBlank()) {
+            throw new BusinessException("INVALID_OWNER", "Owner CCCD is required");
+        }
+        if (ownerDateOfBirth == null || ownerDateOfBirth.isBlank()) {
+            throw new BusinessException("INVALID_OWNER", "Owner date of birth is required");
         }
         if (ownerPhone == null || ownerPhone.isBlank()) {
             throw new BusinessException("INVALID_OWNER", "Owner phone is required");
@@ -66,7 +73,7 @@ public class OrderService {
         
         BigDecimal totalAmount = BigDecimal.ZERO;
         
-        // Add order details and SIM owner info
+        // Add order details - prepare but don't save ThongTinChuSim yet
         for (GioHang cartItem : cartItems) {
             Sim sim = cartItem.getSim();
             
@@ -84,17 +91,6 @@ public class OrderService {
             detail.setGiaCuoi(sim.getGiaBan()); // Before discount
             order.getHoaDonChiTiets().add(detail);
             
-            // Create SIM owner info - requires CCCD but we use phone as placeholder for now
-            ThongTinChuSim ownerInfo = new ThongTinChuSim();
-            ownerInfo.setSim(sim);
-            ownerInfo.setHoaDon(order);
-            ownerInfo.setHoTen(ownerName);
-            ownerInfo.setCccd(ownerPhone); // Using phone as CCCD placeholder
-            ownerInfo.setSdt(ownerPhone);
-            ownerInfo.setDiaChi(ownerAddress);
-            ownerInfo.setNgaySinh(java.time.LocalDate.now().minusYears(20)); // Default age 20
-            thongTinChuSimRepository.save(ownerInfo);
-            
             // Update SIM status to DaBan
             sim.setTrangThai(Sim.TrangThai.DaBan);
             simRepository.save(sim);
@@ -104,26 +100,26 @@ public class OrderService {
         
         // Apply discount if provided
         BigDecimal finalTotalAmount = totalAmount;
+        UuDai appliedDiscount = null;
         if (discountCode != null && !discountCode.isBlank()) {
-            uuDaiRepository.findById(discountCode).ifPresent(discount -> {
-                if (isDiscountValid(discount)) {
-                    BigDecimal discountAmount;
-                    if (discount.getLoaiGiam() == UuDai.LoaiGiam.PhanTram) {
-                        discountAmount = finalTotalAmount.multiply(
-                            discount.getGiaTriGiam().divide(BigDecimal.valueOf(100)));
-                    } else {
-                        discountAmount = discount.getGiaTriGiam();
-                    }
-                    BigDecimal newTotal = finalTotalAmount.subtract(discountAmount);
-                    order.setTongTien(newTotal.max(BigDecimal.ZERO));
-                    
-                    ApDungUuDai appliedDiscount = new ApDungUuDai();
-                    appliedDiscount.setHoaDon(order);
-                    appliedDiscount.setUuDai(discount);
-                    appliedDiscount.setKhachHang(customer);
-                    order.getApDungUuDais().add(appliedDiscount);
+            appliedDiscount = uuDaiRepository.findById(discountCode).orElse(null);
+            if (appliedDiscount != null && isDiscountValid(appliedDiscount)) {
+                BigDecimal discountAmount;
+                if (appliedDiscount.getLoaiGiam() == UuDai.LoaiGiam.PhanTram) {
+                    discountAmount = finalTotalAmount.multiply(
+                        appliedDiscount.getGiaTriGiam().divide(BigDecimal.valueOf(100)));
+                } else {
+                    discountAmount = appliedDiscount.getGiaTriGiam();
                 }
-            });
+                BigDecimal newTotal = finalTotalAmount.subtract(discountAmount);
+                order.setTongTien(newTotal.max(BigDecimal.ZERO));
+                
+                ApDungUuDai apDung = new ApDungUuDai();
+                apDung.setHoaDon(order);
+                apDung.setUuDai(appliedDiscount);
+                apDung.setKhachHang(customer);
+                order.getApDungUuDais().add(apDung);
+            }
         }
         
         // Set total if no discount applied
@@ -131,12 +127,34 @@ public class OrderService {
             order.setTongTien(totalAmount);
         }
         
-        hoaDonRepository.save(order);
+        // Save order first (this will cascade save HoaDonChiTiet due to CascadeType.ALL)
+        HoaDon savedOrder = hoaDonRepository.save(order);
+        
+        // Now save ThongTinChuSim for each SIM after order is persisted
+        for (GioHang cartItem : cartItems) {
+            Sim sim = cartItem.getSim();
+            
+            // Create SIM owner info with proper CCCD
+            ThongTinChuSim ownerInfo = new ThongTinChuSim();
+            ownerInfo.setSim(sim);
+            ownerInfo.setHoaDon(savedOrder);
+            ownerInfo.setHoTen(ownerName);
+            ownerInfo.setCccd(ownerCccd); // Now using proper CCCD
+            ownerInfo.setSdt(ownerPhone);
+            ownerInfo.setDiaChi(ownerAddress);
+            // Parse date of birth
+            try {
+                ownerInfo.setNgaySinh(java.time.LocalDate.parse(ownerDateOfBirth));
+            } catch (Exception e) {
+                throw new BusinessException("INVALID_DATE", "Invalid date of birth format");
+            }
+            thongTinChuSimRepository.save(ownerInfo);
+        }
         
         // Clear cart
         gioHangRepository.deleteAll(cartItems);
         
-        return order;
+        return savedOrder;
     }
     
     /**
@@ -235,6 +253,16 @@ public class OrderService {
     public Page<DanhGia> getAllRatings(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return danhGiaRepository.findAllByOrderByNgayDanhGiaDesc(pageable);
+    }
+    
+    /**
+     * Get completed orders without ratings for a customer (for feedback page).
+     */
+    @Transactional(readOnly = true)
+    public Page<HoaDon> getOrdersWithoutRating(String customerEmail, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return hoaDonRepository.findCompletedOrdersWithoutRatingByCustomer(
+            customerEmail, HoaDon.TrangThaiDon.DaHoanThanh, pageable);
     }
     
     /**

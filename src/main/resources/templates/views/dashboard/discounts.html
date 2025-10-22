@@ -138,17 +138,17 @@
                                         <td th:text="${discount.moTa}">Summer Sale</td>
                                         <td>
                                             <span class="d-badge d-badge-sm" 
-                                                  th:classappend="${discount.loaiGiam == 'PhanTram'} ? 'd-badge-primary' : 'd-badge-secondary'"
-                                                  th:text="${discount.loaiGiam == 'PhanTram'} ? 'Percentage' : 'Fixed'">
+                                                  th:classappend="${discount.loaiGiam.name() == 'PhanTram'} ? 'd-badge-primary' : 'd-badge-secondary'"
+                                                  th:text="${discount.loaiGiam.name() == 'PhanTram'} ? 'Percentage' : 'Fixed'">
                                                 Percentage
                                             </span>
                                         </td>
                                         <td>
-                                            <span th:if="${discount.loaiGiam == 'PhanTram'}" 
+                                            <span th:if="${discount.loaiGiam.name() == 'PhanTram'}" 
                                                   th:text="${#numbers.formatDecimal(discount.giaTriGiam, 1, 'DEFAULT', 1, 'DEFAULT')} + '%'">
                                                 10%
                                             </span>
-                                            <span th:if="${discount.loaiGiam == 'TienMat'}" 
+                                            <span th:if="${discount.loaiGiam.name() == 'TienMat'}" 
                                                   th:text="${#numbers.formatDecimal(discount.giaTriGiam, 0, 'COMMA', 0, 'POINT')} + ' VND'">
                                                 50,000 VND
                                             </span>

@@ -36,14 +36,14 @@ public class ShopService {
                                        String sortBy, int page, int size) {
         List<Sort.Order> orders = new ArrayList<>();
         
-        // Always sort by created date desc first
-        orders.add(Sort.Order.desc("createdAt"));
-        
-        // Add additional sort
+        // Add sort based on user selection
         if ("price".equals(sortBy)) {
             orders.add(Sort.Order.asc("giaBan"));
         } else if ("price-desc".equals(sortBy)) {
             orders.add(Sort.Order.desc("giaBan"));
+        } else {
+            // Default: sort by created date desc
+            orders.add(Sort.Order.desc("createdAt"));
         }
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(orders));

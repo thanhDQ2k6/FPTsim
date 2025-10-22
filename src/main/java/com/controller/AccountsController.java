@@ -31,8 +31,7 @@ public class AccountsController {
                        HttpSession session,
                        @RequestParam(value = "role", required = false) String role,
                        @RequestParam(value = "page", defaultValue = "0") int page,
-                       @RequestParam(value = "size", defaultValue = "10") int size,
-                       @RequestParam(value = "activeTab", required = false) String activeTab) {
+                       @RequestParam(value = "size", defaultValue = "10") int size) {
         if (!isStaff(session)) return "redirect:/";
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "hoTen"));
         Page<NguoiDung> pageData;
@@ -53,63 +52,152 @@ public class AccountsController {
         model.addAttribute("accounts", accounts);
         model.addAttribute("page", pageData);
         model.addAttribute("roleFilter", role);
-        model.addAttribute("activeTab", activeTab == null ? "list" : activeTab);
         return "views/dashboard/accounts";
     }
 
-    @GetMapping("/{id}")
-    public String detail(@PathVariable("id") String email, Model model, HttpSession session) {
-        if (!isStaff(session)) return "redirect:/";
-        NguoiDung u = userRepo.findById(email).orElse(null);
-        model.addAttribute("detail", u);
-        return list(model, session, null, 0, 10, "detail");
-    }
-
+    /**
+     * Show create new account form
+     */
     @GetMapping("/new")
-    public String newForm(Model model, HttpSession session) {
+    public String showCreateForm(Model model, HttpSession session) {
         if (!isStaff(session)) return "redirect:/";
-        model.addAttribute("detail", new NguoiDung());
-        return list(model, session, null, 0, 10, "detail");
+        return "views/dashboard/accountCreate";
     }
 
-    @PostMapping("")
-    public String upsert(@RequestParam String action,
-                         @RequestParam String email,
-                         @RequestParam(required = false) String password,
-                         @RequestParam(value = "fullName", required = false) String hoTen,
-                         @RequestParam(value = "phone", required = false) String sdt,
-                         @RequestParam(value = "dob", required = false) String dob,
-                         @RequestParam(value = "address", required = false) String diaChi,
-                         @RequestParam(value = "role", required = false) String role,
-                         HttpSession session,
-                         RedirectAttributes ra) {
+    /**
+     * Create new account
+     */
+    @PostMapping("/create")
+    public String createAccount(@RequestParam String email,
+                               @RequestParam String password,
+                               @RequestParam String role,
+                               @RequestParam(required = false) String fullName,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) String dob,
+                               @RequestParam(required = false) String address,
+                               HttpSession session,
+                               RedirectAttributes ra) {
         if (!isStaff(session)) return "redirect:/";
-        if ("delete".equalsIgnoreCase(action)) {
-            // Prevent deleting currently logged-in account
-            Object principal = session.getAttribute("user");
-            if (principal instanceof NguoiDung current && email.equalsIgnoreCase(current.getEmail())) {
-                ra.addFlashAttribute("error", "Không thể xoá tài khoản đang đăng nhập");
-                return "redirect:/dashboard/accounts?activeTab=detail";
+        
+        // Check if email already exists
+        if (userRepo.existsById(email)) {
+            ra.addFlashAttribute("error", "Email already exists");
+            return "redirect:/dashboard/accounts/new";
+        }
+        
+        try {
+            NguoiDung user = new NguoiDung();
+            user.setEmail(email);
+            user.setPassword(password);
+            user.setHoTen(fullName != null ? fullName : email);
+            user.setSdt(phone);
+            if (dob != null && !dob.isBlank()) {
+                user.setNgaySinh(LocalDate.parse(dob));
             }
-            userRepo.findById(email).ifPresent(userRepo::delete);
+            user.setDiaChi(address);
+            user.setVaiTro(parseRole(role));
+            
+            userRepo.save(user);
+            ra.addFlashAttribute("success", "Account created successfully");
+            return "redirect:/dashboard/accounts";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to create account: " + e.getMessage());
+            return "redirect:/dashboard/accounts/new";
+        }
+    }
+
+    /**
+     * Show edit account form
+     */
+    @GetMapping("/{email}/edit")
+    public String showEditForm(@PathVariable("email") String email, Model model, HttpSession session, RedirectAttributes ra) {
+        if (!isStaff(session)) return "redirect:/";
+        
+        NguoiDung user = userRepo.findById(email).orElse(null);
+        if (user == null) {
+            ra.addFlashAttribute("error", "Account not found");
             return "redirect:/dashboard/accounts";
         }
-        NguoiDung user = userRepo.findById(email).orElseGet(NguoiDung::new);
-        user.setEmail(email);
-        if (password != null && !password.isBlank()) {
-            user.setPassword(password);
-        } else if (user.getPassword() == null) {
-            throw new BusinessException("PASSWORD_REQUIRED", "Thiếu mật khẩu cho tài khoản mới");
+        
+        model.addAttribute("account", user);
+        return "views/dashboard/accountEdit";
+    }
+
+    /**
+     * Update account
+     */
+    @PostMapping("/{email}/edit")
+    public String updateAccount(@PathVariable("email") String email,
+                               @RequestParam(required = false) String password,
+                               @RequestParam(required = false) String role,
+                               @RequestParam(required = false) String fullName,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) String dob,
+                               @RequestParam(required = false) String address,
+                               HttpSession session,
+                               RedirectAttributes ra) {
+        if (!isStaff(session)) return "redirect:/";
+        
+        NguoiDung user = userRepo.findById(email).orElse(null);
+        if (user == null) {
+            ra.addFlashAttribute("error", "Account not found");
+            return "redirect:/dashboard/accounts";
         }
-        if (hoTen != null) user.setHoTen(hoTen);
-        if (sdt != null) user.setSdt(sdt);
-        if (dob != null && !dob.isBlank()) user.setNgaySinh(LocalDate.parse(dob));
-        if (diaChi != null) user.setDiaChi(diaChi);
-        if (role != null && !role.isBlank()) {
-            user.setVaiTro(parseRole(role));
+        
+        try {
+            // Update fields
+            if (password != null && !password.isBlank()) {
+                user.setPassword(password);
+            }
+            if (fullName != null) {
+                user.setHoTen(fullName);
+            }
+            if (phone != null) {
+                user.setSdt(phone);
+            }
+            if (dob != null && !dob.isBlank()) {
+                user.setNgaySinh(LocalDate.parse(dob));
+            }
+            if (address != null) {
+                user.setDiaChi(address);
+            }
+            if (role != null && !role.isBlank()) {
+                user.setVaiTro(parseRole(role));
+            }
+            
+            userRepo.save(user);
+            ra.addFlashAttribute("success", "Account updated successfully");
+            return "redirect:/dashboard/accounts";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to update account: " + e.getMessage());
+            return "redirect:/dashboard/accounts/" + email + "/edit";
         }
-        userRepo.save(user);
-        return "redirect:/dashboard/accounts";
+    }
+
+    /**
+     * Delete account
+     */
+    @PostMapping("/{email}/delete")
+    public String deleteAccount(@PathVariable("email") String email,
+                               HttpSession session,
+                               RedirectAttributes ra) {
+        if (!isStaff(session)) return "redirect:/";
+        
+        // Prevent deleting currently logged-in account
+        Object principal = session.getAttribute("user");
+        if (principal instanceof NguoiDung current && email.equalsIgnoreCase(current.getEmail())) {
+            ra.addFlashAttribute("error", "Cannot delete your own account");
+            return "redirect:/dashboard/accounts/" + email + "/edit";
+        }
+        
+        try {
+            userRepo.deleteById(email);
+            ra.addFlashAttribute("success", "Account deleted successfully");
+            return "redirect:/dashboard/accounts";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete account: " + e.getMessage());
+            return "redirect:/dashboard/accounts/" + email + "/edit";
+        }
     }
 
     private boolean isStaff(HttpSession session) {
@@ -121,11 +209,10 @@ public class AccountsController {
     private NguoiDung.VaiTro parseRole(String role) {
         return switch (role.toLowerCase()) {
             case "admin" -> NguoiDung.VaiTro.Admin;
-            case "staff" -> NguoiDung.VaiTro.NhanVien;
+            case "staff", "nhanvien" -> NguoiDung.VaiTro.NhanVien;
             case "user", "khachhang", "customer" -> NguoiDung.VaiTro.KhachHang;
             default -> NguoiDung.VaiTro.KhachHang;
         };
     }
 }
-
 

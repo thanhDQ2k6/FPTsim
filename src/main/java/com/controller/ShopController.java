@@ -28,7 +28,7 @@ public class ShopController {
     
     @GetMapping("")
     public String shop(@RequestParam(defaultValue = "0") int page,
-                      @RequestParam(defaultValue = "10") int size,
+                      @RequestParam(defaultValue = "12") int size,
                       @RequestParam(required = false) String nhaMang,
                       @RequestParam(required = false) String loaiSim,
                       @RequestParam(required = false) String sortBy,
@@ -54,6 +54,9 @@ public class ShopController {
         // Get cart count
         int cartCount = gioHangRepository.countByKhachHang_Email(nguoiDung.getEmail());
         model.addAttribute("cartCount", cartCount);
+        
+        // Add isLoggedIn for layout
+        model.addAttribute("isLoggedIn", true);
         
         return "views/shop";
     }
