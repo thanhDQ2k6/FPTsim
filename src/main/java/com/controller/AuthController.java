@@ -57,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signUp(@RequestParam String email,
-                        @RequestParam String password,
+                        @RequestParam(name = "matKhau") String password,
                         @RequestParam(required = false) String fullName,
                         @RequestParam(required = false) String phone,
                         @RequestParam(required = false) String dob,

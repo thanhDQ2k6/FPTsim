@@ -75,7 +75,7 @@
                         <!-- Actions -->
                         <div class="flex flex-col gap-2">
                             <button class="d-btn d-btn-primary d-btn-sm" 
-                                    th:onclick="'openRatingModal(\'' + ${order.maHD} + '\')'">
+                                    th:onclick="|openRatingModal('${order.maHD}')|">
                                 <i class="fa-solid fa-star"></i>
                                 Rate Order
                             </button>
