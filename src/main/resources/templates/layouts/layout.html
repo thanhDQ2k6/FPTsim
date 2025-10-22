@@ -34,6 +34,34 @@
       </div>
 
       <div class="d-navbar-end inline-flex items-center gap-4">
+          <div class="d-dropdown d-dropdown-left">
+              <button class="d-btn d-btn-outline d-btn-xs"><span id="langLabel"></span></button>
+              <ul class="d-dropdown-content d-menu bg-base-300 rounded-box p-3 shadow-sm" id="langMenu">
+                  <li><a data-lang="vi" href="javascript:void(0);">VI</a></li>
+                  <li><a data-lang="en" href="javascript:void(0);">EN</a></li>
+              </ul>
+          </div>
+          <label class="d-toggle text-base-content" th:attr="aria-label=#{theme.toggle}">
+              <input class="d-theme-controller" type="checkbox" value="synthwave"/>
+              <svg aria-label="sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                      <circle cx="12" cy="12" r="4"></circle>
+                      <path d="M12 2v2"></path>
+                      <path d="M12 20v2"></path>
+                      <path d="m4.93 4.93 1.41 1.41"></path>
+                      <path d="m17.66 17.66 1.41 1.41"></path>
+                      <path d="M2 12h2"></path>
+                      <path d="M20 12h2"></path>
+                      <path d="m6.34 17.66-1.41 1.41"></path>
+                      <path d="m19.07 4.93-1.41 1.41"></path>
+                  </g>
+              </svg>
+              <svg aria-label="moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                  </g>
+              </svg>
+          </label>
         <!-- Cart Button - Only navigate to cart page -->
         <a th:href="@{/cart}" 
            class="d-btn d-btn-circle d-btn-ghost"
@@ -50,41 +78,11 @@
         </a>
         
         <!-- User Profile Dropdown -->
-        <div class="d-dropdown d-dropdown-end">
+        <div class="d-dropdown d-dropdown-end ">
           <button aria-label="profile" class="d-btn d-btn-circle inline-flex items-center" type="button">
             <i class="fa-solid fa-user"></i>
           </button>
-          <ul class="d-menu d-dropdown-content bg-base-200 rounded-box mt-2 p-2 shadow">
-            <div class="inline-flex items-center justify-between gap-2 p-2">
-              <div class="d-dropdown d-dropdown-left">
-                <button class="d-btn d-btn-outline d-btn-xs"><span id="langLabel"></span></button>
-                <ul class="d-dropdown-content d-menu bg-base-300 rounded-box p-3 shadow-sm" id="langMenu">
-                  <li><a data-lang="vi" href="javascript:void(0);">VI</a></li>
-                  <li><a data-lang="en" href="javascript:void(0);">EN</a></li>
-                </ul>
-              </div>
-                <label class="d-toggle text-base-content" th:attr="aria-label=#{theme.toggle}">
-                    <input id="themeToggle" class="d-theme-controller" type="checkbox" value="synthwave"/>
-                    <svg aria-label="sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-                            <circle cx="12" cy="12" r="4"></circle>
-                            <path d="M12 2v2"></path>
-                            <path d="M12 20v2"></path>
-                            <path d="m4.93 4.93 1.41 1.41"></path>
-                            <path d="m17.66 17.66 1.41 1.41"></path>
-                            <path d="M2 12h2"></path>
-                            <path d="M20 12h2"></path>
-                            <path d="m6.34 17.66-1.41 1.41"></path>
-                            <path d="m19.07 4.93-1.41 1.41"></path>
-                        </g>
-                    </svg>
-                    <svg aria-label="moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-                        </g>
-                    </svg>
-                </label>
-            </div>
+          <ul class="d-menu d-dropdown-content bg-base-200 rounded-box mt-2 p-2 shadow min-w-30">
             <li th:if="${isLoggedIn}"><a th:href="@{/profile}" th:text="#{menuUser.profile}"></a></li>
             <li th:if="${isLoggedIn}"><a th:href="@{/orders}" th:text="#{menuUser.orders}">My Orders</a></li>
             <li th:if="${isLoggedIn}"><a th:href="@{/feedback}" th:text="#{menuUser.feedback}">Feedback</a></li>
