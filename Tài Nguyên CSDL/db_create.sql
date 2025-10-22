@@ -130,7 +130,6 @@ CREATE TABLE IF NOT EXISTS `thongtinchusim`
     `iccid`    VARCHAR(255) NOT NULL,
     `HoTen`    VARCHAR(255) NOT NULL,
     `CCCD`     VARCHAR(20)  NOT NULL,
-    `NgayCap`  DATE,
     `NgaySinh` DATE         NOT NULL,
     `DiaChi`   VARCHAR(255) NOT NULL,
     `SDT`      VARCHAR(20),

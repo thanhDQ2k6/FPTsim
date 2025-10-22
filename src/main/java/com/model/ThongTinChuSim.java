@@ -29,9 +29,6 @@ public class ThongTinChuSim {
     @Column(name = "CCCD", nullable = false, length = 20)
     private String cccd;
 
-    @Column(name = "NgayCap")
-    private LocalDate ngayCap;
-
     @Column(name = "NgaySinh", nullable = false)
     private LocalDate ngaySinh;
 

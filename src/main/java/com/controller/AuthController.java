@@ -58,10 +58,10 @@ public class AuthController {
     @PostMapping("/signup")
     public String signUp(@RequestParam String email,
                         @RequestParam(name = "matKhau") String password,
-                        @RequestParam(required = false) String fullName,
-                        @RequestParam(required = false) String phone,
-                        @RequestParam(required = false) String dob,
-                        @RequestParam(required = false) String address,
+                        @RequestParam(name = "hoTen" ,required = false) String fullName,
+                        @RequestParam(name = "sdt" ,required = false) String phone,
+                        @RequestParam(name = "ngaySinh" ,required = false) String dob,
+                        @RequestParam(name = "diaChi" ,required = false) String address,
                         HttpSession session,
                         RedirectAttributes redirectAttributes) {
         try {

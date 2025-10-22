@@ -54,7 +54,7 @@
                                     </span>
                                 </label>
                                 <input type="text" 
-                                       name="hoTen" 
+                                       name="hoTen"
                                        placeholder="Nguyễn Văn A" 
                                        class="d-input d-input-bordered w-full" 
                                        required 
@@ -83,7 +83,7 @@
                                     </span>
                                 </label>
                                 <input type="tel" 
-                                       name="sdt" 
+                                       name="sdt"
                                        placeholder="0123456789" 
                                        class="d-input d-input-bordered w-full" 
                                        pattern="[0-9]{10}" />
@@ -97,8 +97,19 @@
                                     </span>
                                 </label>
                                 <input type="text" 
-                                       name="diaChi" 
+                                       name="diaChi"
                                        placeholder="Số nhà, đường, quận, thành phố" 
+                                       class="d-input d-input-bordered w-full" />
+                            </div>
+
+                            <div class="d-form-control">
+                                <label class="d-label">
+                                    <span class="d-label-text font-medium">
+                                        <i class="fas fa-calendar mr-2"></i>Ngày sinh
+                                    </span>
+                                </label>
+                                <input type="date"
+                                       name="ngaySinh"
                                        class="d-input d-input-bordered w-full" />
                             </div>
 
@@ -134,19 +145,6 @@
 
                             <!-- Hidden Role Field (defaults to KhachHang for public registration) -->
                             <input type="hidden" name="vaiTro" value="KhachHang" />
-
-                            <!-- Terms -->
-                            <div class="d-form-control">
-                                <label class="d-label cursor-pointer justify-start gap-2">
-                                    <input type="checkbox" class="d-checkbox d-checkbox-sm d-checkbox-primary" required />
-                                    <span class="d-label-text">
-                                        Tôi đồng ý với 
-                                        <a href="#" class="d-link d-link-primary">Điều khoản dịch vụ</a> 
-                                        và 
-                                        <a href="#" class="d-link d-link-primary">Chính sách bảo mật</a>
-                                    </span>
-                                </label>
-                            </div>
 
                             <!-- Submit Button -->
                             <button type="submit" class="d-btn d-btn-primary w-full">
