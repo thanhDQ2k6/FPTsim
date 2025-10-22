@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/layout :: view(~{::title}, ~{::content})}">
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
 <head>
     <title>My Profile - FPTsim</title>
 </head>
 <body>
-<div th:fragment="content">
+<main>
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-8">My Profile</h1>
 
@@ -128,6 +128,6 @@
             </div>
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>

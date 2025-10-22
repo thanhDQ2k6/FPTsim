@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/layout :: view(~{::title}, ~{::content})}">
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
 <head>
     <title>FPTsim - Sim số đẹp giá rẻ</title>
 </head>
 <body>
-<div th:fragment="content">
+<main>
     <!-- Hero Section -->
     <div class="hero min-h-[500px] bg-gradient-to-r from-primary to-secondary text-primary-content">
         <div class="hero-content text-center">
@@ -117,6 +117,6 @@
             </div>
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>

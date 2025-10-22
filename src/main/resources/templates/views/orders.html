@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layouts/layout :: view(~{::title}, ~{::content})}">
+      th:replace="~{layouts/layout :: view(~{::title}, ~{::main})}">
 <head>
     <title>My Orders - FPTsim</title>
 </head>
 <body>
-<div th:fragment="content">
+<main>
     <div class="container mx-auto px-4 py-8">
         <!-- Page Header -->
         <div class="flex items-center justify-between mb-6">
@@ -143,6 +143,6 @@
             • Total <span th:text="${orders.totalElements}">100</span> order(s)
         </div>
     </div>
-</div>
+</main>
 </body>
 </html>
